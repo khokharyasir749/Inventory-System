@@ -1,0 +1,297 @@
+/* ============================================================
+   PRINT.CSS — Thermal (58mm / 80mm) and A4 Print Styles
+   ============================================================ */
+
+/* ── Hide everything by default ────────────────────────────── */
+@media print {
+  /* Globally hide all UI chrome */
+  #sidebar,
+  #topbar,
+  #toast-container,
+  .modal-backdrop,
+  .no-print,
+  .btn,
+  .filter-bar,
+  .page-header-actions {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12pt;
+    color: black !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  #app {
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+
+  #main-area {
+    height: auto;
+    overflow: visible;
+  }
+
+  #page-content {
+    padding: 0;
+    overflow: visible;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   THERMAL RECEIPT — 80mm Printer
+   ══════════════════════════════════════════════════════════════ */
+@media print and (max-width: 80mm) {
+  @page {
+    size: 80mm auto;
+    margin: 4mm 3mm;
+  }
+}
+
+/* ── Thermal Receipt Content ───────────────────────────────── */
+.print-receipt {
+  display: none;
+}
+
+@media print {
+  body.printing-receipt .print-receipt {
+    display: block !important;
+    width: 100%;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 9pt;
+    color: black;
+    line-height: 1.4;
+  }
+
+  body.printing-receipt * {
+    color: black !important;
+    background: white !important;
+    border-color: black !important;
+    box-shadow: none !important;
+  }
+
+  .print-receipt .r-store-name {
+    text-align: center;
+    font-size: 13pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 2mm;
+  }
+
+  .print-receipt .r-store-sub {
+    text-align: center;
+    font-size: 8pt;
+    margin-bottom: 1mm;
+  }
+
+  .print-receipt .r-order-info {
+    font-size: 8pt;
+    margin: 2mm 0;
+  }
+
+  .print-receipt .r-divider {
+    border: none;
+    border-top: 1px dashed black;
+    margin: 2mm 0;
+  }
+
+  .print-receipt .r-divider-solid {
+    border: none;
+    border-top: 2px solid black;
+    margin: 2mm 0;
+  }
+
+  .print-receipt .r-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1mm;
+    font-size: 9pt;
+  }
+
+  .print-receipt .r-item-name {
+    flex: 1;
+    padding-right: 2mm;
+  }
+
+  .print-receipt .r-item-qty {
+    min-width: 8mm;
+    text-align: right;
+    padding-right: 2mm;
+  }
+
+  .print-receipt .r-item-price {
+    min-width: 14mm;
+    text-align: right;
+  }
+
+  .print-receipt .r-subtotal-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9pt;
+    margin-top: 1mm;
+  }
+
+  .print-receipt .r-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12pt;
+    font-weight: bold;
+    margin: 2mm 0;
+  }
+
+  .print-receipt .r-change-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9pt;
+    font-weight: bold;
+  }
+
+  .print-receipt .r-footer {
+    text-align: center;
+    font-size: 8pt;
+    margin-top: 4mm;
+  }
+
+  .print-receipt .r-barcode {
+    text-align: center;
+    font-size: 7pt;
+    letter-spacing: 0.1em;
+    margin-top: 2mm;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   A4 INVENTORY SHEET
+   ══════════════════════════════════════════════════════════════ */
+@media print {
+  body.printing-a4 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+  }
+
+  body.printing-a4 .print-a4-sheet {
+    display: block !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 15mm 12mm;
+  }
+
+  .print-a4-sheet {
+    display: none;
+    width: 100%;
+  }
+
+  .print-a4-sheet .a4-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6mm;
+    padding-bottom: 4mm;
+    border-bottom: 2pt solid black;
+  }
+
+  .print-a4-sheet .a4-store-name {
+    font-size: 16pt;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .print-a4-sheet .a4-report-title {
+    font-size: 12pt;
+    font-weight: bold;
+    text-align: right;
+  }
+
+  .print-a4-sheet .a4-date {
+    font-size: 9pt;
+    text-align: right;
+    color: #555;
+    margin-top: 2mm;
+  }
+
+  .print-a4-sheet table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+
+  .print-a4-sheet thead tr {
+    background: #f0f0f0 !important;
+    border-bottom: 1.5pt solid black;
+  }
+
+  .print-a4-sheet thead th {
+    padding: 2mm 3mm;
+    font-weight: bold;
+    text-align: left;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .print-a4-sheet tbody tr {
+    border-bottom: 0.5pt solid #ccc;
+  }
+
+  .print-a4-sheet tbody tr:nth-child(even) {
+    background: #f8f8f8 !important;
+  }
+
+  .print-a4-sheet tbody td {
+    padding: 1.5mm 3mm;
+    vertical-align: middle;
+  }
+
+  .print-a4-sheet .a4-low-stock-row {
+    background: #FFF3CD !important;
+  }
+
+  .print-a4-sheet .a4-critical-row {
+    background: #FECACA !important;
+  }
+
+  .print-a4-sheet .a4-footer {
+    margin-top: 6mm;
+    font-size: 8pt;
+    color: #777;
+    display: flex;
+    justify-content: space-between;
+    border-top: 0.5pt solid #ccc;
+    padding-top: 2mm;
+  }
+
+  /* Page breaks */
+  .print-a4-sheet tr { page-break-inside: avoid; }
+  .print-a4-sheet thead { display: table-header-group; }
+
+  /* Summary totals block */
+  .print-a4-sheet .a4-summary {
+    margin-top: 4mm;
+    page-break-inside: avoid;
+    border: 1pt solid #ccc;
+    padding: 3mm;
+  }
+
+  .print-a4-sheet .a4-summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9pt;
+    margin-bottom: 1mm;
+  }
+
+  .print-a4-sheet .a4-summary-row.total {
+    font-weight: bold;
+    font-size: 10pt;
+    border-top: 1pt solid black;
+    padding-top: 1mm;
+    margin-top: 1mm;
+  }
+}

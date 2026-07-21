@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Local-First Inventory & POS app for retail shops and fast-food restaurants. Fully offline, zero hosting cost.">
+  <meta name="theme-color" content="#0F766E">
+
+  <title>InventoryPOS — Local Inventory & Point of Sale</title>
+
+  <!-- PWA Manifest & Service Worker registration -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230F766E'/><text y='22' x='5' font-size='20' fill='white'>📦</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/pos.css">
+  <link rel="stylesheet" href="styles/print.css">
+
+  <!-- Dexie.js — only external dependency -->
+  <script src="https://unpkg.com/dexie@3.2.7/dist/dexie.js"></script>
+</head>
+
+<body>
+
+  <!-- Security PIN Lock Screen Overlay -->
+  <div id="pin-lock-screen"
+    style="display:none;position:fixed;inset:0;background:var(--text-primary);color:white;z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+    <div style="font-size:1.5rem;font-weight:700;letter-spacing:-0.02em">InventoryPOS Locked</div>
+    <div class="text-sm text-secondary" style="color:var(--text-muted)">Enter 4-digit security PIN to unlock</div>
+    <input type="password" id="pin-input" maxlength="4"
+      style="font-size:2rem;text-align:center;width:140px;letter-spacing:10px;padding:10px;background:rgba(255,255,255,0.08);color:white;border:1px solid rgba(255,255,255,0.2);border-radius:10px;outline:none;"
+      autocomplete="off" autofocus>
+    <div id="pin-error" style="color:var(--danger);font-size:0.875rem;height:20px;font-weight:600"></div>
+    <div class="text-xs text-secondary" style="margin-top:20px;opacity:0.5">Default PIN: 1234</div>
+  </div>
+
+  <!-- Business Template Picker Overlay -->
+  <div id="template-picker-screen"
+    style="display:none;position:fixed;inset:0;background:var(--canvas);z-index:9998;align-items:center;justify-content:center;padding:var(--space-4)">
+    <div class="section-card animate-scale-in"
+      style="max-width:700px;width:100%;box-shadow:var(--shadow-lg);padding:var(--space-6)">
+      <div style="text-align:center;margin-bottom:var(--space-5)">
+        <h2
+          style="font-size:1.75rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;color:var(--text-primary)">
+          Select Store Demo Profile</h2>
+        <p class="text-secondary text-sm">Choose a template below. This will clear existing tables and auto-generate 30
+          days of sales history, logs, and seed assets.</p>
+      </div>
+
+      <div
+        style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:var(--space-3);margin-bottom:var(--space-5)"
+        id="template-options-grid">
+        <!-- Options rendered dynamically -->
+      </div>
+
+      <div style="text-align:center">
+        <div class="text-xs text-secondary" style="margin-bottom:var(--space-3);opacity:0.6">Powered by local-first
+          IndexedDB (Dexie.js). 100% offline ready.</div>
+        <button class="btn btn-primary" id="template-picker-submit-btn" disabled
+          style="width:220px;font-weight:600">${icon('icon-check')} Initialize Demo Store</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG Sprite -->
+  <div id="svg-sprite-container" aria-hidden="true" style="display:none">
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+      <!-- ── Navigation Icons ──────────────────────────────────── -->
+      <symbol id="icon-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="9" rx="1.5" />
+        <rect x="14" y="3" width="7" height="5" rx="1.5" />
+        <rect x="14" y="12" width="7" height="9" rx="1.5" />
+        <rect x="3" y="16" width="7" height="5" rx="1.5" />
+      </symbol>
+
+      <symbol id="icon-inventory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </symbol>
+
+      <symbol id="icon-pos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
+      </symbol>
+
+      <symbol id="icon-recipes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z" />
+        <path d="M12 6v6l4 2" />
+      </symbol>
+
+      <symbol id="icon-logs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+      </symbol>
+
+      <symbol id="icon-reports" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+        <line x1="2" y1="20" x2="22" y2="20" />
+      </symbol>
+
+      <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3" />
+        <path
+          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </symbol>
+
+      <!-- ── Action Icons ───────────────────────────────────────── -->
+      <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </symbol>
+
+      <symbol id="icon-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </symbol>
+
+      <symbol id="icon-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </symbol>
+
+      <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      </symbol>
+
+      <symbol id="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </symbol>
+
+      <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </symbol>
+
+      <symbol id="icon-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+      </symbol>
+
+      <symbol id="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </symbol>
+
+      <symbol id="icon-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="17 8 12 3 7 8" />
+        <line x1="12" y1="3" x2="12" y2="15" />
+      </symbol>
+
+      <symbol id="icon-backup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10" />
+        <polyline points="1 20 1 14 7 14" />
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+      </symbol>
+
+      <symbol id="icon-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9" />
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+        <rect x="6" y="14" width="12" height="8" />
+      </symbol>
+
+      <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+      </symbol>
+
+      <symbol id="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+        <line x1="12" y1="9" x2="12" y2="13" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </symbol>
+
+      <symbol id="icon-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </symbol>
+
+      <symbol id="icon-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="21" r="1" />
+        <circle cx="20" cy="21" r="1" />
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+      </symbol>
+
+      <symbol id="icon-cash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
+      </symbol>
+
+      <symbol id="icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="5" width="20" height="14" rx="2" />
+        <line x1="2" y1="10" x2="22" y2="10" />
+      </symbol>
+
+      <symbol id="icon-mobile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+        <line x1="12" y1="18" x2="12.01" y2="18" />
+      </symbol>
+
+      <symbol id="icon-barcode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 5v14M7 5v14M11 5v14M15 5v14M19 5v14" />
+        <path d="M3 9h4M3 15h4M9 9h2M9 15h2M13 9h2M13 15h2M17 9h4M17 15h4" />
+      </symbol>
+
+      <symbol id="icon-package" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" />
+        <path
+          d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+        <line x1="12" y1="22.08" x2="12" y2="12" />
+      </symbol>
+
+      <symbol id="icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+        <line x1="7" y1="7" x2="7.01" y2="7" />
+      </symbol>
+
+      <symbol id="icon-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+        <polyline points="17 6 23 6 23 12" />
+      </symbol>
+
+      <symbol id="icon-trending-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+        <polyline points="17 18 23 18 23 12" />
+      </symbol>
+
+      <symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </symbol>
+
+      <symbol id="icon-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6" />
+      </symbol>
+
+      <symbol id="icon-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6" />
+      </symbol>
+
+      <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+        <circle cx="12" cy="12" r="3" />
+      </symbol>
+
+      <symbol id="icon-dollar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </symbol>
+
+      <symbol id="icon-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path
+          d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      </symbol>
+
+      <symbol id="icon-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </symbol>
+
+      <symbol id="icon-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </symbol>
+
+      <!-- ── Category Icons ─────────────────────────────────────── -->
+      <symbol id="icon-cat-drinks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+        <line x1="6" y1="1" x2="6" y2="4" />
+        <line x1="10" y1="1" x2="10" y2="4" />
+        <line x1="14" y1="1" x2="14" y2="4" />
+      </symbol>
+
+      <symbol id="icon-cat-food" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+        <line x1="6" y1="1" x2="6" y2="4" />
+        <line x1="10" y1="1" x2="10" y2="4" />
+        <line x1="14" y1="1" x2="14" y2="4" />
+      </symbol>
+
+      <symbol id="icon-cat-snacks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+      </symbol>
+
+      <symbol id="icon-cat-raw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z" />
+        <path d="M12 8v4l3 3" />
+      </symbol>
+
+      <symbol id="icon-cat-dairy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 2h6l2 4H7L9 2z" />
+        <rect x="5" y="6" width="14" height="16" rx="2" />
+        <line x1="9" y1="11" x2="15" y2="11" />
+        <line x1="9" y1="15" x2="15" y2="15" />
+      </symbol>
+
+      <symbol id="icon-cat-bakery" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a9 9 0 0 1 9 9" />
+        <path d="M3 12a9 9 0 0 1 9-9" />
+        <path d="M12 21a9 9 0 0 1-9-9" />
+        <path d="M21 12a9 9 0 0 1-9 9" />
+        <circle cx="12" cy="12" r="3" />
+      </symbol>
+
+      <symbol id="icon-cat-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" />
+        <path
+          d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+        <line x1="12" y1="22.08" x2="12" y2="12" />
+      </symbol>
+
+      <!-- ── Status/Misc ─────────────────────────────────────────── -->
+      <symbol id="icon-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
+      </symbol>
+
+      <symbol id="icon-x-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
+      </symbol>
+
+      <symbol id="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </symbol>
+
+      <symbol id="icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10" />
+        <polyline points="1 20 1 14 7 14" />
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+      </symbol>
+
+      <symbol id="icon-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+      </symbol>
+    </svg>
+  </div>
+
+  <!-- App Shell -->
+  <div id="app">
+
+    <!-- ── Sidebar ────────────────────────────────────────────── -->
+    <aside id="sidebar" role="navigation" aria-label="Main navigation">
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </div>
+        <div class="sidebar-logo-text">
+          <span class="sidebar-logo-name" id="sidebar-store-name">My Shop</span>
+          <span class="sidebar-logo-sub">Inventory POS</span>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav" aria-label="App navigation">
+
+        <div class="nav-section-label">Main</div>
+
+        <a class="nav-item" data-route="dashboard" href="#dashboard" id="nav-dashboard">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-dashboard" />
+          </svg>
+          Dashboard
+        </a>
+
+        <a class="nav-item" data-route="pos" href="#pos" id="nav-pos">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-pos" />
+          </svg>
+          Point of Sale
+        </a>
+
+        <a class="nav-item" data-route="register" href="#register" id="nav-register">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-cash" />
+          </svg>
+          Cash Register
+        </a>
+
+        <a class="nav-item" data-route="inventory" href="#inventory" id="nav-inventory">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-inventory" />
+          </svg>
+          Inventory
+          <span class="nav-badge hidden" id="low-stock-badge">0</span>
+        </a>
+
+        <a class="nav-item" data-route="adv_inventory" href="#adv_inventory" id="nav-adv-inventory">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-package" />
+          </svg>
+          Advanced Stock
+        </a>
+
+        <div class="nav-section-label">Management</div>
+
+        <a class="nav-item" data-route="recipes" href="#recipes" id="nav-recipes">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-recipes" />
+          </svg>
+          Recipes / BOM
+        </a>
+
+        <a class="nav-item" data-route="customers" href="#customers" id="nav-customers">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-users" />
+          </svg>
+          Customers
+        </a>
+
+        <a class="nav-item" data-route="suppliers" href="#suppliers" id="nav-suppliers">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-store" />
+          </svg>
+          Suppliers
+        </a>
+
+        <a class="nav-item" data-route="logs" href="#logs" id="nav-logs">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-logs" />
+          </svg>
+          Ledger Logs
+        </a>
+
+        <a class="nav-item" data-route="analytics" href="#analytics" id="nav-analytics">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-reports" />
+          </svg>
+          Analytics
+        </a>
+
+        <a class="nav-item" data-route="reports" href="#reports" id="nav-reports">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-download" />
+          </svg>
+          Reports & Export
+        </a>
+
+        <a class="nav-item" data-route="showcase" href="#showcase" id="nav-showcase"
+          style="border-top:1px solid var(--border-soft);margin-top:var(--space-2);padding-top:var(--space-2)">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-info" />
+          </svg>
+          Client Showcase
+        </a>
+
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div style="display:flex;gap:4px">
+          <button class="nav-item w-full" id="sidebar-lock-btn" style="cursor:pointer;padding:8px" title="Lock App">
+            <svg aria-hidden="true" style="width:16px;height:16px">
+              <use href="icons/sprite.svg#icon-x-circle" />
+            </svg>
+            Lock
+          </button>
+          <button class="nav-item w-full" id="sidebar-settings-btn" style="cursor:pointer;padding:8px" title="Settings">
+            <svg aria-hidden="true" style="width:16px;height:16px">
+              <use href="icons/sprite.svg#icon-settings" />
+            </svg>
+            Config
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div id="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- ── Main Area ──────────────────────────────────────────── -->
+    <div id="main-area">
+
+      <!-- Topbar -->
+      <header id="topbar" role="banner">
+        <button id="menu-toggle" aria-label="Toggle navigation" class="no-print">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-menu" />
+          </svg>
+        </button>
+
+        <!-- Global Search -->
+        <div class="topbar-search-wrap">
+          <svg class="topbar-search-icon" aria-hidden="true">
+            <use href="icons/sprite.svg#icon-search" />
+          </svg>
+          <input type="search" id="global-search" placeholder="Search products or scan barcode… (Ctrl+K)"
+            autocomplete="off" aria-label="Search products" aria-autocomplete="list" aria-controls="search-results">
+          <div id="search-results" role="listbox" aria-label="Search results"></div>
+        </div>
+
+        <!-- Topbar Actions -->
+        <div class="topbar-actions">
+          <button class="topbar-btn no-print" id="topbar-lock-btn" title="Lock POS screen">
+            <svg aria-hidden="true" style="color:var(--danger)">
+              <use href="icons/sprite.svg#icon-x-circle" />
+            </svg>
+          </button>
+          <button class="topbar-btn no-print" id="topbar-backup-btn" title="Backup database">
+            <svg aria-hidden="true">
+              <use href="icons/sprite.svg#icon-backup" />
+            </svg>
+          </button>
+          <button class="topbar-btn no-print" id="topbar-settings-btn" title="Settings">
+            <svg aria-hidden="true">
+              <use href="icons/sprite.svg#icon-settings" />
+            </svg>
+          </button>
+          <div class="topbar-store-name" id="topbar-store-name">My Shop</div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main id="page-content" role="main" aria-live="polite">
+        <!-- Loading state -->
+        <div
+          style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--text-muted)">
+          <svg style="width:40px;height:40px" class="animate-spin" viewBox="0 0 24 24" fill="none"
+            stroke="var(--primary)" stroke-width="2">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+          </svg>
+          <p>Loading InventoryPOS...</p>
+        </div>
+      </main>
+
+    </div><!-- /#main-area -->
+
+  </div><!-- /#app -->
+
+  <!-- Toast Container -->
+  <div id="toast-container" aria-live="assertive" aria-atomic="false" role="status"></div>
+
+  <!-- JS: Core (load order matters) -->
+  <script src="js/db.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/utils.js"></script>
+
+  <!-- JS: Components -->
+  <script src="js/components/toast.js"></script>
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/cart.js"></script>
+  <script src="js/components/search.js"></script>
+
+  <!-- JS: Pages -->
+  <script src="js/pages/dashboard.js"></script>
+  <script src="js/pages/inventory.js"></script>
+  <script src="js/pages/pos.js"></script>
+  <script src="js/pages/register.js"></script>
+  <script src="js/pages/recipes.js"></script>
+  <script src="js/pages/customers.js"></script>
+  <script src="js/pages/suppliers.js"></script>
+  <script src="js/pages/logs.js"></script>
+  <script src="js/pages/analytics.js"></script>
+  <script src="js/pages/adv_inventory.js"></script>
+  <script src="js/pages/reports.js"></script>
+  <script src="js/pages/showcase.js"></script>
+  <script src="js/pages/settings.js"></script>
+
+  <!-- JS: App Initialization -->
+  <script>
+    // PWA service worker registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => {
+            console.log('[PWA] Service Worker registered with scope: ', reg.scope);
+            // Check for updates
+            reg.onupdatefound = () => {
+              const installingWorker = reg.installing;
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  toast.info('Update Available', 'A new version of the app is available. Reload to update.');
+                }
+              };
+            };
+          })
+          .catch(err => console.error('[PWA] Service Worker registration failed: ', err));
+      });
+    }
+
+    (async function initApp() {
+      try {
+        // 1. Initialize database schema
+        await initDB();
+
+        const dbEmpty = (await db.items.count()) === 0;
+        if (dbEmpty) {
+          showTemplatePicker();
+        } else {
+          await startApp();
+        }
+
+        // ── Template Picker Screen Logic ─────────────────────────────
+        async function showTemplatePicker() {
+          const picker = document.getElementById('template-picker-screen');
+          const grid = document.getElementById('template-options-grid');
+          const submitBtn = document.getElementById('template-picker-submit-btn');
+
+          picker.style.display = 'flex';
+
+          const templates = [
+            { id: 'grocery', name: 'Grocery Store', icon: '🛒', desc: 'Milk, bread, rice, eggs, soda, chips' },
+            { id: 'bakery', name: 'Bakery Cafe', icon: '🍞', desc: 'Cakes, cookies, pastries, donuts, cupcakes' },
+            { id: 'restaurant', name: 'Restaurant / Fast Food', icon: '🍔', desc: 'Burgers, cheeseburgers, fries, ingredients BOM' },
+            { id: 'vape', name: 'Vape Shop', icon: '💨', desc: 'Pod kits, coils, mods, disposables, e-liquids' },
+            { id: 'pharmacy', name: 'Pharmacy', icon: '💊', desc: 'Panadol box, cough syrups, vitamins, masks, band-aids' },
+            { id: 'electronics', name: 'Electronics Store', icon: '💻', desc: 'Headphones, chargers, mechanical keyboards, mice' }
+          ];
+
+          let selectedId = '';
+
+          grid.innerHTML = templates.map(t => `
+        <div class="template-option-card" data-tid="${t.id}" style="border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-4); text-align: center; cursor: pointer; background: var(--surface); transition: all var(--transition-fast)">
+          <div style="font-size: 2.25rem; margin-bottom: var(--space-2)">${t.icon}</div>
+          <div class="font-bold" style="font-size: 0.95rem; margin-bottom: 2px">${t.name}</div>
+          <div class="text-xs text-secondary">${t.desc}</div>
+        </div>
+      `).join('');
+
+          grid.querySelectorAll('.template-option-card').forEach(card => {
+            card.addEventListener('click', () => {
+              grid.querySelectorAll('.template-option-card').forEach(c => {
+                c.style.borderColor = 'var(--border)';
+                c.style.background = 'var(--surface)';
+                c.style.boxShadow = 'none';
+              });
+
+              card.style.borderColor = 'var(--primary)';
+              card.style.background = 'var(--primary-muted)';
+              card.style.boxShadow = '0 0 0 2px var(--primary)';
+
+              selectedId = card.dataset.tid;
+              submitBtn.disabled = false;
+            });
+          });
+
+          // We will make sure the submit button listener is added once
+          const initStoreHandler = async () => {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="animate-spin" style="display:inline-block;margin-right:8px;animation:spin 1s linear infinite">⌛</span>Initializing Store...`;
+
+            try {
+              await seedBusinessTemplate(selectedId);
+              await generate30DaysDemoTransactions();
+
+              picker.style.display = 'none';
+              toast.success('Store Initialized', `Successfully loaded the ${selectedId} profile with 30 days history!`);
+
+              await startApp();
+            } catch (err) {
+              toast.error('Initialization Failed', err.message);
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = 'Initialize Demo Store';
+            }
+          };
+
+          submitBtn.removeEventListener('click', initStoreHandler);
+          submitBtn.addEventListener('click', initStoreHandler);
+        }
+
+        // ── Start Application Sequence ───────────────────────────────
+        async function startApp() {
+          // 2. Load settings
+          await loadCurrencySymbol();
+          const storeName = await getSetting('store_name', 'Premium Retail Store');
+
+          // 3. Update store name in UI
+          document.getElementById('topbar-store-name').textContent = storeName;
+          document.getElementById('sidebar-store-name').textContent = storeName;
+
+          // 4. App PIN protection check
+          async function checkPinLock() {
+            const pin = await getSetting('app_pin');
+            if (pin) {
+              const lockScreen = document.getElementById('pin-lock-screen');
+              const input = document.getElementById('pin-input');
+              const err = document.getElementById('pin-error');
+
+              lockScreen.style.display = 'flex';
+              input.focus();
+
+              const handleInput = () => {
+                if (input.value === pin) {
+                  lockScreen.style.display = 'none';
+                  input.value = '';
+                  err.textContent = '';
+                } else if (input.value.length === 4) {
+                  err.textContent = 'Incorrect PIN. Try again.';
+                  input.value = '';
+                  input.focus();
+                }
+              };
+
+              input.removeEventListener('input', handleInput);
+              input.addEventListener('input', handleInput);
+            }
+          }
+
+          await checkPinLock();
+
+          // Enable lock buttons
+          const lockHandler = async () => {
+            await checkPinLock();
+            toast.info('App Locked', 'Screen is locked.');
+          };
+
+          document.getElementById('sidebar-lock-btn')?.removeEventListener('click', lockHandler);
+          document.getElementById('sidebar-lock-btn')?.addEventListener('click', lockHandler);
+          document.getElementById('topbar-lock-btn')?.removeEventListener('click', lockHandler);
+          document.getElementById('topbar-lock-btn')?.addEventListener('click', lockHandler);
+
+          // 5. Load low-stock badge count
+          async function updateLowStockBadge() {
+            const items = await db.items.filter(it => !it.is_composite && it.stock_quantity <= it.min_stock_alert).count();
+            const badge = document.getElementById('low-stock-badge');
+            if (badge) {
+              badge.textContent = items;
+              badge.classList.toggle('hidden', items === 0);
+            }
+          }
+
+          await updateLowStockBadge();
+
+          // Refresh badge on any stock change
+          const origRecordStockEvent = recordStockEvent;
+          window.recordStockEvent = async function (...args) {
+            const result = await origRecordStockEvent(...args);
+            await updateLowStockBadge();
+            return result;
+          };
+
+          // 6. Register routes
+          register('dashboard', renderDashboard);
+          register('inventory', renderInventory);
+          register('pos', renderPOS);
+          register('register', renderRegister);
+          register('adv_inventory', renderAdvInventory);
+          register('recipes', renderRecipes);
+          register('customers', renderCustomers);
+          register('suppliers', renderSuppliers);
+          register('logs', renderLogs);
+          register('analytics', renderAnalytics);
+          register('reports', renderReports);
+          register('showcase', renderShowcase);
+
+          // 7. Initialize router & trigger home
+          initRouter();
+
+          // 8. Initialize global search
+          initSearch();
+
+          // 9. Mobile sidebar toggle
+          const menuToggle = document.getElementById('menu-toggle');
+          const sidebar = document.getElementById('sidebar');
+          const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+          menuToggle?.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('visible');
+          });
+
+          sidebarOverlay?.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('visible');
+          });
+
+          // Close sidebar on nav click (mobile)
+          document.querySelectorAll('.nav-item').forEach(el => {
+            el.addEventListener('click', () => {
+              if (window.innerWidth <= 768) {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('visible');
+              }
+            });
+          });
+
+          // 10. Topbar buttons
+          const backupBtn = document.getElementById('topbar-backup-btn');
+          const backupHandler = async () => {
+            try {
+              await exportBackup();
+              toast.success('Backup Saved', 'Database exported to JSON file.');
+            } catch (e) {
+              toast.error('Backup Failed', e.message);
+            }
+          };
+          backupBtn?.removeEventListener('click', backupHandler);
+          backupBtn?.addEventListener('click', backupHandler);
+
+          document.getElementById('topbar-settings-btn')?.addEventListener('click', () => navigate('reports'));
+          document.getElementById('sidebar-settings-btn')?.addEventListener('click', () => navigate('reports'));
+
+          // 11. Welcome toast (first time)
+          const firstVisit = !localStorage.getItem('pos_visited_v3');
+          if (firstVisit) {
+            localStorage.setItem('pos_visited_v3', '1');
+            setTimeout(() => {
+              toast.info('Welcome!', 'Store initialized successfully. Pin protection is active. Default PIN: 1234.');
+            }, 800);
+          }
+        }
+
+        // Global reset trigger (for settings pages)
+        window.resetAndTriggerTemplatePicker = async function () {
+          await db.transaction('rw', [db.items, db.recipes, db.logs, db.sales, db.sale_items, db.customers, db.customer_transactions, db.suppliers, db.purchase_orders, db.purchase_order_items, db.cash_sessions, db.batches, db.stock_adjustments, db.settings], async () => {
+            await Promise.all([
+              db.items.clear(), db.recipes.clear(), db.logs.clear(), db.sales.clear(), db.sale_items.clear(),
+              db.customers.clear(), db.customer_transactions.clear(), db.suppliers.clear(), db.purchase_orders.clear(),
+              db.purchase_order_items.clear(), db.cash_sessions.clear(), db.batches.clear(), db.stock_adjustments.clear(),
+              db.settings.clear()
+            ]);
+          });
+          window.location.hash = '#dashboard';
+          showTemplatePicker();
+        };
+
+      } catch (err) {
+        console.error('[App] Failed to initialize:', err);
+        document.getElementById('page-content').innerHTML = `
+      <div class="empty-state" style="height:100vh">
+        <svg style="width:48px;height:48px;color:var(--danger)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h3>Failed to Load App</h3>
+        <p style="max-width:400px">An error occurred while initializing the database. This may happen in private browsing mode or if IndexedDB is disabled.</p>
+        <code style="font-size:0.75rem;color:var(--danger);background:var(--danger-bg);padding:8px 12px;border-radius:6px;max-width:400px;word-break:break-all;">${err.message}</code>
+        <button class="btn btn-primary" onclick="window.location.reload()">Try Again</button>
+      </div>`;
+      }
+    })();
+  </script>
+
+</body>
+
+</html>
