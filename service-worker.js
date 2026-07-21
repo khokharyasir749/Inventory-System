@@ -3,7 +3,7 @@
  * Offline asset caching and versioned cache strategy.
  */
 
-const CACHE_NAME = 'inventory-pos-v2.0.0';
+const CACHE_NAME = 'inventory-pos-v3.0.0';
 const ASSETS = [
   './',
   './index.html',
@@ -32,6 +32,8 @@ const ASSETS = [
   './js/pages/analytics.js',
   './js/pages/adv_inventory.js',
   './js/pages/reports.js',
+  './js/pages/showcase.js',
+  './js/pages/settings.js',
   'https://unpkg.com/dexie@3.2.7/dist/dexie.js',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap'
 ];

@@ -1223,3 +1223,19 @@ tbody td {
 .settings-row-info { flex: 1; }
 .settings-row-label { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); }
 .settings-row-desc  { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; }
+
+/* ── Mobile Touch Accessibility ────────────────────────────── */
+@media (max-width: 768px) {
+  .btn {
+    min-height: 42px;
+    padding: 10px var(--space-4);
+  }
+  .form-input, .form-select {
+    min-height: 42px;
+    font-size: 16px !important; /* Prevents auto-zoom on iOS */
+  }
+  .tab-btn {
+    min-height: 40px;
+    padding: 8px 16px;
+  }
+}

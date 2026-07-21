@@ -34,14 +34,26 @@ async function refreshRegisterView(container) {
 
   if (active) {
     // Session is open
-    // Calculate expected cash dynamically
-    const cashSales = await db.sales
-      .where('timestamp').aboveOrEqual(active.opened_at)
-      .and(s => s.payment_method === 'Cash' && s.session_id === active.id)
-      .toArray();
+    const [cashSales, customerPayments, creditSalesPartials] = await Promise.all([
+      db.sales
+        .where('timestamp').aboveOrEqual(active.opened_at)
+        .and(s => s.payment_method === 'Cash' && s.session_id === active.id)
+        .toArray(),
+      db.customer_transactions
+        .where('timestamp').aboveOrEqual(active.opened_at)
+        .and(t => t.transaction_type === 'PAYMENT')
+        .toArray(),
+      db.sales
+        .where('timestamp').aboveOrEqual(active.opened_at)
+        .and(s => s.payment_method === 'Credit' && s.session_id === active.id)
+        .toArray()
+    ]);
 
-    const cashSalesTotal = cashSales.reduce((sum, s) => sum + (s.cash_received || 0), 0);
-    const expectedCash = active.opening_cash + cashSalesTotal;
+    const cashSalesTotal = cashSales.reduce((sum, s) => sum + (s.total || 0), 0);
+    const custPayTotal   = customerPayments.reduce((sum, t) => sum + (t.amount || 0), 0);
+    const creditCashTotal= creditSalesPartials.reduce((sum, s) => sum + (s.cash_received || 0), 0);
+
+    const expectedCash = active.opening_cash + cashSalesTotal + custPayTotal + creditCashTotal;
 
     // Update session expected cash cache
     await db.cash_sessions.update(active.id, { expected_cash: expectedCash });
@@ -69,14 +81,18 @@ async function refreshRegisterView(container) {
 
             <div class="divider" style="margin:var(--space-2) 0"></div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-2)">
               <div>
-                <div class="text-sm text-secondary">Cash Sales (Current Session)</div>
-                <div class="font-semibold text-base text-teal mono">+ ${fmt(cashSalesTotal)}</div>
+                <div class="text-xs text-secondary">POS Cash Sales</div>
+                <div class="font-semibold text-sm text-teal mono">+ ${fmt(cashSalesTotal + creditCashTotal)}</div>
               </div>
               <div>
-                <div class="text-sm text-secondary">Expected Drawer Cash</div>
-                <div class="font-bold text-xl text-primary mono">${fmt(expectedCash)}</div>
+                <div class="text-xs text-secondary">Ledger Payoffs</div>
+                <div class="font-semibold text-sm text-green mono">+ ${fmt(custPayTotal)}</div>
+              </div>
+              <div>
+                <div class="text-xs text-secondary">Expected Drawer</div>
+                <div class="font-bold text-lg text-primary mono">${fmt(expectedCash)}</div>
               </div>
             </div>
 

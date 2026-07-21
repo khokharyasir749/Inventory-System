@@ -143,6 +143,11 @@ const CATEGORY_ICON = {
   'Other':           'icon-cat-default'
 };
 
+// ── Session Helpers ──────────────────────────────────────────
+async function getActiveSession() {
+  return await db.cash_sessions.where('status').equals('OPEN').first();
+}
+
 // ── Stock Engine ─────────────────────────────────────────────
 async function recalcStock(itemId) {
   const logs = await db.logs.where('item_id').equals(itemId).toArray();
@@ -772,7 +777,7 @@ async function generate30DaysDemoTransactions() {
         total,
         payment_method: paymentMethod,
         customer_id: customerId,
-        cash_received: cashReceived,
+        cash_received: paymentMethod === 'Cash' ? total : cashReceived,
         change_returned: changeReturned,
         session_id: sessionId
       });

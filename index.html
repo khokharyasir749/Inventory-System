@@ -642,8 +642,8 @@
 
   <!-- JS: App Initialization -->
   <script>
-    // PWA service worker registration
-    if ('serviceWorker' in navigator) {
+    // PWA service worker registration (HTTP/HTTPS only)
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
           .then(reg => {
@@ -759,13 +759,22 @@
               const lockScreen = document.getElementById('pin-lock-screen');
               const input = document.getElementById('pin-input');
               const err = document.getElementById('pin-error');
+              const appEl = document.getElementById('app');
 
               lockScreen.style.display = 'flex';
+              if (appEl) {
+                appEl.style.filter = 'blur(12px)';
+                appEl.style.pointerEvents = 'none';
+              }
               input.focus();
 
               const handleInput = () => {
                 if (input.value === pin) {
                   lockScreen.style.display = 'none';
+                  if (appEl) {
+                    appEl.style.filter = '';
+                    appEl.style.pointerEvents = '';
+                  }
                   input.value = '';
                   err.textContent = '';
                 } else if (input.value.length === 4) {

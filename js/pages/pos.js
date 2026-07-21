@@ -487,7 +487,11 @@ function renderCart(container) {
     });
   });
 
-  container.querySelector('#checkout-btn').disabled = false;
+  const checkoutBtn = container.querySelector('#checkout-btn');
+  if (checkoutBtn) {
+    checkoutBtn.disabled = false;
+    checkoutBtn.innerHTML = `${icon('icon-check')} Complete Checkout`;
+  }
   updateCartTotals(container);
 }
 
@@ -534,11 +538,36 @@ function updateChangeDue(container) {
   }
 }
 
+async function getMaxCompositeAvailable(item) {
+  if (!item.is_composite) return item.stock_quantity;
+  const boms = await db.recipes.where('composite_item_id').equals(item.id).toArray();
+  if (boms.length === 0) return 0;
+
+  let maxQty = Infinity;
+  for (const bom of boms) {
+    const ingr = await db.items.get(bom.ingredient_item_id);
+    if (!ingr) return 0;
+    const avail = Math.floor(ingr.stock_quantity / bom.qty_required);
+    if (avail < maxQty) maxQty = avail;
+  }
+  return maxQty === Infinity ? 0 : maxQty;
+}
+
 async function addToCart(item, container) {
   const ci = Cart.getItems().find(c => c.item.id === item.id);
-  if (!item.is_composite && item.stock_quantity <= (ci ? ci.qty : 0)) {
-    toast.error('Limit Reached', `Only ${item.stock_quantity} ${item.unit} available in stock.`);
-    return;
+  const currentCartQty = ci ? ci.qty : 0;
+
+  if (item.is_composite) {
+    const maxAvail = await getMaxCompositeAvailable(item);
+    if (maxAvail <= currentCartQty) {
+      toast.error('BOM Stock Limit', `Insufficient raw ingredients to prepare more than ${maxAvail}x ${item.name}.`);
+      return;
+    }
+  } else {
+    if (item.stock_quantity <= currentCartQty) {
+      toast.error('Limit Reached', `Only ${item.stock_quantity} ${item.unit} available in stock.`);
+      return;
+    }
   }
   Cart.add(item);
   renderCart(container);
@@ -611,8 +640,11 @@ async function processCheckout(container) {
 
   } catch (err) {
     toast.error('Checkout Failed', err.message);
-    checkoutBtn.disabled = false;
-    checkoutBtn.innerHTML = `${icon('icon-check')} Complete Checkout`;
+  } finally {
+    if (checkoutBtn) {
+      checkoutBtn.disabled = Cart.getItemCount() === 0;
+      checkoutBtn.innerHTML = `${icon('icon-check')} Complete Checkout`;
+    }
   }
 }
 
