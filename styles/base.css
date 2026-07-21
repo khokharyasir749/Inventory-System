@@ -6,17 +6,21 @@
 
 /* ── Design Tokens ─────────────────────────────────────────── */
 :root {
-  /* Color palette per AGENT.md spec */
-  --canvas:         #F1F5F9;
+  /* Zeploy Commercial Brand Palette */
+  --canvas:         #F8FAFC;
   --surface:        #FFFFFF;
-  --surface-raised: #F8FAFC;
+  --surface-raised: #F1F5F9;
   --border:         #CBD5E1;
   --border-soft:    #E2E8F0;
 
-  --primary:        #0F766E;
-  --primary-dark:   #0D6B63;
-  --primary-light:  #CCFBF1;
-  --primary-muted:  #E6FFFA;
+  --primary:        #3B82F6;
+  --primary-dark:   #0F1C3F;
+  --primary-light:  #AFD2FA;
+  --primary-muted:  #F0F7FF;
+  --zeploy-midnight: #0B1535;
+  --zeploy-navy:     #0F1C3F;
+  --zeploy-header:   #182350;
+  --zeploy-accent:   #3B82F6;
 
   --stock-in:       #059669;
   --stock-in-bg:    #D1FAE5;

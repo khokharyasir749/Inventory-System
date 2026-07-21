@@ -12,7 +12,7 @@
 /* ── Sidebar ───────────────────────────────────────────────── */
 #sidebar {
   width: var(--sidebar-width);
-  background: var(--text-primary);
+  background: var(--zeploy-navy);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -465,4 +465,18 @@
   .grid-3 {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── Sales Presentation Mode ───────────────────────────────── */
+body.presentation-mode #sidebar-settings-btn,
+body.presentation-mode #topbar-settings-btn,
+body.presentation-mode #nav-logs,
+body.presentation-mode #set-reset-db-btn,
+body.presentation-mode #set-pin-btn {
+  display: none !important;
+}
+
+body.presentation-mode .kpi-card {
+  border: 1px solid var(--primary);
+  box-shadow: 0 4px 15px -3px rgba(59, 130, 246, 0.2);
 }

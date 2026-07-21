@@ -47,30 +47,87 @@
     <div class="text-xs text-secondary" style="margin-top:20px;opacity:0.5">Default PIN: 1234</div>
   </div>
 
-  <!-- Business Template Picker Overlay -->
+  <!-- Commercial 4-Step Onboarding Setup Wizard Overlay -->
   <div id="template-picker-screen"
-    style="display:none;position:fixed;inset:0;background:var(--canvas);z-index:9998;align-items:center;justify-content:center;padding:var(--space-4)">
+    style="display:none;position:fixed;inset:0;background:var(--zeploy-midnight);color:white;z-index:9998;align-items:center;justify-content:center;padding:var(--space-4)">
     <div class="section-card animate-scale-in"
-      style="max-width:700px;width:100%;box-shadow:var(--shadow-lg);padding:var(--space-6)">
-      <div style="text-align:center;margin-bottom:var(--space-5)">
-        <h2
-          style="font-size:1.75rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;color:var(--text-primary)">
-          Select Store Demo Profile</h2>
-        <p class="text-secondary text-sm">Choose a template below. This will clear existing tables and auto-generate 30
-          days of sales history, logs, and seed assets.</p>
+      style="max-width:720px;width:100%;box-shadow:var(--shadow-xl);padding:var(--space-8);background:var(--surface);color:var(--text-primary);border-radius:var(--radius-xl)">
+      
+      <!-- Wizard Progress Stepper Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-soft);padding-bottom:var(--space-4);margin-bottom:var(--space-6)">
+        <div>
+          <div style="font-size:1.25rem;font-weight:800;color:var(--zeploy-navy);letter-spacing:-0.02em">ZEPLOY POS SETUP WIZARD</div>
+          <div class="text-xs text-secondary">Initial Store Provisioning & Data Seeding</div>
+        </div>
+        <div style="display:flex;gap:8px" id="wizard-steps-pills">
+          <span class="badge badge-blue" id="wstep-pill-1">1. Info</span>
+          <span class="badge" id="wstep-pill-2">2. Type</span>
+          <span class="badge" id="wstep-pill-3">3. Seed</span>
+          <span class="badge" id="wstep-pill-4">4. Ready</span>
+        </div>
       </div>
 
-      <div
-        style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:var(--space-3);margin-bottom:var(--space-5)"
-        id="template-options-grid">
-        <!-- Options rendered dynamically -->
+      <!-- Step 1: Business Details -->
+      <div id="wstep-1-content">
+        <h3 style="font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:6px">Step 1: Store & Business Details</h3>
+        <p class="text-sm text-secondary" style="margin-bottom:var(--space-4)">Enter your store name and contact details for thermal receipt headers.</p>
+
+        <form id="wizard-info-form" style="display:flex;flex-direction:column;gap:var(--space-3)">
+          <div class="form-group">
+            <label class="form-label">Store / Company Name</label>
+            <input type="text" class="form-input" id="wiz-store-name" value="Metro Supermarket" required placeholder="e.g. Metro Supermarket">
+          </div>
+          <div class="grid-2" style="gap:var(--space-3)">
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="text" class="form-input" id="wiz-phone" value="+92 300 1234567" placeholder="+92 300 1234567">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Address</label>
+              <input type="text" class="form-input" id="wiz-address" value="Sector F-7, Islamabad" placeholder="City, Location">
+            </div>
+          </div>
+          <button class="btn btn-primary" type="button" id="wiz-goto-step2-btn" style="margin-top:var(--space-2);width:100%">
+            Next: Select Business Type →
+          </button>
+        </form>
       </div>
 
-      <div style="text-align:center">
-        <div class="text-xs text-secondary" style="margin-bottom:var(--space-3);opacity:0.6">Powered by local-first
-          IndexedDB (Dexie.js). 100% offline ready.</div>
-        <button class="btn btn-primary" id="template-picker-submit-btn" disabled
-          style="width:220px;font-weight:600">${icon('icon-check')} Initialize Demo Store</button>
+      <!-- Step 2: Select Retail Profile -->
+      <div id="wstep-2-content" style="display:none">
+        <h3 style="font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:6px">Step 2: Select Retail Business Profile</h3>
+        <p class="text-sm text-secondary" style="margin-bottom:var(--space-4)">Choose your retail industry type to automatically load sample products, categories, and recipes.</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:var(--space-3);margin-bottom:var(--space-5)" id="template-options-grid">
+          <!-- Profiles injected dynamically -->
+        </div>
+
+        <div style="display:flex;gap:var(--space-3)">
+          <button class="btn btn-ghost" type="button" id="wiz-backto-step1-btn">← Back</button>
+          <button class="btn btn-primary" id="template-picker-submit-btn" disabled style="flex:1">Load Demo Data & Provisions →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Seeding Progress -->
+      <div id="wstep-3-content" style="display:none;text-align:center;padding:var(--space-6) 0">
+        <div style="font-size:3rem;margin-bottom:var(--space-3)">⚡</div>
+        <h3 style="font-size:1.3rem;font-weight:800;color:var(--zeploy-navy);margin-bottom:6px">Provisioning Store & Seeding 30-Day Data...</h3>
+        <p class="text-sm text-secondary" style="margin-bottom:var(--space-4)">Generating sales transactions, inventory reduction logs, and customer ledgers offline in IndexedDB.</p>
+        <div class="skeleton" style="height:12px;border-radius:6px;width:80%;margin:0 auto"></div>
+      </div>
+
+      <!-- Step 4: Ready -->
+      <div id="wstep-4-content" style="display:none;text-align:center;padding:var(--space-4) 0">
+        <div style="font-size:3.5rem;margin-bottom:var(--space-2)">🎉</div>
+        <h3 style="font-size:1.5rem;font-weight:800;color:var(--stock-in);margin-bottom:6px">Store Provisioned & Ready!</h3>
+        <p class="text-sm text-secondary" style="margin-bottom:var(--space-6)">Your POS environment is configured and ready for sales operations and commercial client demonstration.</p>
+        <button class="btn btn-primary" id="wiz-launch-btn" style="width:240px;font-size:1rem;padding:12px 24px">
+          Launch Zeploy POS →
+        </button>
+      </div>
+
+      <div style="text-align:center;margin-top:var(--space-4);border-top:1px solid var(--border-soft);padding-top:var(--space-3)">
+        <div class="text-xs text-secondary" style="opacity:0.7">Powered by Zeploy Tech — We Deploy Your Vision</div>
       </div>
     </div>
   </div>
@@ -430,8 +487,8 @@
           </svg>
         </div>
         <div class="sidebar-logo-text">
-          <span class="sidebar-logo-name" id="sidebar-store-name">My Shop</span>
-          <span class="sidebar-logo-sub">Inventory POS</span>
+          <span class="sidebar-logo-name" id="sidebar-store-name">Zeploy POS</span>
+          <span class="sidebar-logo-sub" style="color:#AFD2FA;font-weight:600">Commercial Edition</span>
         </div>
       </div>
 
@@ -528,6 +585,22 @@
           Client Showcase
         </a>
 
+        <div class="nav-section-label">Commercial</div>
+
+        <a class="nav-item" data-route="value" href="#value" id="nav-value">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-trending-up" />
+          </svg>
+          Business Value
+        </a>
+
+        <a class="nav-item" data-route="proposal" href="#proposal" id="nav-proposal">
+          <svg aria-hidden="true">
+            <use href="icons/sprite.svg#icon-check-circle" />
+          </svg>
+          Client Proposal
+        </a>
+
       </nav>
 
       <!-- Sidebar Footer -->
@@ -545,6 +618,10 @@
             </svg>
             Config
           </button>
+        </div>
+        <div style="font-size:0.7rem;color:#AFD2FA;text-align:center;padding:8px 0 2px 0;opacity:0.85;font-weight:500;line-height:1.2">
+          Powered by Zeploy Tech<br>
+          <span style="opacity:0.6;font-size:0.65rem">We Deploy Your Vision</span>
         </div>
       </div>
     </aside>
@@ -575,6 +652,9 @@
 
         <!-- Topbar Actions -->
         <div class="topbar-actions">
+          <button class="topbar-btn no-print" id="topbar-pres-btn" title="Toggle Sales Presentation Mode" style="color:var(--primary)">
+            <svg aria-hidden="true"><use href="icons/sprite.svg#icon-trending-up" /></svg>
+          </button>
           <button class="topbar-btn no-print" id="topbar-lock-btn" title="Lock POS screen">
             <svg aria-hidden="true" style="color:var(--danger)">
               <use href="icons/sprite.svg#icon-x-circle" />
@@ -639,6 +719,9 @@
   <script src="js/pages/reports.js"></script>
   <script src="js/pages/showcase.js"></script>
   <script src="js/pages/settings.js"></script>
+  <script src="js/components/tour.js"></script>
+  <script src="js/pages/business_value.js"></script>
+  <script src="js/pages/proposal.js"></script>
 
   <!-- JS: App Initialization -->
   <script>
@@ -674,13 +757,27 @@
           await startApp();
         }
 
-        // ── Template Picker Screen Logic ─────────────────────────────
+        // ── 4-Step Onboarding Setup Wizard Logic ─────────────────────
         async function showTemplatePicker() {
           const picker = document.getElementById('template-picker-screen');
           const grid = document.getElementById('template-options-grid');
           const submitBtn = document.getElementById('template-picker-submit-btn');
 
+          const s1 = document.getElementById('wstep-1-content');
+          const s2 = document.getElementById('wstep-2-content');
+          const s3 = document.getElementById('wstep-3-content');
+          const s4 = document.getElementById('wstep-4-content');
+
+          const p1 = document.getElementById('wstep-pill-1');
+          const p2 = document.getElementById('wstep-pill-2');
+          const p3 = document.getElementById('wstep-pill-3');
+          const p4 = document.getElementById('wstep-pill-4');
+
           picker.style.display = 'flex';
+          s1.style.display = 'block';
+          s2.style.display = 'none';
+          s3.style.display = 'none';
+          s4.style.display = 'none';
 
           const templates = [
             { id: 'grocery', name: 'Grocery Store', icon: '🛒', desc: 'Milk, bread, rice, eggs, soda, chips' },
@@ -694,12 +791,12 @@
           let selectedId = '';
 
           grid.innerHTML = templates.map(t => `
-        <div class="template-option-card" data-tid="${t.id}" style="border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-4); text-align: center; cursor: pointer; background: var(--surface); transition: all var(--transition-fast)">
-          <div style="font-size: 2.25rem; margin-bottom: var(--space-2)">${t.icon}</div>
-          <div class="font-bold" style="font-size: 0.95rem; margin-bottom: 2px">${t.name}</div>
-          <div class="text-xs text-secondary">${t.desc}</div>
-        </div>
-      `).join('');
+            <div class="template-option-card" data-tid="${t.id}" style="border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-4); text-align: center; cursor: pointer; background: var(--surface); transition: all var(--transition-fast)">
+              <div style="font-size: 2.25rem; margin-bottom: var(--space-2)">${t.icon}</div>
+              <div class="font-bold" style="font-size: 0.95rem; margin-bottom: 2px">${t.name}</div>
+              <div class="text-xs text-secondary">${t.desc}</div>
+            </div>
+          `).join('');
 
           grid.querySelectorAll('.template-option-card').forEach(card => {
             card.addEventListener('click', () => {
@@ -718,28 +815,68 @@
             });
           });
 
-          // We will make sure the submit button listener is added once
+          // Step 1 -> Step 2
+          document.getElementById('wiz-goto-step2-btn').addEventListener('click', () => {
+            const nameInput = document.getElementById('wiz-store-name').value.trim();
+            if (!nameInput) {
+              toast.error('Store Name Required', 'Please enter your business or store name.');
+              return;
+            }
+            s1.style.display = 'none';
+            s2.style.display = 'block';
+            p1.className = 'badge';
+            p2.className = 'badge badge-blue';
+          });
+
+          // Step 2 -> Step 1
+          document.getElementById('wiz-backto-step1-btn').addEventListener('click', () => {
+            s2.style.display = 'none';
+            s1.style.display = 'block';
+            p2.className = 'badge';
+            p1.className = 'badge badge-blue';
+          });
+
+          // Step 2 -> Step 3 & Step 4
           const initStoreHandler = async () => {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `<span class="animate-spin" style="display:inline-block;margin-right:8px;animation:spin 1s linear infinite">⌛</span>Initializing Store...`;
+            s2.style.display = 'none';
+            s3.style.display = 'block';
+            p2.className = 'badge';
+            p3.className = 'badge badge-blue';
 
             try {
               await seedBusinessTemplate(selectedId);
+
+              // Update custom business info from Step 1
+              const custName = document.getElementById('wiz-store-name').value.trim();
+              const custPhone = document.getElementById('wiz-phone').value.trim();
+              const custAddr = document.getElementById('wiz-address').value.trim();
+
+              if (custName) await setSetting('store_name', custName);
+              if (custPhone) await setSetting('store_phone', custPhone);
+              if (custAddr) await setSetting('store_address', custAddr);
+
               await generate30DaysDemoTransactions();
 
-              picker.style.display = 'none';
-              toast.success('Store Initialized', `Successfully loaded the ${selectedId} profile with 30 days history!`);
-
-              await startApp();
+              s3.style.display = 'none';
+              s4.style.display = 'block';
+              p3.className = 'badge';
+              p4.className = 'badge badge-green';
             } catch (err) {
-              toast.error('Initialization Failed', err.message);
-              submitBtn.disabled = false;
-              submitBtn.innerHTML = 'Initialize Demo Store';
+              toast.error('Provisioning Failed', err.message);
+              s3.style.display = 'none';
+              s2.style.display = 'block';
             }
           };
 
           submitBtn.removeEventListener('click', initStoreHandler);
           submitBtn.addEventListener('click', initStoreHandler);
+
+          // Step 4 -> Launch App
+          document.getElementById('wiz-launch-btn').addEventListener('click', async () => {
+            picker.style.display = 'none';
+            toast.success('Zeploy POS Ready', 'Store environment provisioned and ready for operations!');
+            await startApp();
+          });
         }
 
         // ── Start Application Sequence ───────────────────────────────
@@ -802,6 +939,23 @@
           document.getElementById('topbar-lock-btn')?.removeEventListener('click', lockHandler);
           document.getElementById('topbar-lock-btn')?.addEventListener('click', lockHandler);
 
+          // Sales Presentation Mode Toggle
+          let presentationMode = false;
+          const presBtn = document.getElementById('topbar-pres-btn');
+          presBtn?.addEventListener('click', () => {
+            presentationMode = !presentationMode;
+            document.body.classList.toggle('presentation-mode', presentationMode);
+            if (presentationMode) {
+              toast.info('Presentation Mode Active', 'Technical controls hidden for client sales demonstration.');
+              presBtn.style.background = 'var(--primary)';
+              presBtn.style.color = 'white';
+            } else {
+              toast.info('Presentation Mode Off', 'Standard controls restored.');
+              presBtn.style.background = '';
+              presBtn.style.color = 'var(--primary)';
+            }
+          });
+
           // 5. Load low-stock badge count
           async function updateLowStockBadge() {
             const items = await db.items.filter(it => !it.is_composite && it.stock_quantity <= it.min_stock_alert).count();
@@ -835,6 +989,9 @@
           register('analytics', renderAnalytics);
           register('reports', renderReports);
           register('showcase', renderShowcase);
+          register('settings', renderSettings);
+          register('value', renderBusinessValue);
+          register('proposal', renderProposal);
 
           // 7. Initialize router & trigger home
           initRouter();
