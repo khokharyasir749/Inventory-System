@@ -1080,6 +1080,24 @@
       </div>`;
       }
     })();
+
+    // -- Global Error Handler
+    window.onerror = function(msg, src, line, col, err) {
+      console.error('[Global Error]', msg, src, line, col, err);
+      if (window.toast) { toast.error('Unexpected Error', String(msg).substring(0, 120)); }
+      return false;
+    };
+    window.addEventListener('unhandledrejection', function(ev) {
+      console.error('[Unhandled Promise]', ev.reason);
+      if (window.toast && ev.reason && ev.reason.message) { toast.error('Operation Failed', String(ev.reason.message).substring(0, 120)); }
+    });
+    // -- Escape to close modals
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) { var cb = backdrop.querySelector('.modal-close, #confirm-close, #confirm-cancel'); if (cb) cb.click(); }
+      }
+    });
   </script>
 
 </body>

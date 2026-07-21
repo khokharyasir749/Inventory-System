@@ -475,12 +475,26 @@ function renderCart(container) {
   itemsEl.querySelectorAll('.cart-qty-btn').forEach(btn => {
     const itemId = parseInt(btn.dataset.id);
     const act = btn.dataset.action;
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const ci = Cart.getItems().find(c => c.item.id === itemId);
       if (act === 'dec') {
         if (ci && ci.qty <= 1) Cart.remove(itemId);
         else Cart.setQty(itemId, (ci?.qty || 1) - 1);
       } else {
+        // Stock limit check before incrementing
+        const freshItem = posItems.find(it => it.id === itemId);
+        if (freshItem) {
+          if (freshItem.is_composite) {
+            const maxAvail = await getMaxCompositeAvailable(freshItem);
+            if ((ci?.qty || 0) >= maxAvail) {
+              toast.error('Stock Limit', `Cannot exceed available stock of ${maxAvail}.`);
+              return;
+            }
+          } else if ((ci?.qty || 0) >= freshItem.stock_quantity) {
+            toast.error('Stock Limit', `Only ${freshItem.stock_quantity} ${freshItem.unit} available in stock.`);
+            return;
+          }
+        }
         Cart.setQty(itemId, (ci?.qty || 1) + 1);
       }
       renderCart(container);
@@ -668,7 +682,7 @@ function showReceiptModal(cartItems, result, storeInfo, timestamp = null) {
     <div class="receipt-body" id="invoice-receipt-wrapper">
       <div class="receipt-store" style="text-align:center">
         <!-- Stylized Logo Mark -->
-        <div style="width:40px;height:40px;background:var(--primary);border-radius:50%;color:white;display:flex;align-items:center;justify-content:center;font-weight:900;margin:0 auto var(--space-2);font-size:1.25rem">${storeName[0].toUpperCase()}</div>
+        <div style="width:40px;height:40px;background:var(--primary);border-radius:50%;color:white;display:flex;align-items:center;justify-content:center;font-weight:900;margin:0 auto var(--space-2);font-size:1.25rem">${(storeName || 'Z')[0].toUpperCase()}</div>
         <div class="receipt-store-name" style="font-size:1.15rem;font-weight:800;letter-spacing:-0.03em">${storeName}</div>
         ${storeAddr ? `<div class="receipt-store-sub" style="font-size:0.75rem">${storeAddr}</div>` : ''}
         ${storePhone ? `<div class="receipt-store-sub" style="font-size:0.75rem">Phone: ${storePhone}</div>` : ''}
@@ -699,7 +713,7 @@ function showReceiptModal(cartItems, result, storeInfo, timestamp = null) {
           <div class="receipt-total-row" style="font-size:0.75rem"><span>Change Due</span><span>${fmt(changeDue)}</span></div>` : ''}
         ${payMethod === 'Credit' ? `
           <div class="receipt-total-row" style="font-size:0.75rem"><span>Paid Cash</span><span>${fmt(cashTendered)}</span></div>
-          <div class="receipt-total-row" style="font-size:0.75rem"><span>Balance Credited</span><span>${fmt(total - cashTendered)}</span></div>` : ''}
+          <div class="receipt-total-row" style="font-size:0.75rem"><span>Balance Credited</span><span>${fmt(Math.max(0, total - cashTendered))}</span></div>` : ''}
       </div>
       
       <!-- Dynamic QR Code -->

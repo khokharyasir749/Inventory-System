@@ -467,7 +467,7 @@ const BUSINESS_PRESETS = {
       { name: 'Amna Begum', phone: '03009988112', address: 'Askari Flats, Rawalpindi', current_balance: 1800 }
     ],
     suppliers: [
-      { name: ' GSK Pharma Distributors', phone: '021-111-gsk-11', email: 'supply@gsk.com.pk', address: 'Industrial Area, Korangi, Karachi' }
+      { name: 'GSK Pharma Distributors', phone: '021-111-gsk-11', email: 'supply@gsk.com.pk', address: 'Industrial Area, Korangi, Karachi' }
     ]
   },
   electronics: {
@@ -631,69 +631,53 @@ async function generate30DaysDemoTransactions() {
   const items = await db.items.toArray();
   const sellableItems = items.filter(it => it.selling_price > 0 || it.is_composite);
   const customers = await db.customers.toArray();
-  const storeName = await getSetting('store_name', 'InventoryPOS Store');
   const taxRate   = await getSetting('tax_rate', 0);
 
   if (sellableItems.length === 0) return false;
 
-  const logsArr = [];
-  const salesArr = [];
-  const saleItemsArr = [];
-  const sessionArr = [];
-  const custTxArr = [];
+  const salesArr    = [];
+  const cartMetaArr = [];
+  const sessionArr  = [];
+  const custTxMetaArr = [];
   
   const now = new Date();
 
-  // 1. Generate daily register sessions and sales
   for (let day = 30; day >= 0; day--) {
     const date = new Date(now - day * 86400000);
-    date.setHours(9, 0, 0, 0); // start day at 9 AM
-    const dateStr = date.toISOString().split('T')[0];
-
-    // Day session open
-    const sessionId = day * 10 + 1; // custom dummy index ID
-    const openingCash = 5000 + (Math.floor(Math.random() * 5) * 1000); // 5k-9k
+    date.setHours(9, 0, 0, 0);
+    
+    const openingCash = 5000 + (Math.floor(Math.random() * 5) * 1000);
     let expectedCash = openingCash;
 
-    // Daily Sales Count (3 to 10 sales per day)
     const numSales = Math.floor(Math.random() * 8) + 3;
-    const daySales = [];
 
     for (let s = 1; s <= numSales; s++) {
       const saleDate = new Date(date);
-      saleDate.setHours(9 + Math.floor(Math.random() * 12)); // 9 AM to 9 PM
+      saleDate.setHours(9 + Math.floor(Math.random() * 12));
       saleDate.setMinutes(Math.floor(Math.random() * 60));
       saleDate.setSeconds(Math.floor(Math.random() * 60));
 
-      const saleId = day * 100 + s;
-      const invoiceNo = `RCP-${saleDate.getTime()}`;
+      const invoiceNo = `RCP-${saleDate.getTime()}-${day}-${s}`;
 
-      // Pick 1 to 4 random cart items
       const numCart = Math.floor(Math.random() * 3) + 1;
       const cartItems = [];
       let subtotal = 0;
 
       for (let c = 0; c < numCart; c++) {
         const item = sellableItems[Math.floor(Math.random() * sellableItems.length)];
-        // Ensure no duplicate in cart
         if (cartItems.some(ci => ci.item.id === item.id)) continue;
-
         const qty = Math.floor(Math.random() * 3) + 1;
-        cartItems.push({
-          item,
-          qty,
-          unit_price: item.selling_price
-        });
+        cartItems.push({ item, qty, unit_price: item.selling_price });
         subtotal += item.selling_price * qty;
       }
 
       if (cartItems.length === 0) continue;
 
       const discountAmt = Math.random() > 0.7 ? (Math.random() > 0.5 ? 50 : 100) : 0;
-      const totalTax = Math.round((subtotal - discountAmt) * (taxRate / 100));
-      const total = (subtotal - discountAmt) + totalTax;
+      const afterDisc = Math.max(0, subtotal - discountAmt);
+      const totalTax = Math.round(afterDisc * (taxRate / 100));
+      const total = afterDisc + totalTax;
 
-      // Select random payment method (Cash 60%, Card 30%, Credit 10%)
       const rPay = Math.random();
       let paymentMethod = 'Cash';
       let customerId = null;
@@ -703,9 +687,10 @@ async function generate30DaysDemoTransactions() {
       if (rPay > 0.9 && customers.length > 0) {
         paymentMethod = 'Credit';
         customerId = customers[Math.floor(Math.random() * customers.length)].id;
-        cashReceived = Math.random() > 0.5 ? Math.round(total / 2) : 0; // partial or full credit
+        cashReceived = Math.random() > 0.5 ? Math.round(total / 2) : 0;
       } else if (rPay > 0.6) {
         paymentMethod = 'Card';
+        cashReceived = total;
       }
 
       if (paymentMethod === 'Cash') {
@@ -717,57 +702,7 @@ async function generate30DaysDemoTransactions() {
         expectedCash += cashReceived;
       }
 
-      // Record sale_items rows
-      cartItems.forEach(ci => {
-        saleItemsArr.push({
-          shop_id: 1,
-          sale_id: saleId,
-          item_id: ci.item.id,
-          quantity: ci.qty,
-          unit_price: ci.unit_price,
-          cost_price: ci.item.cost_price || 0,
-          line_total: ci.unit_price * ci.qty
-        });
-
-        // Record stock log
-        logsArr.push({
-          shop_id: 1,
-          item_id: ci.item.id,
-          change_type: CHANGE_TYPE.SALE,
-          qty_changed: ci.qty,
-          timestamp: saleDate.toISOString(),
-          sync_status: 'SYNCED',
-          notes: `POS checkout: ${invoiceNo}`,
-          sale_id: saleId
-        });
-      });
-
-      // Customer Transactions
-      if (customerId && paymentMethod === 'Credit') {
-        const creditAmount = total - cashReceived;
-        custTxArr.push({
-          shop_id: 1,
-          customer_id: customerId,
-          sale_id: saleId,
-          amount: total,
-          transaction_type: 'CREDIT',
-          timestamp: saleDate.toISOString()
-        });
-
-        if (cashReceived > 0) {
-          custTxArr.push({
-            shop_id: 1,
-            customer_id: customerId,
-            sale_id: saleId,
-            amount: cashReceived,
-            transaction_type: 'PAYMENT',
-            timestamp: saleDate.toISOString()
-          });
-        }
-      }
-
       salesArr.push({
-        id: saleId,
         shop_id: 1,
         invoice_no: invoiceNo,
         timestamp: saleDate.toISOString(),
@@ -777,19 +712,19 @@ async function generate30DaysDemoTransactions() {
         total,
         payment_method: paymentMethod,
         customer_id: customerId,
-        cash_received: paymentMethod === 'Cash' ? total : cashReceived,
+        cash_received: cashReceived,
         change_returned: changeReturned,
-        session_id: sessionId
+        session_id: null
       });
+      cartMetaArr.push(cartItems);
+      custTxMetaArr.push({ customerId, total, cashReceived, paymentMethod, saleDate });
     }
 
-    // Day session close (CLOSED if in past, OPEN if today)
     const isToday = day === 0;
     sessionArr.push({
-      id: sessionId,
       shop_id: 1,
       opened_at: date.toISOString(),
-      closed_at: isToday ? null : new Date(date.getTime() + 10 * 3600000).toISOString(), // 7 PM
+      closed_at: isToday ? null : new Date(date.getTime() + 10 * 3600000).toISOString(),
       opening_cash: openingCash,
       expected_cash: expectedCash,
       actual_cash: isToday ? 0 : expectedCash,
@@ -798,26 +733,90 @@ async function generate30DaysDemoTransactions() {
     });
   }
 
-  // 2. Save all generated logs inside transaction
-  await db.transaction('rw', [db.sales, db.sale_items, db.logs, db.cash_sessions, db.customer_transactions, db.customers, db.items], async () => {
-    await db.sales.bulkAdd(salesArr);
+  await db.transaction('rw', [
+    db.sales, db.sale_items, db.logs, db.cash_sessions,
+    db.customer_transactions, db.customers, db.items
+  ], async () => {
+    await db.cash_sessions.bulkAdd(sessionArr);
+
+    // Insert sales — get auto-generated primary keys back in order
+    const saleIds = await db.sales.bulkAdd(salesArr, { allKeys: true });
+
+    // Build sale_items, logs, and customer transactions using real saleIds
+    const saleItemsArr = [];
+    const logsArr = [];
+    const custTxArr = [];
+
+    saleIds.forEach((saleId, idx) => {
+      const cart = cartMetaArr[idx];
+      const sale = salesArr[idx];
+      const meta = custTxMetaArr[idx];
+
+      cart.forEach(ci => {
+        saleItemsArr.push({
+          shop_id: 1,
+          sale_id: saleId,
+          item_id: ci.item.id,
+          quantity: ci.qty,
+          unit_price: ci.unit_price,
+          cost_price: ci.item.cost_price || 0,
+          line_total: ci.unit_price * ci.qty
+        });
+        logsArr.push({
+          shop_id: 1,
+          item_id: ci.item.id,
+          change_type: CHANGE_TYPE.SALE,
+          qty_changed: ci.qty,
+          timestamp: sale.timestamp,
+          sync_status: 'SYNCED',
+          notes: `POS checkout: ${sale.invoice_no}`,
+          sale_id: saleId
+        });
+      });
+
+      if (meta.customerId && meta.paymentMethod === 'Credit') {
+        custTxArr.push({
+          shop_id: 1,
+          customer_id: meta.customerId,
+          sale_id: saleId,
+          amount: meta.total,
+          transaction_type: 'CREDIT',
+          timestamp: meta.saleDate.toISOString()
+        });
+        if (meta.cashReceived > 0) {
+          custTxArr.push({
+            shop_id: 1,
+            customer_id: meta.customerId,
+            sale_id: saleId,
+            amount: meta.cashReceived,
+            transaction_type: 'PAYMENT',
+            timestamp: meta.saleDate.toISOString()
+          });
+        }
+      }
+    });
+
     await db.sale_items.bulkAdd(saleItemsArr);
     await db.logs.bulkAdd(logsArr);
-    await db.cash_sessions.bulkAdd(sessionArr);
-    await db.customer_transactions.bulkAdd(custTxArr);
+    if (custTxArr.length > 0) {
+      await db.customer_transactions.bulkAdd(custTxArr);
+    }
 
-    // Apply customer outstanding balances
+    // Update customer outstanding balances
     for (const c of customers) {
       const txs = custTxArr.filter(t => t.customer_id === c.id);
-      let balance = c.current_balance || 0;
+      if (txs.length === 0) continue;
+      let balance = 0;
       txs.forEach(t => {
         if (t.transaction_type === 'CREDIT') balance += t.amount;
         else balance -= t.amount;
       });
-      await db.customers.update(c.id, { current_balance: Math.max(0, balance) });
+      if (balance !== 0) {
+        await db.customers.update(c.id, { current_balance: Math.max(0, balance) });
+      }
     }
 
-    // Recalculate and materialized stock quantities
+    // Recalculate and persist stock quantities
     const allItems = await db.items.toArray();
     for (const it of allItems) {
       const stock = await recalcStock(it.id);

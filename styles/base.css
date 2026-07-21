@@ -33,6 +33,16 @@
   --spoilage:       #7C3AED;
   --spoilage-bg:    #EDE9FE;
 
+  /* Semantic Color Aliases (used in components) */
+  --success:        #059669;
+  --success-bg:     #D1FAE5;
+  --warning:        #D97706;
+  --warning-bg:     #FEF3C7;
+  --info:           #0EA5E9;
+  --info-bg:        #E0F2FE;
+  --teal:           #0D9488;
+  --teal-bg:        #CCFBF1;
+
   --text-primary:   #0F172A;
   --text-secondary: #475569;
   --text-muted:     #94A3B8;
@@ -77,6 +87,7 @@
   --sidebar-width: 224px;
   --topbar-height: 60px;
 }
+
 
 /* ── Reset ─────────────────────────────────────────────────── */
 *, *::before, *::after {

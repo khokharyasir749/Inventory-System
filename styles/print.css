@@ -4,6 +4,11 @@
 
 /* ── Hide everything by default ────────────────────────────── */
 @media print {
+  @page {
+    margin: 0.5cm;
+    size: auto;
+  }
+
   /* Globally hide all UI chrome */
   #sidebar,
   #topbar,
@@ -23,6 +28,8 @@
     color: black !important;
     margin: 0;
     padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   #app {

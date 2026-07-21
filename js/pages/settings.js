@@ -150,7 +150,7 @@ async function renderSettings(container) {
   // Save PIN Button
   container.querySelector('#set-pin-btn').addEventListener('click', async () => {
     const newPin = container.querySelector('#set-pin').value.trim();
-    if (newPin && newPin.length !== 4 && !/^\d{4}$/.test(newPin)) {
+    if (newPin && (newPin.length !== 4 || !/^\d{4}$/.test(newPin))) {
       toast.error('Invalid PIN', 'PIN code must be exactly 4 numerical digits.');
       return;
     }
