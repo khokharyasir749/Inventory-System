@@ -14,7 +14,8 @@ const Cart = (() => {
         items.map(ci => ({
           itemId:     ci.item.id,
           qty:        ci.qty,
-          unit_price: ci.unit_price
+          unit_price: ci.unit_price,
+          discount:   ci.discount || 0
         }))
       ));
     } catch (e) { /* Storage full or unavailable */ }
@@ -28,7 +29,14 @@ const Cart = (() => {
       items = [];
       for (const s of saved) {
         const item = await db.items.get(s.itemId);
-        if (item) items.push({ item, qty: s.qty, unit_price: s.unit_price });
+        if (item) {
+          items.push({
+            item,
+            qty: s.qty,
+            unit_price: s.unit_price,
+            discount: s.discount || 0
+          });
+        }
       }
     } catch (e) {
       items = [];
@@ -41,7 +49,7 @@ const Cart = (() => {
     if (existing) {
       existing.qty += qty;
     } else {
-      items.push({ item, qty, unit_price: item.selling_price });
+      items.push({ item, qty, unit_price: item.selling_price, discount: 0 });
     }
     save();
     emit();
@@ -51,6 +59,19 @@ const Cart = (() => {
     const ci = items.find(ci => ci.item.id === itemId);
     if (ci) {
       ci.qty = Math.max(1, qty);
+      if (ci.discount > ci.unit_price * ci.qty) {
+        ci.discount = ci.unit_price * ci.qty;
+      }
+      save();
+      emit();
+    }
+  }
+
+  function setItemDiscount(itemId, discountAmt) {
+    const ci = items.find(ci => ci.item.id === itemId);
+    if (ci) {
+      const lineGross = ci.unit_price * ci.qty;
+      ci.discount = Math.max(0, Math.min(lineGross, Math.round(discountAmt * 100) / 100));
       save();
       emit();
     }
@@ -71,8 +92,16 @@ const Cart = (() => {
   // ── Read ──────────────────────────────────────────────────
   function getItems() { return [...items]; }
 
-  function getSubtotal() {
+  function getGrossSubtotal() {
     return items.reduce((sum, ci) => sum + ci.unit_price * ci.qty, 0);
+  }
+
+  function getTotalLineDiscounts() {
+    return items.reduce((sum, ci) => sum + (ci.discount || 0), 0);
+  }
+
+  function getSubtotal() {
+    return items.reduce((sum, ci) => sum + Math.max(0, (ci.unit_price * ci.qty) - (ci.discount || 0)), 0);
   }
 
   function getItemCount() {
@@ -84,5 +113,5 @@ const Cart = (() => {
     document.dispatchEvent(new CustomEvent('cart:updated', { detail: { items: getItems() } }));
   }
 
-  return { add, setQty, remove, clear, getItems, getSubtotal, getItemCount, load, save };
+  return { add, setQty, setItemDiscount, remove, clear, getItems, getGrossSubtotal, getTotalLineDiscounts, getSubtotal, getItemCount, load, save };
 })();

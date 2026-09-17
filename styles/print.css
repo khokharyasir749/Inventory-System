@@ -50,54 +50,83 @@
 }
 
 /* ══════════════════════════════════════════════════════════════
-   THERMAL RECEIPT — 80mm Printer
+   THERMAL RECEIPT ENGINE (58mm & 80mm)
    ══════════════════════════════════════════════════════════════ */
-@media print and (max-width: 80mm) {
-  @page {
-    size: 80mm auto;
-    margin: 4mm 3mm;
-  }
-}
-
-/* ── Thermal Receipt Content ───────────────────────────────── */
-.print-receipt {
-  display: none;
-}
-
 @media print {
-  body.printing-receipt .print-receipt {
-    display: block !important;
-    width: 100%;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 9pt;
-    color: black;
-    line-height: 1.4;
+  @page {
+    margin: 0;
+    size: auto;
   }
 
-  body.printing-receipt * {
+  body.printing-receipt,
+  body.printing-receipt-80mm,
+  body.printing-receipt-58mm {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+    width: 100% !important;
+  }
+
+  body.printing-receipt .print-receipt,
+  body.printing-receipt-80mm .print-receipt {
+    display: block !important;
+    width: 72mm !important;
+    max-width: 72mm !important;
+    margin: 0 auto !important;
+    padding: 3mm 2mm !important;
+    font-family: 'Courier Prime', 'Consolas', 'Courier New', Courier, monospace !important;
+    font-size: 8.5pt !important;
+    line-height: 1.35 !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  body.printing-receipt-58mm .print-receipt {
+    display: block !important;
+    width: 48mm !important;
+    max-width: 48mm !important;
+    margin: 0 auto !important;
+    padding: 2mm 1mm !important;
+    font-family: 'Courier Prime', 'Consolas', 'Courier New', Courier, monospace !important;
+    font-size: 7pt !important;
+    line-height: 1.25 !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  .print-receipt * {
     color: black !important;
     background: white !important;
     border-color: black !important;
     box-shadow: none !important;
+    text-shadow: none !important;
   }
 
   .print-receipt .r-store-name {
     text-align: center;
-    font-size: 13pt;
-    font-weight: bold;
+    font-size: 11pt;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 2mm;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5mm;
   }
 
   .print-receipt .r-store-sub {
     text-align: center;
-    font-size: 8pt;
-    margin-bottom: 1mm;
+    font-size: 7.5pt;
+    line-height: 1.25;
+  }
+
+  .print-receipt .r-ntn {
+    text-align: center;
+    font-size: 7.5pt;
+    font-weight: 700;
+    margin-top: 1mm;
   }
 
   .print-receipt .r-order-info {
-    font-size: 8pt;
+    font-size: 7.5pt;
     margin: 2mm 0;
   }
 
@@ -110,7 +139,17 @@
   .print-receipt .r-divider-solid {
     border: none;
     border-top: 2px solid black;
-    margin: 2mm 0;
+    margin: 2.5mm 0;
+  }
+
+  .print-receipt .r-table-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5pt;
+    font-weight: 700;
+    border-bottom: 1px dashed black;
+    padding-bottom: 1mm;
+    margin-bottom: 1.5mm;
   }
 
   .print-receipt .r-item {
@@ -118,12 +157,13 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1mm;
-    font-size: 9pt;
+    font-size: 8pt;
   }
 
   .print-receipt .r-item-name {
     flex: 1;
     padding-right: 2mm;
+    word-break: break-word;
   }
 
   .print-receipt .r-item-qty {
@@ -133,43 +173,60 @@
   }
 
   .print-receipt .r-item-price {
-    min-width: 14mm;
+    min-width: 13mm;
     text-align: right;
   }
 
   .print-receipt .r-subtotal-row {
     display: flex;
     justify-content: space-between;
-    font-size: 9pt;
+    font-size: 8pt;
     margin-top: 1mm;
   }
 
   .print-receipt .r-total-row {
     display: flex;
     justify-content: space-between;
-    font-size: 12pt;
-    font-weight: bold;
+    font-size: 11pt;
+    font-weight: 900;
     margin: 2mm 0;
   }
 
   .print-receipt .r-change-row {
     display: flex;
     justify-content: space-between;
-    font-size: 9pt;
-    font-weight: bold;
+    font-size: 8pt;
+    font-weight: 700;
+    margin-top: 0.5mm;
   }
 
   .print-receipt .r-footer {
     text-align: center;
-    font-size: 8pt;
-    margin-top: 4mm;
+    font-size: 7.5pt;
+    margin-top: 3mm;
+    line-height: 1.3;
   }
 
-  .print-receipt .r-barcode {
+  .print-receipt .r-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3mm;
+  }
+
+  .print-receipt .r-qr svg {
+    display: block;
+    margin: 0 auto;
+    width: 60px;
+    height: 60px;
+  }
+
+  .print-receipt .r-qr-label {
+    font-size: 6.5pt;
     text-align: center;
-    font-size: 7pt;
-    letter-spacing: 0.1em;
-    margin-top: 2mm;
+    margin-top: 1mm;
+    text-transform: uppercase;
   }
 }
 

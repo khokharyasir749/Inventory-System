@@ -144,19 +144,37 @@ function downloadCSV(rows, filename) {
   URL.revokeObjectURL(url);
 }
 
-async function exportInventoryCSV() {
-  const items = await db.items.toArray();
+async function exportInventoryCSV(customItems = null, filenamePrefix = 'inventory-catalog') {
+  const items = customItems || await db.items.toArray();
   const rows  = [
-    ['ID', 'Barcode', 'Name', 'Category', 'Unit', 'Cost Price', 'Selling Price', 'Stock Qty', 'Min Stock Alert', 'Is Composite', 'Created At'],
-    ...items.map(it => [
-      it.id, it.barcode, it.name, it.category, it.unit,
-      it.cost_price, it.selling_price, it.stock_quantity,
-      it.min_stock_alert, it.is_composite ? 'Yes' : 'No',
-      fmtDate(it.created_at)
-    ])
+    ['ID', 'SKU / Barcode', 'Product Name', 'Category', 'Unit', 'Cost Price', 'Selling Price', 'Margin %', 'Stock Quantity', 'Min Stock Alert', 'Stock Status', 'Cost Valuation', 'Retail Valuation', 'Is Recipe', 'Created At'],
+    ...items.map(it => {
+      const margin = it.selling_price > 0 ? (((it.selling_price - it.cost_price) / it.selling_price) * 100).toFixed(1) : 0;
+      const status = it.is_composite ? 'Recipe' : it.stock_quantity === 0 ? 'Out of Stock' : it.stock_quantity <= it.min_stock_alert ? 'Low Stock' : 'In Stock';
+      const costVal = ((it.cost_price || 0) * (it.stock_quantity || 0)).toFixed(2);
+      const retailVal = ((it.selling_price || 0) * (it.stock_quantity || 0)).toFixed(2);
+
+      return [
+        it.id,
+        it.barcode || 'N/A',
+        it.name,
+        it.category,
+        it.unit,
+        it.cost_price,
+        it.selling_price,
+        `${margin}%`,
+        it.stock_quantity,
+        it.min_stock_alert,
+        status,
+        costVal,
+        retailVal,
+        it.is_composite ? 'Yes' : 'No',
+        fmtDate(it.created_at)
+      ];
+    })
   ];
   const date = new Date().toISOString().split('T')[0];
-  downloadCSV(rows, `inventory-snapshot-${date}.csv`);
+  downloadCSV(rows, `${filenamePrefix}-${date}.csv`);
 }
 
 async function exportLowStockCSV() {
@@ -365,4 +383,76 @@ function printElement(htmlContent, className) {
   window.print();
   document.body.removeChild(printDiv);
   document.body.classList.remove(className);
+}
+
+// ── Automated SKU Generator ───────────────────────────────────
+function generateSKU(category = 'General', name = 'Item') {
+  const catClean = (category || 'GEN')
+    .replace(/[^a-zA-Z]/g, '')
+    .toUpperCase()
+    .slice(0, 3)
+    .padEnd(3, 'X');
+
+  const nameClean = (name || 'ITM')
+    .replace(/[^a-zA-Z]/g, '')
+    .toUpperCase()
+    .slice(0, 4)
+    .padEnd(3, 'X');
+
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `${catClean}-${nameClean}-${rand}`;
+}
+
+// ── Web Audio API Barcode Beep Synthesizer ────────────────────
+let _audioCtx = null;
+function getAudioContext() {
+  if (!_audioCtx) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      _audioCtx = new AudioCtx();
+    }
+  }
+  if (_audioCtx && _audioCtx.state === 'suspended') {
+    _audioCtx.resume();
+  }
+  return _audioCtx;
+}
+
+function playBeepSound(type = 'success') {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+
+    if (type === 'success') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1760, now); // High clean POS beep
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.start(now);
+      osc.stop(now + 0.08);
+    } else if (type === 'error') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(280, now);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    } else {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+      osc.start(now);
+      osc.stop(now + 0.05);
+    }
+  } catch (e) {
+    // Graceful fallback if audio context blocked before gesture
+  }
 }

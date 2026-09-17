@@ -166,15 +166,21 @@ async function recalcStock(itemId) {
         stock -= log.qty_changed;
         break;
       case CHANGE_TYPE.ADJUSTMENT:
-        stock += log.qty_changed; // Can be negative
+        // Check if notes indicate negative shrinkage/adjustment or negative qty
+        if (log.notes && (log.notes.startsWith('[-]') || log.notes.includes('Shrinkage') || log.notes.includes('Damage') || log.notes.includes('Theft') || log.notes.includes('Loss'))) {
+          stock -= log.qty_changed;
+        } else {
+          stock += log.qty_changed;
+        }
         break;
     }
   }
   return Math.max(0, stock);
 }
 
-async function recordStockEvent({ itemId, changeType, qty, notes = '', saleId = null }) {
+async function recordStockEvent({ itemId, changeType, qty, notes = '', saleId = null, reason = '', unitCost = null }) {
   const timestamp = new Date().toISOString();
+  const fullNotes = reason ? (notes ? `${reason}: ${notes}` : reason) : notes;
 
   await db.logs.add({
     shop_id:     1,
@@ -183,12 +189,16 @@ async function recordStockEvent({ itemId, changeType, qty, notes = '', saleId = 
     qty_changed: Math.abs(qty),
     timestamp,
     sync_status: 'PENDING',
-    notes,
+    notes:       fullNotes,
     sale_id:     saleId
   });
 
   const liveStock = await recalcStock(itemId);
-  await db.items.update(itemId, { stock_quantity: liveStock });
+  const updateData = { stock_quantity: liveStock };
+  if (unitCost !== null && unitCost !== undefined && !isNaN(unitCost) && unitCost > 0) {
+    updateData.cost_price = parseFloat(unitCost);
+  }
+  await db.items.update(itemId, updateData);
 
   return liveStock;
 }
@@ -201,49 +211,72 @@ async function processSale(cartItems, opts = {}) {
     cashTendered = 0,
     storeName = 'My Shop',
     customerId = null,
-    sessionId = null
+    sessionId = null,
+    splitDetails = null,
+    cardRef = null,
+    digitalProvider = null,
+    digitalRef = null
   } = opts;
 
-  const subtotal = cartItems.reduce((sum, ci) => sum + (ci.unit_price * ci.qty), 0);
-  const discountAmt = discount;
-  const afterDiscount = subtotal - discountAmt;
+  // Calculate gross subtotal and line-level discounts
+  const grossSubtotal = cartItems.reduce((sum, ci) => sum + (ci.unit_price * ci.qty), 0);
+  const lineDiscounts = cartItems.reduce((sum, ci) => sum + (ci.discount || 0), 0);
+  const netSubtotal = Math.max(0, grossSubtotal - lineDiscounts);
+
+  const billDiscount = discount;
+  const totalDiscount = lineDiscounts + billDiscount;
+  const afterDiscount = Math.max(0, netSubtotal - billDiscount);
   const taxAmount = Math.round(afterDiscount * (taxRate / 100) * 100) / 100;
   const total = afterDiscount + taxAmount;
   
-  let cashReceived = cashTendered;
+  let cashReceived = 0;
   let changeReturned = 0;
 
   if (paymentMethod === 'Cash') {
     changeReturned = Math.max(0, cashTendered - total);
     cashReceived = Math.min(cashTendered, total);
   } else if (paymentMethod === 'Credit') {
+    cashReceived = Math.min(cashTendered, total);
     changeReturned = 0;
+  } else if (paymentMethod === 'Split' && Array.isArray(splitDetails)) {
+    const cashSplit = splitDetails.find(s => s.method === 'Cash');
+    const cashPortion = cashSplit ? parseFloat(cashSplit.amount) || 0 : 0;
+    cashReceived = cashPortion;
+    changeReturned = opts.changeDue !== undefined ? opts.changeDue : Math.max(0, cashTendered - cashPortion);
   } else {
-    cashReceived = total;
+    // Card, Digital Wallet, etc.
+    cashReceived = 0;
     changeReturned = 0;
   }
 
   const invoiceNo = `RCP-${Date.now()}`;
 
-  // 1. Create sale record
+  // 1. Create sale record (backward compatible with IndexedDB schema)
   const saleId = await db.sales.add({
     shop_id: 1,
     invoice_no: invoiceNo,
     timestamp: new Date().toISOString(),
-    subtotal,
-    discount: discountAmt,
+    subtotal: netSubtotal,
+    discount: totalDiscount,
     tax: taxAmount,
     total,
     payment_method: paymentMethod,
     customer_id: customerId,
     cash_received: cashReceived,
     change_returned: changeReturned,
-    session_id: sessionId
+    session_id: sessionId,
+    split_details: splitDetails,
+    card_ref: cardRef,
+    digital_provider: digitalProvider,
+    digital_ref: digitalRef
   });
 
   // 2. Create normalized sale items & record inventory events
   for (const ci of cartItems) {
     const item = ci.item;
+    const lineGross = ci.unit_price * ci.qty;
+    const itemDiscount = ci.discount || 0;
+    const lineTotal = Math.max(0, lineGross - itemDiscount);
 
     await db.sale_items.add({
       shop_id: 1,
@@ -252,7 +285,8 @@ async function processSale(cartItems, opts = {}) {
       quantity: ci.qty,
       unit_price: ci.unit_price,
       cost_price: item.cost_price || 0,
-      line_total: ci.unit_price * ci.qty
+      discount: itemDiscount,
+      line_total: lineTotal
     });
 
     if (item.is_composite) {
@@ -310,7 +344,7 @@ async function processSale(cartItems, opts = {}) {
           });
         }
       } else {
-        // Direct cash/card payment with customer linked
+        // Direct cash/card/digital payment with customer linked
         await db.customer_transactions.add({
           shop_id: 1,
           customer_id: customerId,
@@ -324,15 +358,41 @@ async function processSale(cartItems, opts = {}) {
   }
 
   // 4. Update Cash Register Session expected cash (if active)
-  if (sessionId && paymentMethod === 'Cash') {
-    const session = await db.cash_sessions.get(sessionId);
-    if (session) {
-      const expected = (session.expected_cash || session.opening_cash) + cashReceived;
-      await db.cash_sessions.update(sessionId, { expected_cash: expected });
+  if (sessionId) {
+    let cashAddedToDrawer = 0;
+    if (paymentMethod === 'Cash') {
+      cashAddedToDrawer = cashReceived;
+    } else if (paymentMethod === 'Split' && Array.isArray(splitDetails)) {
+      const cashSplit = splitDetails.find(s => s.method === 'Cash');
+      if (cashSplit) cashAddedToDrawer = parseFloat(cashSplit.amount) || 0;
+    }
+
+    if (cashAddedToDrawer > 0) {
+      const session = await db.cash_sessions.get(sessionId);
+      if (session) {
+        const expected = (session.expected_cash || session.opening_cash) + cashAddedToDrawer;
+        await db.cash_sessions.update(sessionId, { expected_cash: expected });
+      }
     }
   }
 
-  return { saleId, receiptNo: invoiceNo, subtotal, discountAmt, taxAmount, total, changeDue: changeReturned };
+  return {
+    saleId,
+    receiptNo: invoiceNo,
+    subtotal: netSubtotal,
+    grossSubtotal,
+    lineDiscounts,
+    discountAmt: totalDiscount,
+    taxAmount,
+    total,
+    changeDue: changeReturned,
+    paymentMethod,
+    cashReceived,
+    splitDetails,
+    cardRef,
+    digitalProvider,
+    digitalRef
+  };
 }
 
 // ── Settings helpers ─────────────────────────────────────────

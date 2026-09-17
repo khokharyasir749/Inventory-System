@@ -5,7 +5,7 @@
 
 async function renderSettings(container) {
   // Fetch current settings
-  const [name, addr, phone, tax, curr, footer, pin, currentProfile] = await Promise.all([
+  const [name, addr, phone, tax, curr, footer, pin, currentProfile, ntn] = await Promise.all([
     getSetting('store_name', 'Premium Retail Store'),
     getSetting('store_address', ''),
     getSetting('store_phone', ''),
@@ -13,7 +13,8 @@ async function renderSettings(container) {
     getSetting('currency', 'Rs.'),
     getSetting('receipt_footer', 'Thank you!'),
     getSetting('app_pin', '1234'),
-    getSetting('demo_business', 'grocery')
+    getSetting('demo_business', 'grocery'),
+    getSetting('ntn_tax_id', 'NTN-9842104-7')
   ]);
 
   container.innerHTML = `
@@ -49,9 +50,15 @@ async function renderSettings(container) {
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Store Phone Number</label>
-            <input type="text" class="form-input" id="set-phone" value="${phone}" placeholder="e.g. +92 300 1234567">
+          <div class="grid-2" style="gap:var(--space-3)">
+            <div class="form-group">
+              <label class="form-label">Store Phone Number</label>
+              <input type="text" class="form-input" id="set-phone" value="${phone}" placeholder="e.g. +92 300 1234567">
+            </div>
+            <div class="form-group">
+              <label class="form-label">NTN / Tax Registration ID</label>
+              <input type="text" class="form-input" id="set-ntn" value="${ntn}" placeholder="e.g. NTN-9842104-7">
+            </div>
           </div>
 
           <div class="form-group">
@@ -119,6 +126,7 @@ async function renderSettings(container) {
     const newCurr = container.querySelector('#set-currency').value;
     const newTax = parseFloat(container.querySelector('#set-tax').value) || 0;
     const newPhone = container.querySelector('#set-phone').value;
+    const newNtn = container.querySelector('#set-ntn').value.trim();
     const newAddr = container.querySelector('#set-address').value;
     const newFooter = container.querySelector('#set-footer').value;
 
@@ -128,6 +136,7 @@ async function renderSettings(container) {
         setSetting('currency', newCurr),
         setSetting('tax_rate', newTax),
         setSetting('store_phone', newPhone),
+        setSetting('ntn_tax_id', newNtn),
         setSetting('store_address', newAddr),
         setSetting('receipt_footer', newFooter)
       ]);
