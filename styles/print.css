@@ -367,4 +367,78 @@
     padding-top: 1mm;
     margin-top: 1mm;
   }
+
+  /* ── Commercial Proposal Print & PDF Engine ───────────────── */
+  #printable-proposal-doc.proposal-doc {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 12mm 10mm !important;
+    background: white !important;
+    color: #0F172A !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+
+  #printable-proposal-doc * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #printable-proposal-doc .proposal-header {
+    border-bottom: 2pt solid #2563EB !important;
+  }
+
+  #printable-proposal-doc .proposal-brand-title {
+    color: #0F172A !important;
+  }
+
+  #printable-proposal-doc .proposal-brand-sub {
+    color: #2563EB !important;
+  }
+
+  #printable-proposal-doc .proposal-callout {
+    background: #F1F5F9 !important;
+    border: 1px solid #CBD5E1 !important;
+    border-left: 4px solid #2563EB !important;
+  }
+
+  #printable-proposal-doc .proposal-callout-name,
+  #printable-proposal-doc .proposal-section-title,
+  #printable-proposal-doc .proposal-terms-title,
+  #printable-proposal-doc .proposal-footer-team,
+  #printable-proposal-doc .module-name {
+    color: #0F172A !important;
+  }
+
+  #printable-proposal-doc .proposal-table {
+    border: 1px solid #CBD5E1 !important;
+  }
+
+  #printable-proposal-doc .proposal-table thead tr {
+    background: #F1F5F9 !important;
+    border-bottom: 1.5pt solid #94A3B8 !important;
+  }
+
+  #printable-proposal-doc .proposal-table thead th {
+    color: #0F172A !important;
+    background: #F1F5F9 !important;
+    font-weight: 800 !important;
+  }
+
+  #printable-proposal-doc .proposal-table tbody tr {
+    border-bottom: 0.5pt solid #E2E8F0 !important;
+  }
+
+  #printable-proposal-doc .proposal-table tbody td {
+    color: #334155 !important;
+  }
+
+  #printable-proposal-doc .proposal-terms-card {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+  }
 }
+
