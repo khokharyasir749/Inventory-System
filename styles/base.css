@@ -19,7 +19,7 @@
   --slate-900: #0F172A;
   --slate-950: #020617;
 
-  /* Surfaces & Canvas (Light Theme Default) */
+  /* Surfaces & Canvas (Ultra-crisp Studio Aesthetic Light Theme) */
   --canvas:         #F8FAFC;
   --surface:        #FFFFFF;
   --surface-raised: #F1F5F9;
@@ -29,43 +29,46 @@
   --border-soft:    #F1F5F9;
   --border-strong:  #CBD5E1;
 
-  /* Enterprise Primary (High-Performance SaaS Blue) */
-  --primary:        #2563EB;
-  --primary-hover:  #1D4ED8;
-  --primary-dark:   #1E40AF;
-  --primary-light:  #EFF6FF;
-  --primary-muted:  #F0F7FF;
-  --primary-glow:   rgba(37, 99, 235, 0.16);
+  /* Radiant Micro-Accents (Electric Indigo & Luminous Sapphire SaaS Palette) */
+  --primary:        #6366F1;
+  --primary-hover:  #4F46E5;
+  --primary-dark:   #4338CA;
+  --primary-light:  #EEF2FF;
+  --primary-muted:  rgba(99, 102, 241, 0.08);
+  --primary-glow:   rgba(99, 102, 241, 0.28);
+  --accent-sapphire: #38BDF8;
+  --accent-sapphire-glow: rgba(56, 189, 248, 0.28);
+  --accent-violet:  #8B5CF6;
 
   /* Brand Accents */
-  --zeploy-midnight: #0B1120;
+  --zeploy-midnight: #0B0F17;
   --zeploy-navy:     #0F172A;
   --zeploy-header:   #1E293B;
-  --zeploy-accent:   #2563EB;
+  --zeploy-accent:   #6366F1;
 
   /* Status Colors */
-  --stock-in:       #059669;
+  --stock-in:       #10B981;
   --stock-in-bg:    #ECFDF5;
-  --sale:           #4F46E5;
+  --sale:           #6366F1;
   --sale-bg:        #EEF2FF;
-  --alert:          #D97706;
+  --alert:          #F59E0B;
   --alert-bg:       #FFFBEB;
-  --danger:         #DC2626;
+  --danger:         #EF4444;
   --danger-bg:      #FEF2F2;
-  --spoilage:       #7C3AED;
+  --spoilage:       #8B5CF6;
   --spoilage-bg:    #F5F3FF;
 
   /* Semantic Color Aliases */
-  --success:        #059669;
+  --success:        #10B981;
   --success-bg:     #ECFDF5;
-  --warning:        #D97706;
+  --warning:        #F59E0B;
   --warning-bg:     #FFFBEB;
-  --info:           #0284C7;
+  --info:           #0EA5E9;
   --info-bg:        #F0F9FF;
-  --teal:           #0D9488;
+  --teal:           #14B8A6;
   --teal-bg:        #F0FDFA;
 
-  /* Text Colors */
+  /* Text Colors — High Contrast Typography */
   --text-primary:   #0F172A;
   --text-secondary: #475569;
   --text-muted:     #94A3B8;
@@ -97,69 +100,74 @@
   --radius-2xl: 24px;
   --radius-full: 9999px;
 
-  /* Shadows — Modern layered shadows */
-  --shadow-xs:  0 1px 2px 0 rgb(15 23 42 / 0.04);
-  --shadow-sm:  0 1px 3px 0 rgb(15 23 42 / 0.08), 0 1px 2px -1px rgb(15 23 42 / 0.06);
-  --shadow-md:  0 4px 8px -2px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.04);
-  --shadow-lg:  0 12px 20px -4px rgb(15 23 42 / 0.08), 0 4px 6px -4px rgb(15 23 42 / 0.03);
-  --shadow-xl:  0 20px 30px -6px rgb(15 23 42 / 0.1), 0 8px 12px -6px rgb(15 23 42 / 0.05);
-  --shadow-2xl: 0 25px 50px -12px rgb(15 23 42 / 0.22);
+  /* Shadows — Multi-layer ambient diffuse shadows */
+  --shadow-xs:  0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md:  0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+  --shadow-lg:  0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  --shadow-xl:  0 20px 30px -6px rgba(15, 23, 42, 0.08), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(15, 23, 42, 0.16);
   --shadow-glow: 0 0 24px -2px var(--primary-glow);
+  --shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.20);
 
-  /* Transitions */
-  --transition-fast:   140ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 220ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow:   350ms cubic-bezier(0.4, 0, 0.2, 1);
-  --spring:            320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Butter-smooth Transitions */
+  --transition-fast:   150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow:   360ms cubic-bezier(0.16, 1, 0.3, 1);
+  --spring:            320ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Layout Constants */
   --sidebar-width: 236px;
   --topbar-height: 62px;
 }
 
-/* ── Dark Mode Token Overrides ────────────────────────────── */
+/* ── Dark Mode Token Overrides (Raycast / Linear Obsidian Canvas) ── */
 [data-theme="dark"] {
-  --canvas:         #090D16;
-  --surface:        #0F172A;
-  --surface-raised: #1E293B;
-  --surface-hover:  #243249;
-  --surface-glass:  rgba(15, 23, 42, 0.85);
-  --border:         #1E293B;
-  --border-soft:    #151F30;
-  --border-strong:  #334155;
+  --canvas:         #080C14;
+  --surface:        #111827;
+  --surface-raised: #161F30;
+  --surface-hover:  #1C263C;
+  --surface-glass:  rgba(17, 24, 39, 0.82);
+  --border:         #1F293D;
+  --border-soft:    rgba(255, 255, 255, 0.06);
+  --border-strong:  rgba(255, 255, 255, 0.12);
 
-  --primary:        #3B82F6;
-  --primary-hover:  #60A5FA;
-  --primary-dark:   #1D4ED8;
-  --primary-light:  rgba(59, 130, 246, 0.16);
-  --primary-muted:  rgba(59, 130, 246, 0.10);
-  --primary-glow:   rgba(59, 130, 246, 0.32);
+  --primary:        #6366F1;
+  --primary-hover:  #818CF8;
+  --primary-dark:   #4F46E5;
+  --primary-light:  rgba(99, 102, 241, 0.16);
+  --primary-muted:  rgba(99, 102, 241, 0.10);
+  --primary-glow:   rgba(99, 102, 241, 0.35);
+  --accent-sapphire: #38BDF8;
+  --accent-sapphire-glow: rgba(56, 189, 248, 0.35);
 
-  --zeploy-midnight: #040711;
-  --zeploy-navy:     #080D1A;
-  --zeploy-header:   #0F172A;
-  --zeploy-accent:   #3B82F6;
+  --zeploy-midnight: #06090F;
+  --zeploy-navy:     #0B0F17;
+  --zeploy-header:   #111827;
+  --zeploy-accent:   #6366F1;
 
   --text-primary:   #F8FAFC;
   --text-secondary: #94A3B8;
   --text-muted:     #64748B;
-  --text-inverse:   #0F172A;
+  --text-inverse:   #080C14;
 
-  --stock-in-bg:    rgba(5, 150, 105, 0.16);
-  --sale-bg:        rgba(79, 70, 229, 0.16);
-  --alert-bg:       rgba(217, 119, 6, 0.16);
-  --danger-bg:      rgba(220, 38, 38, 0.16);
-  --spoilage-bg:    rgba(124, 58, 237, 0.16);
-  --success-bg:     rgba(5, 150, 105, 0.16);
-  --warning-bg:     rgba(217, 119, 6, 0.16);
-  --info-bg:        rgba(2, 132, 199, 0.16);
-  --teal-bg:        rgba(13, 148, 136, 0.16);
+  --stock-in-bg:    rgba(16, 185, 129, 0.16);
+  --sale-bg:        rgba(99, 102, 241, 0.16);
+  --alert-bg:       rgba(245, 158, 11, 0.16);
+  --danger-bg:      rgba(239, 68, 68, 0.16);
+  --spoilage-bg:    rgba(139, 92, 246, 0.16);
+  --success-bg:     rgba(16, 185, 129, 0.16);
+  --warning-bg:     rgba(245, 158, 11, 0.16);
+  --info-bg:        rgba(14, 165, 233, 0.16);
+  --teal-bg:        rgba(20, 184, 166, 0.16);
 
-  --shadow-sm:  0 1px 3px 0 rgb(0 0 0 / 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  --shadow-md:  0 4px 12px 0 rgb(0 0 0 / 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
-  --shadow-lg:  0 12px 24px 0 rgb(0 0 0 / 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
-  --shadow-xl:  0 20px 36px 0 rgb(0 0 0 / 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  --shadow-2xl: 0 25px 55px -10px rgb(0 0 0 / 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  --shadow-xs:  0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-sm:  0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-md:  0 4px 14px 0 rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --shadow-lg:  0 12px 28px 0 rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-xl:  0 20px 40px 0 rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.10);
+  --shadow-2xl: 0 25px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.14);
+  --shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.28);
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
@@ -210,6 +218,11 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+  transition: transform var(--transition-fast), background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+button:active {
+  transform: scale(0.97);
 }
 
 input, textarea, select {
@@ -218,12 +231,13 @@ input, textarea, select {
   outline: none;
   background: var(--surface);
   color: var(--text-primary);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 input:focus, textarea:focus, select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-glow);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 hr {
@@ -315,15 +329,30 @@ p { line-height: 1.6; }
   transition: all var(--transition-fast);
 }
 
-.badge-primary   { background: var(--primary-light);  color: var(--primary);       border-color: rgba(37, 99, 235, 0.2); }
-.badge-blue      { background: var(--primary-light);  color: var(--primary);       border-color: rgba(37, 99, 235, 0.2); }
-.badge-green     { background: var(--stock-in-bg);    color: var(--stock-in);      border-color: rgba(5, 150, 105, 0.2); }
-.badge-indigo    { background: var(--sale-bg);        color: var(--sale);          border-color: rgba(79, 70, 229, 0.2); }
-.badge-amber     { background: var(--alert-bg);       color: var(--alert);         border-color: rgba(217, 119, 6, 0.2); }
-.badge-red       { background: var(--danger-bg);      color: var(--danger);        border-color: rgba(220, 38, 38, 0.2); }
-.badge-purple    { background: var(--spoilage-bg);    color: var(--spoilage);      border-color: rgba(124, 58, 237, 0.2); }
+.badge-primary   { background: var(--primary-light);  color: var(--primary);       border-color: rgba(99, 102, 241, 0.25); }
+.badge-blue      { background: var(--primary-light);  color: var(--primary);       border-color: rgba(99, 102, 241, 0.25); }
+.badge-green     { background: var(--stock-in-bg);    color: var(--stock-in);      border-color: rgba(16, 185, 129, 0.25); }
+.badge-indigo    { background: var(--sale-bg);        color: var(--sale);          border-color: rgba(99, 102, 241, 0.25); }
+.badge-amber     { background: var(--alert-bg);       color: var(--alert);         border-color: rgba(245, 158, 11, 0.25); }
+.badge-red       { background: var(--danger-bg);      color: var(--danger);        border-color: rgba(239, 68, 68, 0.25); }
+.badge-purple    { background: var(--spoilage-bg);    color: var(--spoilage);      border-color: rgba(139, 92, 246, 0.25); }
 .badge-gray      { background: var(--surface-raised); color: var(--text-secondary); border-color: var(--border); }
 .badge-dark      { background: var(--slate-800);      color: var(--slate-100);     border-color: var(--slate-700); }
+
+.badge-live {
+  position: relative;
+}
+.badge-live::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: pulseDot 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  margin-right: 4px;
+}
 
 /* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -381,12 +410,30 @@ p { line-height: 1.6; }
   100% { background-position: 200% 0; }
 }
 
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  50% { transform: scale(1.15); opacity: 0.85; box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+}
+
+@keyframes liveBadgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(99, 102, 241, 0); }
+}
+
 .animate-fade-in       { animation: fadeIn var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-slide-up      { animation: slideInUp var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-slide-right   { animation: slideInRight var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-scale-in      { animation: scaleIn var(--spring) both; }
 .animate-pulse         { animation: pulse 1.8s ease-in-out infinite; }
 .animate-spin          { animation: spin 1s linear infinite; }
+.animate-live-dot      { animation: pulseDot 2s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+.animate-badge-pulse   { animation: liveBadgePulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+
+.badge-shimmer {
+  background: linear-gradient(90deg, var(--surface-raised) 0%, rgba(99, 102, 241, 0.12) 50%, var(--surface-raised) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

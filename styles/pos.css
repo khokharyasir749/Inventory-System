@@ -49,6 +49,13 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--surface);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#pos-search:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .pos-filter-pills {
@@ -83,12 +90,12 @@
 
 .pos-product-card:hover {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-glow);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .pos-product-card:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
   border-color: var(--primary-dark);
 }
 
@@ -335,6 +342,7 @@
 }
 
 .cart-qty-btn:hover { border-color: var(--primary); color: var(--primary); }
+.cart-qty-btn:active { transform: scale(0.94); }
 
 .cart-qty-btn.remove:hover {
   border-color: var(--danger);
@@ -673,16 +681,17 @@
   align-items: center;
   justify-content: center;
   min-width: 22px;
-  height: 18px;
-  padding: 0 4px;
+  height: 19px;
+  padding: 0 5px;
   background: var(--surface-raised);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
+  border-bottom: 2px solid var(--border-strong);
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 0.65rem;
   font-weight: 700;
   color: var(--primary);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .hotkey-divider {
