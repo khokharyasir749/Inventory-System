@@ -1,6 +1,11 @@
 /**
- * customers.js — Customer Management & Credit Ledger
- * CRUD, balance tracking, transactions, record payments, ledger statements
+ * customers.js — Customer Management, Credit Ledger & CRM Engine
+ * Features:
+ * 1. Customer CRUD, search, and outstanding credit balance badges
+ * 2. Instant WhatsApp Click-to-Chat (wa.me) & Phone Call triggers
+ * 3. Interactive Customer Ledger Statement with running balance tracking
+ * 4. Payment Collection Modal with quick-pay preset chips and receipt printing
+ * 5. Statement CSV export
  */
 
 let customersList    = [];
@@ -16,8 +21,8 @@ async function renderCustomers(container) {
   container.innerHTML = `
     <div class="page-header">
       <div class="page-header-left">
-        <h1>Customers & Credits</h1>
-        <p>Manage customer ledger accounts, credit balances, and payments</p>
+        <h1>Customers & Credit Ledger</h1>
+        <p>Customer ledger statements, outstanding receivables, WhatsApp payment reminders, and payment receipts</p>
       </div>
       <div class="page-header-actions">
         <button class="btn btn-primary btn-sm" id="customer-add-btn">${icon('icon-plus')} Add Customer</button>
@@ -27,9 +32,9 @@ async function renderCustomers(container) {
     <div id="customers-view-outlet" class="animate-fade-in">
       <!-- Search & Filters -->
       <div class="filter-bar">
-        <div class="filter-search-wrap" style="max-width:320px;flex:1">
+        <div class="filter-search-wrap" style="max-width:340px;flex:1">
           ${icon('icon-search', 'filter-search-icon')}
-          <input type="text" class="filter-search" id="customer-search" placeholder="Search by name or phone...">
+          <input type="text" class="filter-search" id="customer-search" placeholder="Search customer name or phone...">
         </div>
       </div>
 
@@ -71,8 +76,8 @@ function renderCustomersListTable(container) {
     );
   }
 
-  // Sort by name
-  filtered.sort((a, b) => a.name.localeCompare(b.name));
+  // Sort by outstanding balance descending, then by name
+  filtered.sort((a, b) => (b.current_balance || 0) - (a.current_balance || 0) || a.name.localeCompare(b.name));
 
   // Pagination
   const totalPages = Math.max(1, Math.ceil(filtered.length / CUSTOMERS_PER_PAGE));
@@ -96,32 +101,64 @@ function renderCustomersListTable(container) {
           <thead>
             <tr>
               <th>Customer Name</th>
-              <th>Phone</th>
+              <th>Contact & Triggers</th>
               <th>Address</th>
               <th>Outstanding Balance</th>
-              <th>Account Since</th>
+              <th>Status</th>
               <th style="text-align:right">Actions</th>
             </tr>
           </thead>
           <tbody>
-            ${page.map(c => `
-              <tr>
-                <td class="font-semibold">${c.name}</td>
-                <td>${c.phone || '—'}</td>
-                <td class="text-sm text-secondary truncate" style="max-width:200px" title="${c.address || ''}">${c.address || '—'}</td>
-                <td class="mono font-bold ${c.current_balance > 0 ? 'text-red' : 'text-green'}">
-                  ${fmt(c.current_balance)}
-                </td>
-                <td class="text-sm text-muted">${fmtDate(c.created_at)}</td>
-                <td class="table-actions">
-                  <button class="btn btn-ghost btn-sm btn-icon" data-view-ledger="${c.id}" title="Ledger Statement">
-                    ${icon('icon-eye')}
-                  </button>
-                  <button class="btn btn-ghost btn-sm btn-icon" data-edit-c="${c.id}" title="Edit profile">
-                    ${icon('icon-edit')}
-                  </button>
-                </td>
-              </tr>`).join('')}
+            ${page.map(c => {
+              const cleanPhone = (c.phone || '').replace(/[^0-9]/g, '');
+              const waText = encodeURIComponent(`Assalam-o-Alaikum ${c.name},\nThis is a friendly reminder regarding your outstanding balance of ${fmt(c.current_balance)} at our store.\nThank you!`);
+              const hasBalance = (c.current_balance || 0) > 0;
+
+              return `
+                <tr>
+                  <td class="font-semibold">
+                    <div style="font-size:0.925rem;color:var(--text-primary)">${c.name}</div>
+                    <div class="text-xs text-muted">Customer since ${fmtDate(c.created_at)}</div>
+                  </td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                      ${c.phone ? `
+                        <a href="tel:${c.phone}" class="contact-btn-phone" title="Call ${c.phone}">
+                          📞 ${c.phone}
+                        </a>
+                        ${cleanPhone.length >= 7 ? `
+                          <a href="https://wa.me/${cleanPhone.startsWith('0') ? '92' + cleanPhone.slice(1) : cleanPhone}?text=${waText}" target="_blank" rel="noopener" class="contact-btn-wa" title="Send WhatsApp reminder">
+                            💬 WhatsApp
+                          </a>
+                        ` : ''}
+                      ` : '<span class="text-muted text-xs">—</span>'}
+                    </div>
+                  </td>
+                  <td class="text-xs text-secondary truncate" style="max-width:180px" title="${c.address || ''}">${c.address || '—'}</td>
+                  <td class="mono font-bold ${hasBalance ? 'text-red' : 'text-green'}">
+                    ${fmt(c.current_balance)}
+                  </td>
+                  <td>
+                    ${hasBalance 
+                      ? `<span class="badge badge-red">Receivable Due</span>`
+                      : `<span class="badge badge-green">Cleared</span>`
+                    }
+                  </td>
+                  <td class="table-actions">
+                    <button class="btn btn-ghost btn-sm" data-view-ledger="${c.id}" title="Statement">
+                      ${icon('icon-eye')} Statement
+                    </button>
+                    ${hasBalance ? `
+                      <button class="btn btn-success btn-sm" data-pay-c="${c.id}" title="Collect Payment">
+                        ${icon('icon-check')} Pay
+                      </button>
+                    ` : ''}
+                    <button class="btn btn-ghost btn-sm btn-icon" data-edit-c="${c.id}" title="Edit Profile">
+                      ${icon('icon-edit')}
+                    </button>
+                  </td>
+                </tr>`;
+            }).join('')}
           </tbody>
         </table>
       </div>
@@ -151,6 +188,14 @@ function renderCustomersListTable(container) {
     });
   });
 
+  tableContainer.querySelectorAll('[data-pay-c]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cId = parseInt(btn.dataset.payC);
+      const c = customersList.find(x => x.id === cId);
+      if (c) showPaymentModal(c, container);
+    });
+  });
+
   tableContainer.querySelectorAll('[data-edit-c]').forEach(btn => {
     btn.addEventListener('click', () => {
       const cId = parseInt(btn.dataset.editC);
@@ -160,50 +205,70 @@ function renderCustomersListTable(container) {
   });
 }
 
-// ── Customer Ledger statement View ────────────────────────────
+// ── Customer Ledger Statement View ────────────────────────────
 async function renderCustomerLedgerView(container, customer) {
   selectedCustomerForLedger = customer;
   
   const outlet = container.querySelector('#customers-view-outlet');
   if (!outlet) return;
 
+  const cleanPhone = (customer.phone || '').replace(/[^0-9]/g, '');
+  const waText = encodeURIComponent(`Assalam-o-Alaikum ${customer.name},\nThis is your account statement from our store. Your current outstanding balance is ${fmt(customer.current_balance)}.`);
+
   outlet.innerHTML = `
-    <div style="display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-4)">
+    <div style="display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-4);flex-wrap:wrap">
       <button class="btn btn-ghost btn-sm" id="ledger-back-btn">
         ${icon('icon-chevron-left')} Back to Customers
       </button>
-      <button class="btn btn-ghost btn-sm" id="ledger-export-btn" style="margin-left:auto">
-        ${icon('icon-download')} Export Statement CSV
-      </button>
-      <button class="btn btn-success btn-sm" id="ledger-pay-btn">
-        ${icon('icon-dollar')} Record Payment / Payoff
-      </button>
+
+      <div style="display:flex;gap:var(--space-2);margin-left:auto;flex-wrap:wrap">
+        ${customer.phone ? `
+          <a href="tel:${customer.phone}" class="btn btn-ghost btn-sm">
+            📞 Call ${customer.phone}
+          </a>
+          ${cleanPhone.length >= 7 ? `
+            <a href="https://wa.me/${cleanPhone.startsWith('0') ? '92' + cleanPhone.slice(1) : cleanPhone}?text=${waText}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" style="color:#10B981;border-color:rgba(16,185,129,0.3)">
+              💬 WhatsApp Reminder
+            </a>
+          ` : ''}
+        ` : ''}
+        <button class="btn btn-ghost btn-sm" id="ledger-export-btn">
+          ${icon('icon-download')} Export CSV
+        </button>
+        <button class="btn btn-success btn-sm" id="ledger-pay-btn">
+          ${icon('icon-check')} Record Payment
+        </button>
+      </div>
     </div>
 
+    <!-- Customer KPI Cards -->
     <div class="grid-3" style="margin-bottom:var(--space-5)">
-      <div class="kpi-card">
+      <div class="kpi-card" style="border-color:${customer.current_balance > 0 ? 'var(--danger)' : 'var(--stock-in)'}">
         <div class="kpi-card-body">
-          <div class="kpi-value text-red" id="ledger-kpi-bal">${fmt(customer.current_balance)}</div>
-          <div class="kpi-label">Outstanding Balance</div>
+          <div class="kpi-value mono ${customer.current_balance > 0 ? 'text-red' : 'text-green'}" id="ledger-kpi-bal">
+            ${fmt(customer.current_balance)}
+          </div>
+          <div class="kpi-label">Current Outstanding Balance</div>
         </div>
       </div>
       <div class="kpi-card">
         <div class="kpi-card-body">
-          <div class="kpi-value text-teal" id="ledger-kpi-sales">Rs. 0</div>
-          <div class="kpi-label">Total Credit Sales</div>
+          <div class="kpi-value text-indigo mono" id="ledger-kpi-sales">Rs. 0</div>
+          <div class="kpi-label">Total Credit Sales (Receivables)</div>
         </div>
       </div>
       <div class="kpi-card">
         <div class="kpi-card-body">
-          <div class="kpi-value text-green" id="ledger-kpi-paid">Rs. 0</div>
+          <div class="kpi-value text-green mono" id="ledger-kpi-paid">Rs. 0</div>
           <div class="kpi-label">Total Payments Received</div>
         </div>
       </div>
     </div>
 
+    <!-- Statement Table -->
     <div class="section-card">
-      <div class="section-card-header">
-        <span class="section-card-title">Ledger Transaction Statement — ${customer.name}</span>
+      <div class="section-card-header" style="border-bottom:1px solid var(--border-soft);padding-bottom:var(--space-2);margin-bottom:var(--space-3)">
+        <span class="section-card-title">${icon('icon-reports')} Account Statement Timeline — ${customer.name}</span>
       </div>
       <div id="ledger-transactions-table">
         <div class="skeleton" style="height:150px"></div>
@@ -224,8 +289,21 @@ async function loadAndRenderTransactions(outlet, customerId) {
   const saleMap = {};
   sales.forEach(s => { saleMap[s.id] = s.invoice_no; });
 
-  // Sort transactions by date descending
-  transactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  // Sort chronological for running balance calculation
+  transactions.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  let runningBalance = 0;
+  const transactionsWithRunning = transactions.map(t => {
+    if (t.transaction_type === 'CREDIT') {
+      runningBalance += (t.amount || 0);
+    } else {
+      runningBalance = Math.max(0, runningBalance - (t.amount || 0));
+    }
+    return { ...t, running_balance: runningBalance };
+  });
+
+  // Display reverse-chronological (newest first)
+  const displayTransactions = transactionsWithRunning.slice().reverse();
 
   // Compute metrics
   const totalCredit = transactions
@@ -242,7 +320,7 @@ async function loadAndRenderTransactions(outlet, customerId) {
   const tableWrap = outlet.querySelector('#ledger-transactions-table');
   if (!tableWrap) return;
 
-  if (transactions.length === 0) {
+  if (displayTransactions.length === 0) {
     tableWrap.innerHTML = `<p class="text-sm text-secondary" style="padding:var(--space-4);text-align:center">No transaction ledger events found for this customer.</p>`;
     return;
   }
@@ -253,24 +331,28 @@ async function loadAndRenderTransactions(outlet, customerId) {
         <thead>
           <tr>
             <th>Date & Time</th>
-            <th>Reference / Sale</th>
-            <th>Type</th>
+            <th>Reference / Details</th>
+            <th>Transaction Type</th>
             <th>Amount</th>
+            <th style="text-align:right">Running Balance</th>
           </tr>
         </thead>
         <tbody>
-          ${transactions.map(t => {
+          ${displayTransactions.map(t => {
             const isCredit = t.transaction_type === 'CREDIT';
             const badge = isCredit
               ? `<span class="badge badge-amber">Credit Sale</span>`
-              : `<span class="badge badge-green">Payment Received</span>`;
+              : `<span class="badge badge-green">Payment Settled</span>`;
             return `
               <tr>
                 <td class="mono text-xs">${fmtDateTime(t.timestamp)}</td>
-                <td>${t.sale_id ? `Invoice: ${saleMap[t.sale_id] || t.sale_id}` : 'Direct Receipt / Adjustment'}</td>
+                <td class="text-xs">${t.sale_id ? `Invoice: <strong>${saleMap[t.sale_id] || t.sale_id}</strong>` : 'Direct Payment / Opening Balance'}</td>
                 <td>${badge}</td>
-                <td class="mono font-bold ${isCredit ? 'text-indigo' : 'text-green'}">
+                <td class="mono font-bold text-xs ${isCredit ? 'text-indigo' : 'text-green'}">
                   ${isCredit ? '+' : '−'} ${fmt(t.amount)}
+                </td>
+                <td class="mono font-bold text-xs" style="text-align:right">
+                  ${fmt(t.running_balance)}
                 </td>
               </tr>`;
           }).join('')}
@@ -282,21 +364,37 @@ async function loadAndRenderTransactions(outlet, customerId) {
 
 // ── Direct Customer Payment Modal ────────────────────────────
 function showPaymentModal(customer, pageContainer) {
+  const curBal = customer.current_balance || 0;
+  const halfBal = Math.round(curBal / 2);
+
   const bodyHTML = `
-    <div style="background:var(--canvas);padding:var(--space-3);border-radius:var(--radius-md);margin-bottom:var(--space-4)">
-      <div class="text-sm text-secondary">Outstanding Balance for <strong>${customer.name}</strong></div>
-      <div class="font-bold text-xl text-red mono">${fmt(customer.current_balance)}</div>
+    <div style="background:var(--surface-raised);padding:var(--space-4);border-radius:var(--radius-lg);margin-bottom:var(--space-4);border:1px solid var(--border)">
+      <div class="text-xs text-secondary">Outstanding Balance for <strong>${customer.name}</strong></div>
+      <div class="font-bold text-2xl text-red mono" style="margin-top:2px">${fmt(curBal)}</div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Payment Amount <span class="required">*</span></label>
-      <div class="input-group">
-        <span class="input-prefix">Rs.</span>
-        <input type="number" class="form-input" id="pay-amount" placeholder="e.g. 1000" min="0.01" step="0.5" style="font-size:1.1rem;font-weight:700">
+
+    <!-- Quick Preset Chips -->
+    <div style="margin-bottom:var(--space-3)">
+      <div class="text-xs font-semibold text-secondary" style="margin-bottom:var(--space-2)">Quick Fill Amount:</div>
+      <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+        <button type="button" class="btn btn-ghost btn-xs" id="chip-full-pay">Full Payoff (${fmt(curBal)})</button>
+        ${curBal > 100 ? `<button type="button" class="btn btn-ghost btn-xs" id="chip-half-pay">50% (${fmt(halfBal)})</button>` : ''}
+        <button type="button" class="btn btn-ghost btn-xs" id="chip-1000">1,000</button>
+        <button type="button" class="btn btn-ghost btn-xs" id="chip-5000">5,000</button>
       </div>
     </div>
+
     <div class="form-group">
-      <label class="form-label">Payment Notes / Remarks</label>
-      <input type="text" class="form-input" id="pay-notes" placeholder="e.g. Cash payment received, check # etc.">
+      <label class="form-label" for="pay-amount">Payment Amount Collected <span class="required">*</span></label>
+      <div class="input-group">
+        <span class="input-prefix">Rs.</span>
+        <input type="number" class="form-input" id="pay-amount" value="${curBal > 0 ? curBal : ''}" placeholder="0.00" min="0.01" step="0.5" autofocus style="font-size:1.25rem;font-weight:700">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="pay-notes">Payment Remarks / Reference</label>
+      <input type="text" class="form-input" id="pay-notes" placeholder="e.g. Cash received in store, bank transfer, check #">
     </div>
   `;
 
@@ -305,20 +403,30 @@ function showPaymentModal(customer, pageContainer) {
     <button class="btn btn-success" id="pay-submit-btn">${icon('icon-check')} Save Payment Receipt</button>
   `;
 
-  openModal({ title: 'Record Customer Payment', bodyHTML, footerHTML,
+  openModal({
+    title: `Collect Payment: ${customer.name}`,
+    bodyHTML,
+    footerHTML,
     onOpen: (backdrop) => {
+      const amtInp = backdrop.querySelector('#pay-amount');
+
+      backdrop.querySelector('#chip-full-pay')?.addEventListener('click', () => { amtInp.value = curBal; });
+      backdrop.querySelector('#chip-half-pay')?.addEventListener('click', () => { amtInp.value = halfBal; });
+      backdrop.querySelector('#chip-1000')?.addEventListener('click', () => { amtInp.value = 1000; });
+      backdrop.querySelector('#chip-5000')?.addEventListener('click', () => { amtInp.value = 5000; });
+
       backdrop.querySelector('#pay-submit-btn').addEventListener('click', async () => {
-        const amt = parseFloat(backdrop.querySelector('#pay-amount').value);
+        const amt = parseFloat(amtInp.value);
         if (isNaN(amt) || amt <= 0) {
-          toast.error('Error', 'Please enter a valid payment amount greater than zero.');
+          toast.error('Validation Error', 'Please enter a valid payment amount greater than zero.');
           return;
         }
 
-        // Check active cash session (since direct customer payment increases cash drawer)
         const activeSession = await getActiveSession();
         const sessionId = activeSession ? activeSession.id : null;
+        const notes = backdrop.querySelector('#pay-notes').value.trim();
 
-        // Record payment transaction
+        // 1. Add customer transaction
         await db.customer_transactions.add({
           shop_id: 1,
           customer_id: customer.id,
@@ -328,11 +436,11 @@ function showPaymentModal(customer, pageContainer) {
           timestamp: new Date().toISOString()
         });
 
-        // Decrement balance
+        // 2. Decrement customer balance
         const newBalance = Math.max(0, (customer.current_balance || 0) - amt);
         await db.customers.update(customer.id, { current_balance: newBalance });
 
-        // Update active register session cache if session exists
+        // 3. Update active drawer session expected cash
         if (sessionId) {
           const session = await db.cash_sessions.get(sessionId);
           if (session) {
@@ -341,10 +449,20 @@ function showPaymentModal(customer, pageContainer) {
           }
         }
 
+        // 4. Record audit log
+        await db.logs.add({
+          shop_id: 1,
+          item_id: null,
+          change_type: 'PAYMENT_RECEIVED',
+          qty_changed: amt,
+          timestamp: new Date().toISOString(),
+          sync_status: 'SYNCED',
+          notes: `Received ${fmt(amt)} from ${customer.name}${notes ? ` (${notes})` : ''}`
+        });
+
         closeModal();
-        toast.success('Payment Recorded', `Successfully received ${fmt(amt)} from ${customer.name}`);
+        toast.success('Payment Recorded', `Successfully recorded payment of ${fmt(amt)} for ${customer.name}.`);
         
-        // Refresh views
         customer.current_balance = newBalance;
         const outlet = pageContainer.querySelector('#customers-view-outlet');
         if (outlet && selectedCustomerForLedger) {
@@ -364,25 +482,26 @@ function showCustomerEditModal(customer, pageContainer) {
   const isEdit = !!customer;
   const bodyHTML = `
     <div class="form-group">
-      <label class="form-label">Full Name <span class="required">*</span></label>
-      <input class="form-input" id="c-name" value="${customer?.name || ''}" placeholder="e.g. Zahid Mahmood">
+      <label class="form-label" for="c-name">Full Customer Name <span class="required">*</span></label>
+      <input class="form-input" id="c-name" value="${customer?.name || ''}" placeholder="e.g. Zahid Mahmood" required>
     </div>
     <div class="form-group">
-      <label class="form-label">Phone Number</label>
+      <label class="form-label" for="c-phone">Phone / WhatsApp Number</label>
       <input class="form-input" id="c-phone" value="${customer?.phone || ''}" placeholder="e.g. 03001234567">
+      <div class="form-hint">Used for 1-click WhatsApp payment reminders and notifications.</div>
     </div>
     <div class="form-group">
-      <label class="form-label">Address</label>
+      <label class="form-label" for="c-address">Delivery / Billing Address</label>
       <textarea class="form-input" id="c-address" placeholder="Residential or commercial billing address...">${customer?.address || ''}</textarea>
     </div>
     ${!isEdit ? `
       <div class="form-group">
-        <label class="form-label">Initial Credit Balance</label>
+        <label class="form-label" for="c-balance">Initial Outstanding Balance</label>
         <div class="input-group">
           <span class="input-prefix">Rs.</span>
           <input type="number" class="form-input" id="c-balance" value="0" min="0" step="0.5">
         </div>
-        <div class="form-hint">Set initial outstanding credit if importing old accounts.</div>
+        <div class="form-hint">Set existing credit balance if migrating accounts.</div>
       </div>
     ` : ''}
   `;

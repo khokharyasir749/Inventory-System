@@ -103,6 +103,15 @@
     text-shadow: none !important;
   }
 
+  .print-receipt .r-logo {
+    display: block;
+    margin: 0 auto 2mm auto;
+    max-height: 14mm;
+    max-width: 40mm;
+    object-fit: contain;
+    filter: grayscale(100%) contrast(150%);
+  }
+
   .print-receipt .r-store-name {
     text-align: center;
     font-size: 11pt;

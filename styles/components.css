@@ -1985,3 +1985,181 @@ tbody td {
   border-bottom: none;
 }
 
+/* ── Brand Logo Preview & Upload Box ──────────────────────── */
+.brand-logo-preview-box {
+  width: 90px;
+  height: 90px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.brand-logo-preview-box:hover {
+  border-color: var(--primary);
+}
+
+.brand-logo-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.brand-dropzone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  text-align: center;
+  background: var(--surface-raised);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.brand-dropzone:hover, .brand-dropzone.dragover {
+  border-color: var(--primary);
+  background: var(--primary-muted);
+}
+
+/* ── Settings Enterprise Tabbed Navigation ─────────────────── */
+.settings-tabs-header {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-5);
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.settings-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.settings-tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--surface-raised);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.settings-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.settings-tab-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Denomination Counter Helper ──────────────────────────── */
+.denom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.denom-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.denom-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.denom-input {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: right;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+/* ── Yield & Bottleneck Card in Recipes ───────────────────── */
+.yield-bottleneck-card {
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.05), rgba(79, 70, 229, 0.05));
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+/* ── Quick Trigger Buttons (WhatsApp, Phone) ───────────────── */
+.contact-btn-wa {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-full);
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.contact-btn-wa:hover {
+  background: #10B981;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.contact-btn-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--primary);
+  background: var(--primary-muted);
+  border: 1px solid rgba(15, 118, 110, 0.25);
+  border-radius: var(--radius-full);
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.contact-btn-phone:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+

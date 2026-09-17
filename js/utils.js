@@ -456,3 +456,249 @@ function playBeepSound(type = 'success') {
     // Graceful fallback if audio context blocked before gesture
   }
 }
+
+// ── Brand Identity & Customization Engine ─────────────────────
+
+/**
+ * Compresses an uploaded image file on the client side using HTML5 Canvas
+ * @param {File} file
+ * @param {number} maxWidth
+ * @param {number} maxHeight
+ * @param {number} quality
+ * @returns {Promise<string>} base64 data URL
+ */
+function compressImageFile(file, maxWidth = 320, maxHeight = 320, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) {
+      return reject(new Error('Selected file is not a valid image.'));
+    }
+
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Failed to read image file.'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Failed to decode image.'));
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth || height > maxHeight) {
+          if (width / maxWidth > height / maxHeight) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Try webp first, fallback to jpeg
+        let dataUrl = canvas.toDataURL('image/webp', quality);
+        if (!dataUrl.startsWith('data:image/webp')) {
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+        resolve(dataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Retrieves current store name and logo
+ */
+async function getStoreBranding() {
+  const [name, logo] = await Promise.all([
+    getSetting('store_name', 'Zeploy POS'),
+    getSetting('store_logo', '')
+  ]);
+  return { name, logo };
+}
+
+/**
+ * Saves store branding and synchronizes UI across the application
+ */
+async function setStoreBranding(name, logo = null) {
+  const cleanName = (name || '').trim() || 'Zeploy POS';
+  await setSetting('store_name', cleanName);
+  if (logo !== null) {
+    await setSetting('store_logo', logo || '');
+  }
+  await applyStoreBranding(cleanName, logo);
+}
+
+/**
+ * Globally updates all visible header elements, receipt previews, and dispatches sync event
+ */
+async function applyStoreBranding(storeName = null, storeLogo = null) {
+  if (storeName === null || storeLogo === null) {
+    const branding = await getStoreBranding();
+    if (storeName === null) storeName = branding.name;
+    if (storeLogo === null) storeLogo = branding.logo;
+  }
+
+  // 1. Update Sidebar Store Name
+  const sidebarNameEl = document.getElementById('sidebar-store-name');
+  if (sidebarNameEl) sidebarNameEl.textContent = storeName;
+
+  // 2. Update Sidebar Logo Mark
+  const sidebarLogoContainer = document.getElementById('sidebar-logo-container');
+  const defaultSidebarIcon = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  `;
+  if (sidebarLogoContainer) {
+    if (storeLogo) {
+      sidebarLogoContainer.innerHTML = `<img src="${storeLogo}" alt="${storeName}" class="sidebar-logo-img" />`;
+    } else {
+      sidebarLogoContainer.innerHTML = defaultSidebarIcon;
+    }
+  }
+
+  // 3. Update Topbar Store Pill & Name
+  const topbarNameEl = document.getElementById('topbar-store-name');
+  if (topbarNameEl) topbarNameEl.textContent = storeName;
+
+  const topbarLogoWrap = document.getElementById('topbar-store-logo-wrap');
+  if (topbarLogoWrap) {
+    if (storeLogo) {
+      topbarLogoWrap.innerHTML = `<img src="${storeLogo}" alt="${storeName}" class="topbar-logo-img" />`;
+    } else {
+      topbarLogoWrap.innerHTML = `
+        <span class="topbar-logo-fallback">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          </svg>
+        </span>
+      `;
+    }
+  }
+
+  // 4. Update Setup Wizard if visible
+  const wizStoreInp = document.getElementById('wiz-store-name');
+  if (wizStoreInp && !wizStoreInp.value) wizStoreInp.value = storeName;
+
+  const wizBrandLogoWrap = document.getElementById('wiz-brand-logo-preview');
+  if (wizBrandLogoWrap) {
+    if (storeLogo) {
+      wizBrandLogoWrap.innerHTML = `<img src="${storeLogo}" style="max-height:48px;max-width:140px;object-fit:contain" alt="Brand Logo" />`;
+    } else {
+      wizBrandLogoWrap.innerHTML = `<span class="text-xs text-muted">No custom logo set</span>`;
+    }
+  }
+
+  // 5. Broadcast custom event for active views (Dashboard, POS, etc.)
+  window.dispatchEvent(new CustomEvent('store-branding-updated', {
+    detail: { name: storeName, logo: storeLogo }
+  }));
+}
+
+/**
+ * Modal dialog for quick Brand Name and Logo customization from topbar or settings
+ */
+async function openQuickBrandModal() {
+  const { name, logo } = await getStoreBranding();
+  let currentLogoData = logo || '';
+
+  const bodyHTML = `
+    <div style="display:flex;flex-direction:column;gap:var(--space-4)">
+      <div class="form-group">
+        <label class="form-label" for="qb-store-name">Store / Brand Name <span class="required">*</span></label>
+        <input type="text" class="form-input" id="qb-store-name" value="${name}" placeholder="e.g. Metro Supermarket" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Brand Logo (PNG, SVG, JPG, WebP)</label>
+        <div style="display:flex;gap:var(--space-4);align-items:center;flex-wrap:wrap">
+          <!-- Logo Preview Box -->
+          <div id="qb-logo-preview-box" class="brand-logo-preview-box">
+            ${currentLogoData 
+              ? `<img src="${currentLogoData}" id="qb-preview-img" alt="Logo" class="brand-logo-preview-img" />`
+              : `<div class="text-xs text-muted" style="text-align:center;padding:12px">Default Mark Active</div>`
+            }
+          </div>
+
+          <!-- Actions -->
+          <div style="display:flex;flex-direction:column;gap:var(--space-2);flex:1;min-width:200px">
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer;justify-content:center">
+              ${icon('icon-plus')} Upload New Logo
+              <input type="file" id="qb-logo-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none">
+            </label>
+            <button type="button" class="btn btn-ghost-danger btn-sm" id="qb-reset-logo-btn" ${!currentLogoData ? 'style="display:none"' : ''}>
+              ${icon('icon-trash')} Reset to Default Mark
+            </button>
+            <div class="text-xs text-secondary">Optimal size: 300x300px. Images are automatically compressed offline.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const footerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" id="qb-save-btn">${icon('icon-check')} Save Brand Identity</button>
+  `;
+
+  openModal({
+    title: 'Brand Identity & Customization',
+    bodyHTML,
+    footerHTML,
+    onOpen: (backdrop) => {
+      const nameInput = backdrop.querySelector('#qb-store-name');
+      const fileInput = backdrop.querySelector('#qb-logo-input');
+      const resetBtn  = backdrop.querySelector('#qb-reset-logo-btn');
+      const previewBox= backdrop.querySelector('#qb-logo-preview-box');
+      const saveBtn   = backdrop.querySelector('#qb-save-btn');
+
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+          const compressed = await compressImageFile(file, 360, 360, 0.88);
+          currentLogoData = compressed;
+          previewBox.innerHTML = `<img src="${compressed}" id="qb-preview-img" alt="Logo" class="brand-logo-preview-img" />`;
+          resetBtn.style.display = 'inline-flex';
+          toast.success('Logo Uploaded', 'Preview updated. Click Save to apply.');
+        } catch (err) {
+          toast.error('Upload Error', err.message);
+        }
+      });
+
+      resetBtn.addEventListener('click', () => {
+        currentLogoData = '';
+        fileInput.value = '';
+        previewBox.innerHTML = `<div class="text-xs text-muted" style="text-align:center;padding:12px">Default Mark Active</div>`;
+        resetBtn.style.display = 'none';
+      });
+
+      saveBtn.addEventListener('click', async () => {
+        const newName = nameInput.value.trim();
+        if (!newName) {
+          toast.error('Validation Error', 'Brand / Store name cannot be empty.');
+          return;
+        }
+
+        saveBtn.disabled = true;
+        try {
+          await setStoreBranding(newName, currentLogoData);
+          closeModal();
+          toast.success('Branding Updated', 'Custom identity synchronized across header, receipts, and reports.');
+        } catch (err) {
+          toast.error('Save Failed', err.message);
+          saveBtn.disabled = false;
+        }
+      });
+    }
+  });
+}
+

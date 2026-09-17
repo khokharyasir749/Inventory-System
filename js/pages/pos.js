@@ -632,6 +632,7 @@ async function renderRecentSalesList(container) {
       }
 
       const storeName = await getSetting('store_name', 'My Shop');
+      const storeLogo = await getSetting('store_logo', '');
       const storeAddr = await getSetting('store_address', '');
       const storePhone = await getSetting('store_phone', '');
       const receiptFooter = await getSetting('receipt_footer', 'Thank you!');
@@ -651,7 +652,7 @@ async function renderRecentSalesList(container) {
         cardRef: sale.card_ref,
         digitalProvider: sale.digital_provider,
         digitalRef: sale.digital_ref
-      }, { storeName, storeAddr, storePhone, receiptFooter, taxLabel, ntnTaxId }, sale.timestamp);
+      }, { storeName, storeLogo, storeAddr, storePhone, receiptFooter, taxLabel, ntnTaxId }, sale.timestamp);
     });
   });
 }
@@ -958,6 +959,7 @@ async function executeQuickCashCheckout(container) {
 
   try {
     const storeName   = await getSetting('store_name', 'My Shop');
+    const storeLogo   = await getSetting('store_logo', '');
     const storeAddr   = await getSetting('store_address', '');
     const storePhone  = await getSetting('store_phone', '');
     const receiptFooter = await getSetting('receipt_footer', 'Thank you for your visit!');
@@ -977,7 +979,7 @@ async function executeQuickCashCheckout(container) {
     toast.success('Cash Sale Complete', `Invoice ${result.receiptNo} settled in full (${fmt(total)}).`);
 
     // Open Thermal Receipt Modal
-    showReceiptModal(cartItems, result, { storeName, storeAddr, storePhone, receiptFooter, taxLabel, ntnTaxId });
+    showReceiptModal(cartItems, result, { storeName, storeLogo, storeAddr, storePhone, receiptFooter, taxLabel, ntnTaxId });
 
     // Reset cart
     Cart.clear();
@@ -1328,6 +1330,7 @@ function openMultiTenderModal(container) {
 
         try {
           const storeName   = await getSetting('store_name', 'My Shop');
+          const storeLogo   = await getSetting('store_logo', '');
           const storeAddr   = await getSetting('store_address', '');
           const storePhone  = await getSetting('store_phone', '');
           const receiptFooter = await getSetting('receipt_footer', 'Thank you for your business!');
@@ -1385,7 +1388,7 @@ function openMultiTenderModal(container) {
 // ── Professional Thermal Receipt Engine (58mm & 80mm) ─────────
 function showReceiptModal(cartItems, result, storeInfo, timestamp = null) {
   const { subtotal, discountAmt, taxAmount, total, changeDue, receiptNo, paymentMethod, splitDetails, cardRef, digitalProvider, digitalRef } = result;
-  const { storeName, storeAddr, storePhone, receiptFooter, taxLabel, ntnTaxId } = storeInfo;
+  const { storeName, storeLogo, storeAddr, storePhone, receiptFooter, taxLabel, ntnTaxId } = storeInfo;
   const dateStr = fmtDateTime(timestamp || new Date().toISOString());
 
   let activePaperSize = '80mm'; // '80mm' | '58mm'
@@ -1435,6 +1438,7 @@ function showReceiptModal(cartItems, result, storeInfo, timestamp = null) {
   const getReceiptHTML = (is58mm = false) => `
     <div class="thermal-receipt-container ${is58mm ? 'size-58mm' : 'size-80mm'}">
       <div style="text-align:center;margin-bottom:6px;">
+        ${storeLogo ? `<div style="margin-bottom:6px;text-align:center"><img src="${storeLogo}" alt="Logo" style="max-height:46px;max-width:140px;object-fit:contain;filter:grayscale(100%) contrast(140%);display:inline-block;" /></div>` : ''}
         <div style="font-size:1.15rem;font-weight:900;letter-spacing:0.04em;">${storeName.toUpperCase()}</div>
         ${storeAddr ? `<div style="font-size:0.75rem;">${storeAddr}</div>` : ''}
         ${storePhone ? `<div style="font-size:0.75rem;">Phone: ${storePhone}</div>` : ''}
@@ -1542,6 +1546,7 @@ function showReceiptModal(cartItems, result, storeInfo, timestamp = null) {
         const printClass = is58 ? 'printing-receipt-58mm' : 'printing-receipt-80mm';
         const rawHTML = `
           <div class="print-receipt">
+            ${storeLogo ? `<img src="${storeLogo}" class="r-logo" alt="Logo" />` : ''}
             <div class="r-store-name">${storeName.toUpperCase()}</div>
             ${storeAddr ? `<div class="r-store-sub">${storeAddr}</div>` : ''}
             ${storePhone ? `<div class="r-store-sub">Phone: ${storePhone}</div>` : ''}

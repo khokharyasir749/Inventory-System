@@ -33,13 +33,14 @@ async function renderDashboard(container) {
 
 async function refreshDashboardContent(container) {
   // Fetch required tables in parallel
-  const [items, sales, saleItems, logs, batches, storeName, currency, currentTemplate] = await Promise.all([
+  const [items, sales, saleItems, logs, batches, storeName, storeLogo, currency, currentTemplate] = await Promise.all([
     db.items.toArray(),
     db.sales.toArray(),
     db.sale_items.toArray(),
     db.logs.orderBy('timestamp').reverse().limit(60).toArray(),
     db.batches.toArray(),
     getSetting('store_name', 'Executive Store'),
+    getSetting('store_logo', ''),
     getSetting('currency', 'Rs.'),
     getSetting('demo_business', 'grocery')
   ]);
@@ -98,8 +99,9 @@ async function refreshDashboardContent(container) {
   container.innerHTML = `
     <div class="page-header">
       <div class="page-header-left">
-        <h1 style="display:flex;align-items:center;gap:8px;">
-          ${storeName} 
+        <h1 style="display:flex;align-items:center;gap:10px;">
+          ${storeLogo ? `<img src="${storeLogo}" alt="Logo" id="dash-brand-logo-img" style="width:34px;height:34px;border-radius:var(--radius-md);object-fit:cover;border:1px solid var(--border-soft);background:white;" />` : ''}
+          <span id="dash-brand-store-name">${storeName}</span>
           <span class="health-pulse-dot" title="Local-First Node Active"></span>
         </h1>
         <p class="text-secondary text-sm">Enterprise Executive Analytics · ${currentTemplate.toUpperCase()} Profile</p>
