@@ -384,12 +384,15 @@ input[type="range"]::-webkit-slider-thumb {
    ══════════════════════════════════════════════════════════════ */
 .kpi-card {
   background: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
   border: 1px solid var(--border);
+  /* Metallic razor rim — makes glass visible */
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
-  box-shadow: var(--shadow-sm), var(--specular-highlight);
+  box-shadow: var(--shadow-md), var(--specular-highlight);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -433,8 +436,9 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .kpi-card:hover {
-  border-color: rgba(99, 102, 241, 0.45);
-  box-shadow: var(--shadow-lg), 0 0 24px -2px rgba(99, 102, 241, 0.20), var(--specular-highlight);
+  border-color: rgba(129, 140, 248, 0.55);
+  border-top-color: rgba(255, 255, 255, 0.36);
+  box-shadow: var(--shadow-lg), 0 0 32px -4px rgba(129, 140, 248, 0.28), var(--specular-highlight);
   transform: translateY(-3px);
 }
 
@@ -2505,6 +2509,86 @@ tbody td {
   width: 170px;
   margin-bottom: 4px;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   UTILITY: GLASS CARD & GLASS PANEL
+   Reusable frosted glass containers for any page/component.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Frosted glass card — translucent, with metallic specular rim */
+.glass-card {
+  background: var(--surface);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-md), var(--specular-highlight);
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.glass-card:hover {
+  border-color: rgba(129, 140, 248, 0.45);
+  border-top-color: rgba(255, 255, 255, 0.32);
+  box-shadow: var(--shadow-lg), 0 0 28px -4px rgba(129, 140, 248, 0.22), var(--specular-highlight);
+  transform: translateY(-2px);
+}
+
+/* Deeper glass panel — for full-width sections and containers */
+.glass-panel {
+  background: var(--surface);
+  backdrop-filter: blur(28px) saturate(1.8);
+  -webkit-backdrop-filter: blur(28px) saturate(1.8);
+  border: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), var(--specular-highlight);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Frosted glass metric pill — for adv_inventory KPI summary strips */
+.glass-metric-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm), var(--specular-highlight);
+  transition: all var(--transition-fast);
+}
+
+.glass-metric-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), 0 0 20px -4px var(--primary-glow), var(--specular-highlight);
+}
+
+/* Neon-border variant for danger/alert kpi pills */
+.glass-metric-pill.pill-danger {
+  border-top-color: rgba(248, 113, 113, 0.50);
+  box-shadow: var(--shadow-sm), 0 0 16px -6px rgba(248, 113, 113, 0.30), var(--specular-highlight);
+}
+
+.glass-metric-pill.pill-warning {
+  border-top-color: rgba(251, 191, 36, 0.55);
+  box-shadow: var(--shadow-sm), 0 0 16px -6px rgba(251, 191, 36, 0.30), var(--specular-highlight);
+}
+
+.glass-metric-pill.pill-primary {
+  border-top-color: rgba(129, 140, 248, 0.55);
+  box-shadow: var(--shadow-sm), 0 0 16px -6px rgba(129, 140, 248, 0.30), var(--specular-highlight);
+}
+
 
 
 

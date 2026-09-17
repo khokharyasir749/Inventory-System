@@ -22,12 +22,12 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="styles/base.css">
-  <link rel="stylesheet" href="styles/layout.css">
-  <link rel="stylesheet" href="styles/components.css">
-  <link rel="stylesheet" href="styles/pos.css">
-  <link rel="stylesheet" href="styles/print.css">
+  <!-- Stylesheets (cache-busted: glass_4 — ambient orbs + true glass surfaces) -->
+  <link rel="stylesheet" href="styles/base.css?v=glass_4">
+  <link rel="stylesheet" href="styles/layout.css?v=glass_4">
+  <link rel="stylesheet" href="styles/components.css?v=glass_4">
+  <link rel="stylesheet" href="styles/pos.css?v=glass_4">
+  <link rel="stylesheet" href="styles/print.css?v=glass_4">
 
   <!-- Instant Theme Execution (Zero-Flicker) -->
   <script>
@@ -46,6 +46,61 @@
 </head>
 
 <body>
+
+  <!-- ── Ambient Light Orbs — ALWAYS behind everything, makes glass visible ── -->
+  <div id="ambient-orbs" aria-hidden="true" style="
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  ">
+    <!-- Indigo/Violet orb — top-left -->
+    <div style="
+      position: absolute; top: -10%; left: -5%;
+      width: 60vw; height: 65vh;
+      background: radial-gradient(ellipse at center, rgba(99,102,241,0.36) 0%, transparent 70%);
+      filter: blur(40px); transform-origin: center;
+      animation: orbDrift1 18s ease-in-out infinite alternate;
+    "></div>
+    <!-- Cyan/Sky orb — top-right -->
+    <div style="
+      position: absolute; top: -8%; right: -8%;
+      width: 55vw; height: 60vh;
+      background: radial-gradient(ellipse at center, rgba(6,182,212,0.26) 0%, transparent 70%);
+      filter: blur(50px);
+      animation: orbDrift2 22s ease-in-out infinite alternate;
+    "></div>
+    <!-- Violet/Purple orb — bottom center -->
+    <div style="
+      position: absolute; bottom: -15%; left: 20%;
+      width: 60vw; height: 60vh;
+      background: radial-gradient(ellipse at center, rgba(168,85,247,0.28) 0%, transparent 70%);
+      filter: blur(45px);
+      animation: orbDrift3 26s ease-in-out infinite alternate;
+    "></div>
+    <!-- Emerald micro-orb — mid-right accent -->
+    <div style="
+      position: absolute; top: 35%; right: 10%;
+      width: 30vw; height: 35vh;
+      background: radial-gradient(ellipse at center, rgba(52,211,153,0.16) 0%, transparent 70%);
+      filter: blur(35px);
+      animation: orbDrift2 30s ease-in-out infinite alternate-reverse;
+    "></div>
+  </div>
+
+  <style>
+    @keyframes orbDrift1 {
+      0%   { transform: translate(0,   0)   scale(1); }
+      100% { transform: translate(4%,  6%)  scale(1.08); }
+    }
+    @keyframes orbDrift2 {
+      0%   { transform: translate(0,   0)   scale(1); }
+      100% { transform: translate(-5%, 4%)  scale(1.06); }
+    }
+    @keyframes orbDrift3 {
+      0%   { transform: translate(0,   0)   scale(1); }
+      100% { transform: translate(3%,  -5%) scale(1.10); }
+    }
+    /* Hide orbs in light mode — they're too strong on white */
+    [data-theme="light"] #ambient-orbs { opacity: 0.45; }
+  </style>
 
   <!-- Security PIN Lock Screen Overlay -->
   <div id="pin-lock-screen"

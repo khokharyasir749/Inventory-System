@@ -95,23 +95,17 @@ async function renderActiveAdvTab(container) {
 
     outlet.innerHTML = `
       <div class="grid-3" style="margin-bottom:var(--space-5)">
-        <div class="kpi-card" style="border-color:var(--danger)">
-          <div class="kpi-body">
-            <div class="kpi-value text-red">${alerts.filter(a => a.diffDays <= 7).length}</div>
-            <div class="kpi-label">Critical (Expiry &le; 7 Days)</div>
-          </div>
+        <div class="glass-metric-pill pill-danger">
+          <div class="kpi-value text-red" style="font-size:2rem;">${alerts.filter(a => a.diffDays <= 7).length}</div>
+          <div class="kpi-label" style="color:var(--danger)">Critical — Expiry ≤ 7 Days</div>
         </div>
-        <div class="kpi-card" style="border-color:var(--alert)">
-          <div class="kpi-body">
-            <div class="kpi-value text-amber">${alerts.filter(a => a.diffDays > 7 && a.diffDays <= 30).length}</div>
-            <div class="kpi-label">Warning (Expiry &le; 30 Days)</div>
-          </div>
+        <div class="glass-metric-pill pill-warning">
+          <div class="kpi-value text-amber" style="font-size:2rem;">${alerts.filter(a => a.diffDays > 7 && a.diffDays <= 30).length}</div>
+          <div class="kpi-label" style="color:var(--alert)">Warning — Expiry ≤ 30 Days</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-body">
-            <div class="kpi-value text-primary">${alerts.filter(a => a.diffDays > 30 && a.diffDays <= 90).length}</div>
-            <div class="kpi-label">Attention (Expiry &le; 90 Days)</div>
-          </div>
+        <div class="glass-metric-pill pill-primary">
+          <div class="kpi-value text-primary" style="font-size:2rem;">${alerts.filter(a => a.diffDays > 30 && a.diffDays <= 90).length}</div>
+          <div class="kpi-label">Attention — Expiry ≤ 90 Days</div>
         </div>
       </div>
 

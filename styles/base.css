@@ -122,58 +122,66 @@
   /* Layout Constants */
   --sidebar-width: 240px;
   --topbar-height: 62px;
+
+  /* ── CRITICAL: backdrop-filter safe value (do not use var() for blur fn) */
+  --glass-blur-value: 22px;
 }
 
 /* ── Dark Cosmic Glass Token Overrides ── */
 [data-theme="dark"] {
-  --canvas:             #060913;
-  --surface:            rgba(17, 24, 39, 0.68);
-  --surface-raised:     rgba(30, 41, 59, 0.70);
-  --surface-hover:      rgba(45, 59, 82, 0.65);
-  --surface-glass:      rgba(15, 23, 42, 0.65);
-  --glass-blur:         20px;
-  --border:             rgba(255, 255, 255, 0.12);
+  /* Deep obsidian canvas — pure void for maximum glass contrast */
+  --canvas:             #04070F;
+  --surface:            rgba(15, 22, 40, 0.42);
+  --surface-raised:     rgba(22, 32, 56, 0.48);
+  --surface-hover:      rgba(30, 44, 72, 0.55);
+  --surface-glass:      rgba(12, 18, 36, 0.40);
+  --glass-blur:         22px;
+  --glass-blur-value:   22px;
+  --border:             rgba(255, 255, 255, 0.13);
   --border-soft:        rgba(255, 255, 255, 0.07);
-  --border-strong:      rgba(255, 255, 255, 0.22);
-  --specular-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  --shadow-glass:       0 8px 32px 0 rgba(0, 0, 0, 0.40);
+  --border-strong:      rgba(255, 255, 255, 0.25);
+  --specular-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  --shadow-glass:       0 8px 32px 0 rgba(0, 0, 0, 0.60);
 
-  --primary:        #6366F1;
-  --primary-hover:  #818CF8;
-  --primary-dark:   #4F46E5;
-  --primary-light:  rgba(99, 102, 241, 0.16);
-  --primary-muted:  rgba(99, 102, 241, 0.10);
-  --primary-glow:   rgba(99, 102, 241, 0.35);
+  --primary:        #818CF8;
+  --primary-hover:  #A5B4FC;
+  --primary-dark:   #6366F1;
+  --primary-light:  rgba(129, 140, 248, 0.18);
+  --primary-muted:  rgba(129, 140, 248, 0.10);
+  --primary-glow:   rgba(129, 140, 248, 0.45);
   --accent-sapphire: #38BDF8;
-  --accent-sapphire-glow: rgba(56, 189, 248, 0.35);
+  --accent-sapphire-glow: rgba(56, 189, 248, 0.40);
+  --accent-violet:  #C084FC;
+  --accent-emerald: #34D399;
+  --accent-emerald-glow: rgba(52, 211, 153, 0.40);
 
-  --zeploy-midnight: #040710;
-  --zeploy-navy:     rgba(11, 17, 32, 0.75);
-  --zeploy-header:   rgba(17, 24, 39, 0.80);
-  --zeploy-accent:   #6366F1;
+  --zeploy-midnight: #020508;
+  --zeploy-navy:     rgba(6, 10, 22, 0.80);
+  --zeploy-header:   rgba(10, 16, 32, 0.80);
+  --zeploy-accent:   #818CF8;
 
-  --text-primary:   #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted:     #64748B;
-  --text-inverse:   #060913;
+  --text-primary:   #F1F5FF;
+  --text-secondary: #8B9FC4;
+  --text-muted:     #4E6282;
+  --text-inverse:   #04070F;
 
-  --stock-in-bg:    rgba(16, 185, 129, 0.16);
-  --sale-bg:        rgba(99, 102, 241, 0.16);
-  --alert-bg:       rgba(245, 158, 11, 0.16);
-  --danger-bg:      rgba(239, 68, 68, 0.16);
-  --spoilage-bg:    rgba(139, 92, 246, 0.16);
-  --success-bg:     rgba(16, 185, 129, 0.16);
-  --warning-bg:     rgba(245, 158, 11, 0.16);
-  --info-bg:        rgba(14, 165, 233, 0.16);
-  --teal-bg:        rgba(20, 184, 166, 0.16);
+  --stock-in-bg:    rgba(52, 211, 153, 0.16);
+  --sale-bg:        rgba(129, 140, 248, 0.16);
+  --alert-bg:       rgba(251, 191, 36, 0.16);
+  --danger-bg:      rgba(248, 113, 113, 0.16);
+  --spoilage-bg:    rgba(192, 132, 252, 0.16);
+  --success-bg:     rgba(52, 211, 153, 0.16);
+  --warning-bg:     rgba(251, 191, 36, 0.16);
+  --info-bg:        rgba(56, 189, 248, 0.16);
+  --teal-bg:        rgba(45, 212, 191, 0.16);
 
-  --shadow-xs:  0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --shadow-sm:  0 2px 8px 0 rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  --shadow-md:  0 6px 18px 0 rgba(0, 0, 0, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  --shadow-lg:  0 8px 32px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-  --shadow-xl:  0 20px 48px 0 rgba(0, 0, 0, 0.70), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  --shadow-2xl: 0 25px 65px -10px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  --shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.28);
+  --shadow-xs:  0 1px 3px 0 rgba(0, 0, 0, 0.65);
+  --shadow-sm:  0 2px 10px 0 rgba(0, 0, 0, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-md:  0 6px 20px 0 rgba(0, 0, 0, 0.60), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --shadow-lg:  0 12px 40px 0 rgba(0, 0, 0, 0.70), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  --shadow-xl:  0 20px 60px 0 rgba(0, 0, 0, 0.80), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  --shadow-2xl: 0 30px 80px -8px rgba(0, 0, 0, 0.90), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  --shadow-focus: 0 0 0 3px rgba(129, 140, 248, 0.35);
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
@@ -195,10 +203,11 @@ body {
   line-height: 1.55;
   color: var(--text-primary);
   background-color: var(--canvas);
+  /* Vivid ambient gradient orbs — large and strong so glass has something to blur through */
   background-image:
-    radial-gradient(ellipse 900px 500px at 10% 12%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 800px 450px at 90% 15%, rgba(56, 189, 248, 0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 700px 400px at 50% 85%, rgba(139, 92, 246, 0.05) 0%, transparent 60%);
+    radial-gradient(ellipse 1000px 700px at 8% 15%,  rgba(99, 102, 241, 0.14) 0%, transparent 65%),
+    radial-gradient(ellipse  900px 600px at 92% 12%, rgba(56, 189, 248, 0.10) 0%, transparent 65%),
+    radial-gradient(ellipse  800px 600px at 50% 88%, rgba(168, 85, 247, 0.09) 0%, transparent 65%);
   background-attachment: fixed;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -207,11 +216,14 @@ body {
 }
 
 [data-theme="dark"] body {
+  /* Dramatically stronger orbs in dark mode — glass MUST have vivid colors bleeding through */
   background-image:
-    radial-gradient(ellipse 950px 550px at 8% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
-    radial-gradient(ellipse 850px 500px at 92% 14%, rgba(56, 189, 248, 0.11) 0%, transparent 60%),
-    radial-gradient(ellipse 750px 450px at 50% 82%, rgba(139, 92, 246, 0.09) 0%, transparent 60%);
+    radial-gradient(ellipse 1100px 800px at  8% 12%,  rgba(99, 102, 241, 0.38) 0%, transparent 65%),
+    radial-gradient(ellipse  900px 700px at 92% 10%,  rgba(6, 182, 212, 0.28)  0%, transparent 65%),
+    radial-gradient(ellipse  800px 700px at 50% 85%,  rgba(168, 85, 247, 0.30) 0%, transparent 65%),
+    radial-gradient(ellipse  600px 500px at 75% 45%,  rgba(52, 211, 153, 0.14) 0%, transparent 60%);
 }
+
 
 img, svg {
   display: block;
