@@ -1,10 +1,11 @@
 /**
- * service-worker.js — PWA Service Worker
- * Offline asset caching and versioned cache strategy.
+ * service-worker.js — Enterprise PWA Service Worker (Hardened Offline Resilience)
+ * Offline-first asset caching, atomic cache cleanup, and resilient fallbacks.
  */
 
-const CACHE_NAME = 'inventory-pos-v4.0.0';
-const ASSETS = [
+const CACHE_NAME = 'inventory-pos-v5.0.0';
+
+const LOCAL_ASSETS = [
   './',
   './index.html',
   './manifest.json',
@@ -36,29 +37,42 @@ const ASSETS = [
   './js/pages/showcase.js',
   './js/pages/settings.js',
   './js/pages/business_value.js',
-  './js/pages/proposal.js',
-  'https://unpkg.com/dexie@3.2.7/dist/dexie.js',
-  'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap'
+  './js/pages/proposal.js'
 ];
 
-// Install event — pre-cache all core files
+const EXTERNAL_ASSETS = [
+  'https://unpkg.com/dexie@3.2.7/dist/dexie.js',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;600;700&display=swap'
+];
+
+// Install event — pre-cache all local assets reliably
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Pre-caching static assets...');
-      return cache.addAll(ASSETS);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      console.log('[SW] Pre-caching core local assets...');
+      // Cache local assets strictly
+      await cache.addAll(LOCAL_ASSETS);
+
+      // Cache external assets gracefully (do not fail if offline during install)
+      for (const url of EXTERNAL_ASSETS) {
+        try {
+          await cache.add(url);
+        } catch (e) {
+          console.warn('[SW] Non-critical external asset skipped:', url);
+        }
+      }
     }).then(() => self.skipWaiting())
   );
 });
 
-// Activate event — clean up old caches
+// Activate event — clean up old caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', key);
+            console.log('[SW] Purging deprecated cache:', key);
             return caches.delete(key);
           }
         })
@@ -67,31 +81,31 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event — serve from cache, fallback to network
+// Fetch event — Stale-While-Revalidate with bulletproof offline fallbacks
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch fresh in background to update cache for next time (Stale-While-Revalidate)
+        // Fetch in background to update cache for next time (Stale-While-Revalidate)
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, networkResponse);
             });
           }
-        }).catch(() => { /* ignore offline fetch errors */ });
+        }).catch(() => { /* offline: ignore network error */ });
 
         return cachedResponse;
       }
 
       return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+        if (!networkResponse || networkResponse.status !== 200) {
           return networkResponse;
         }
 
+        // Cache newly requested assets
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseToCache);
@@ -99,9 +113,10 @@ self.addEventListener('fetch', (event) => {
 
         return networkResponse;
       }).catch(() => {
-        // If offline and request is HTML, return index page
-        if (event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('./index.html');
+        // If offline and requesting navigation HTML, return cached index.html
+        const accept = event.request.headers.get('accept');
+        if (accept && accept.includes('text/html')) {
+          return caches.match('./index.html') || caches.match('./');
         }
       });
     })

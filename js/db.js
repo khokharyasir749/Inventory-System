@@ -892,3 +892,136 @@ async function generate30DaysDemoTransactions() {
 async function initDB() {
   // Seeding is initiated by the UI template picker when items count is zero.
 }
+
+// ── Bulletproof Backup & Disaster Recovery Engine ─────────────
+const DB_TABLE_NAMES = [
+  'items', 'recipes', 'logs', 'sales', 'sale_items', 'settings',
+  'customers', 'customer_transactions', 'cash_sessions', 'suppliers',
+  'purchase_orders', 'purchase_order_items', 'inventory_counts',
+  'inventory_count_items', 'stock_adjustments', 'inventory_transfers',
+  'inventory_transfer_items', 'batches'
+];
+
+async function exportDatabaseBackup() {
+  const storeName = await getSetting('store_name', 'Retail Store');
+  const backup = {
+    app: 'InventoryPOS-Enterprise',
+    version: '5.0',
+    exported_at: new Date().toISOString(),
+    store_name: storeName,
+    tables: {}
+  };
+
+  for (const tableName of DB_TABLE_NAMES) {
+    if (db[tableName]) {
+      backup.tables[tableName] = await db[tableName].toArray();
+    }
+  }
+
+  const jsonStr = JSON.stringify(backup, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  a.href = url;
+  a.download = `InventoryPOS-Backup-${dateStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  return backup;
+}
+
+async function parseBackupFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!data || !data.tables) {
+          throw new Error('Invalid backup format: Missing tables data.');
+        }
+        resolve(data);
+      } catch (err) {
+        reject(new Error('Corrupted or invalid JSON file: ' + err.message));
+      }
+    };
+    reader.onerror = () => reject(new Error('Failed to read backup file.'));
+    reader.readAsText(file);
+  });
+}
+
+async function restoreDatabaseFromBackup(backupData) {
+  if (!backupData || !backupData.tables) {
+    throw new Error('Invalid backup data payload.');
+  }
+
+  const tablesToRestore = DB_TABLE_NAMES.filter(name => db[name] && Array.isArray(backupData.tables[name]));
+  
+  await db.transaction('rw', tablesToRestore.map(name => db[name]), async () => {
+    for (const tableName of tablesToRestore) {
+      await db[tableName].clear();
+      const records = backupData.tables[tableName];
+      if (records && records.length > 0) {
+        await db[tableName].bulkAdd(records);
+      }
+    }
+  });
+
+  return true;
+}
+
+// ── Database Health Diagnostics & Cleaner ─────────────────────
+async function getStorageUsageEstimate() {
+  if (navigator.storage && navigator.storage.estimate) {
+    try {
+      const estimate = await navigator.storage.estimate();
+      const usedBytes = estimate.usage || 0;
+      const quotaBytes = estimate.quota || 0;
+      const usedMB = (usedBytes / (1024 * 1024)).toFixed(2);
+      const quotaMB = (quotaBytes / (1024 * 1024)).toFixed(0);
+      const pct = quotaBytes > 0 ? ((usedBytes / quotaBytes) * 100).toFixed(1) : 0;
+      return { usedMB, quotaMB, pct, usedBytes, quotaBytes };
+    } catch (e) {
+      return { usedMB: '0', quotaMB: 'N/A', pct: '0' };
+    }
+  }
+  return { usedMB: '0', quotaMB: 'N/A', pct: '0' };
+}
+
+async function cleanOrphanedRecords() {
+  let cleanedLogs = 0;
+  let cleanedSaleItems = 0;
+  let cleanedRecipes = 0;
+
+  const itemIds = new Set((await db.items.toArray()).map(it => it.id));
+  const saleIds = new Set((await db.sales.toArray()).map(s => s.id));
+
+  // Find logs referencing non-existent items
+  const allLogs = await db.logs.toArray();
+  const orphanedLogIds = allLogs.filter(l => l.item_id && !itemIds.has(l.item_id)).map(l => l.id);
+  if (orphanedLogIds.length > 0) {
+    await db.logs.bulkDelete(orphanedLogIds);
+    cleanedLogs = orphanedLogIds.length;
+  }
+
+  // Find sale_items referencing non-existent sales
+  const allSaleItems = await db.sale_items.toArray();
+  const orphanedSaleItemIds = allSaleItems.filter(si => si.sale_id && !saleIds.has(si.sale_id)).map(si => si.id);
+  if (orphanedSaleItemIds.length > 0) {
+    await db.sale_items.bulkDelete(orphanedSaleItemIds);
+    cleanedSaleItems = orphanedSaleItemIds.length;
+  }
+
+  // Find recipes referencing non-existent composite or ingredient items
+  const allRecipes = await db.recipes.toArray();
+  const orphanedRecipeIds = allRecipes.filter(r => !itemIds.has(r.composite_item_id) || !itemIds.has(r.ingredient_item_id)).map(r => r.id);
+  if (orphanedRecipeIds.length > 0) {
+    await db.recipes.bulkDelete(orphanedRecipeIds);
+    cleanedRecipes = orphanedRecipeIds.length;
+  }
+
+  return { cleanedLogs, cleanedSaleItems, cleanedRecipes, totalCleaned: cleanedLogs + cleanedSaleItems + cleanedRecipes };
+}
+
