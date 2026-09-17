@@ -178,7 +178,10 @@
 /* ── Cart Panel ────────────────────────────────────────────── */
 .pos-cart-panel {
   background: var(--surface);
-  border-left: 1px solid var(--border-soft);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--specular-highlight);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -661,7 +664,10 @@
   gap: var(--space-2);
   padding: 6px 12px;
   background: var(--surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm), var(--specular-highlight);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-3);
 }

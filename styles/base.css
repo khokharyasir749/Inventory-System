@@ -19,15 +19,18 @@
   --slate-900: #0F172A;
   --slate-950: #020617;
 
-  /* Surfaces & Canvas (Ultra-crisp Studio Aesthetic Light Theme) */
-  --canvas:         #F8FAFC;
-  --surface:        #FFFFFF;
-  --surface-raised: #F1F5F9;
-  --surface-hover:  #F8FAFC;
-  --surface-glass:  rgba(255, 255, 255, 0.88);
-  --border:         #E2E8F0;
-  --border-soft:    #F1F5F9;
-  --border-strong:  #CBD5E1;
+  /* Surfaces & Canvas (Frosted Ice-Glass Light Theme) */
+  --canvas:             #F4F7FB;
+  --surface:            rgba(255, 255, 255, 0.78);
+  --surface-raised:     rgba(241, 245, 249, 0.85);
+  --surface-hover:      rgba(255, 255, 255, 0.94);
+  --surface-glass:      rgba(255, 255, 255, 0.72);
+  --glass-blur:         18px;
+  --border:             rgba(255, 255, 255, 0.80);
+  --border-soft:        rgba(226, 232, 240, 0.70);
+  --border-strong:      rgba(255, 255, 255, 0.95);
+  --specular-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.90);
+  --shadow-glass:       0 8px 32px 0 rgba(15, 23, 42, 0.08);
 
   /* Radiant Micro-Accents (Electric Indigo & Luminous Sapphire SaaS Palette) */
   --primary:        #6366F1;
@@ -100,13 +103,13 @@
   --radius-2xl: 24px;
   --radius-full: 9999px;
 
-  /* Shadows — Multi-layer ambient diffuse shadows */
+  /* Shadows — Multi-layer ambient diffuse shadows with specular highlight */
   --shadow-xs:  0 1px 2px 0 rgba(15, 23, 42, 0.04);
-  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --shadow-md:  0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
-  --shadow-lg:  0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.04);
-  --shadow-xl:  0 20px 30px -6px rgba(15, 23, 42, 0.08), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgba(15, 23, 42, 0.16);
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --shadow-md:  0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.90);
+  --shadow-lg:  0 8px 24px -4px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --shadow-xl:  0 20px 32px -6px rgba(15, 23, 42, 0.10), 0 8px 16px -4px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --shadow-2xl: 0 25px 50px -12px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.95);
   --shadow-glow: 0 0 24px -2px var(--primary-glow);
   --shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.20);
 
@@ -117,20 +120,23 @@
   --spring:            320ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Layout Constants */
-  --sidebar-width: 236px;
+  --sidebar-width: 240px;
   --topbar-height: 62px;
 }
 
-/* ── Dark Mode Token Overrides (Raycast / Linear Obsidian Canvas) ── */
+/* ── Dark Cosmic Glass Token Overrides ── */
 [data-theme="dark"] {
-  --canvas:         #080C14;
-  --surface:        #111827;
-  --surface-raised: #161F30;
-  --surface-hover:  #1C263C;
-  --surface-glass:  rgba(17, 24, 39, 0.82);
-  --border:         #1F293D;
-  --border-soft:    rgba(255, 255, 255, 0.06);
-  --border-strong:  rgba(255, 255, 255, 0.12);
+  --canvas:             #060913;
+  --surface:            rgba(17, 24, 39, 0.68);
+  --surface-raised:     rgba(30, 41, 59, 0.70);
+  --surface-hover:      rgba(45, 59, 82, 0.65);
+  --surface-glass:      rgba(15, 23, 42, 0.65);
+  --glass-blur:         20px;
+  --border:             rgba(255, 255, 255, 0.12);
+  --border-soft:        rgba(255, 255, 255, 0.07);
+  --border-strong:      rgba(255, 255, 255, 0.22);
+  --specular-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  --shadow-glass:       0 8px 32px 0 rgba(0, 0, 0, 0.40);
 
   --primary:        #6366F1;
   --primary-hover:  #818CF8;
@@ -141,15 +147,15 @@
   --accent-sapphire: #38BDF8;
   --accent-sapphire-glow: rgba(56, 189, 248, 0.35);
 
-  --zeploy-midnight: #06090F;
-  --zeploy-navy:     #0B0F17;
-  --zeploy-header:   #111827;
+  --zeploy-midnight: #040710;
+  --zeploy-navy:     rgba(11, 17, 32, 0.75);
+  --zeploy-header:   rgba(17, 24, 39, 0.80);
   --zeploy-accent:   #6366F1;
 
   --text-primary:   #F8FAFC;
   --text-secondary: #94A3B8;
   --text-muted:     #64748B;
-  --text-inverse:   #080C14;
+  --text-inverse:   #060913;
 
   --stock-in-bg:    rgba(16, 185, 129, 0.16);
   --sale-bg:        rgba(99, 102, 241, 0.16);
@@ -162,11 +168,11 @@
   --teal-bg:        rgba(20, 184, 166, 0.16);
 
   --shadow-xs:  0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --shadow-sm:  0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  --shadow-md:  0 4px 14px 0 rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.07);
-  --shadow-lg:  0 12px 28px 0 rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
-  --shadow-xl:  0 20px 40px 0 rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.10);
-  --shadow-2xl: 0 25px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.14);
+  --shadow-sm:  0 2px 8px 0 rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-md:  0 6px 18px 0 rgba(0, 0, 0, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --shadow-lg:  0 8px 32px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  --shadow-xl:  0 20px 48px 0 rgba(0, 0, 0, 0.70), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  --shadow-2xl: 0 25px 65px -10px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.22);
   --shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.28);
 }
 
@@ -188,11 +194,23 @@ body {
   font-size: 0.9375rem;
   line-height: 1.55;
   color: var(--text-primary);
-  background: var(--canvas);
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(ellipse 900px 500px at 10% 12%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 800px 450px at 90% 15%, rgba(56, 189, 248, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 700px 400px at 50% 85%, rgba(139, 92, 246, 0.05) 0%, transparent 60%);
+  background-attachment: fixed;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse 950px 550px at 8% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 850px 500px at 92% 14%, rgba(56, 189, 248, 0.11) 0%, transparent 60%),
+    radial-gradient(ellipse 750px 450px at 50% 82%, rgba(139, 92, 246, 0.09) 0%, transparent 60%);
 }
 
 img, svg {

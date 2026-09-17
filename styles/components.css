@@ -377,10 +377,12 @@ input[type="range"]::-webkit-slider-thumb {
    ══════════════════════════════════════════════════════════════ */
 .kpi-card {
   background: var(--surface);
-  border: 1px solid var(--border-soft);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), var(--specular-highlight);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -475,10 +477,12 @@ input[type="range"]::-webkit-slider-thumb {
 
 .product-card {
   background: var(--surface);
-  border: 1px solid var(--border-soft);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), var(--specular-highlight);
   cursor: pointer;
   transition: border-color var(--transition-fast), box-shadow var(--transition-normal), transform var(--transition-normal);
   position: relative;
@@ -637,10 +641,12 @@ input[type="range"]::-webkit-slider-thumb {
    ══════════════════════════════════════════════════════════════ */
 .table-wrap {
   background: var(--surface);
-  border: 1px solid var(--border-soft);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), var(--specular-highlight);
 }
 
 .table-scroll {
