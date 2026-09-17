@@ -418,8 +418,38 @@ function getAudioContext() {
   return _audioCtx;
 }
 
+// ── Screen-Edge Scan Flash Visual Feedback ────────────────────
+/**
+ * Flashes a coloured screen-edge overlay for ~150 ms to give
+ * instant visual confirmation of barcode scans / transactions.
+ * @param {'success'|'error'} type
+ */
+function triggerScanFlash(type = 'success') {
+  let overlay = document.getElementById('scan-flash-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'scan-flash-overlay';
+    document.body.appendChild(overlay);
+  }
+
+  // Remove error class to reset to default emerald style
+  overlay.classList.remove('error', 'active');
+
+  if (type === 'error') overlay.classList.add('error');
+
+  // Force reflow so transition fires every time
+  void overlay.offsetWidth;
+  overlay.classList.add('active');
+
+  clearTimeout(overlay._flashTimer);
+  overlay._flashTimer = setTimeout(() => {
+    overlay.classList.remove('active');
+  }, 150);
+}
+
 function playBeepSound(type = 'success') {
   try {
+
     const ctx = getAudioContext();
     if (!ctx) return;
 
@@ -437,6 +467,7 @@ function playBeepSound(type = 'success') {
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
       osc.start(now);
       osc.stop(now + 0.08);
+      triggerScanFlash('success');
     } else if (type === 'error') {
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(280, now);
@@ -444,6 +475,7 @@ function playBeepSound(type = 'success') {
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
       osc.start(now);
       osc.stop(now + 0.18);
+      triggerScanFlash('error');
     } else {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(880, now);

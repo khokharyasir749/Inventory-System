@@ -1145,6 +1145,7 @@ function openMultiTenderModal(container) {
   `;
 
   openModal({
+    id: 'pos-pay-modal',
     title: `Complete Settlement · ${fmt(grandTotal)}`,
     bodyHTML,
     footerHTML: `
@@ -1496,20 +1497,21 @@ function showReceiptModal(cartItems, result, storeInfo, timestamp = null) {
   const bodyHTML = `
     <!-- Paper Format Selector -->
     <div style="display:flex;justify-content:center;margin-bottom:var(--space-3)">
-      <div style="display:inline-flex;background:var(--surface-raised);padding:3px;border-radius:var(--radius-md);border:1px solid var(--border)">
-        <button type="button" class="btn btn-ghost btn-sm ${activePaperSize === '80mm' ? 'active' : ''}" id="paper-opt-80" style="padding:4px 12px;font-size:0.75rem;">
+      <div class="receipt-paper-toggle">
+        <button type="button" class="btn btn-ghost btn-sm ${activePaperSize === '80mm' ? 'active' : ''}" id="paper-opt-80" style="padding:4px 14px;font-size:0.75rem;">
           🖨️ 80mm Standard
         </button>
-        <button type="button" class="btn btn-ghost btn-sm ${activePaperSize === '58mm' ? 'active' : ''}" id="paper-opt-58" style="padding:4px 12px;font-size:0.75rem;">
+        <button type="button" class="btn btn-ghost btn-sm ${activePaperSize === '58mm' ? 'active' : ''}" id="paper-opt-58" style="padding:4px 14px;font-size:0.75rem;">
           🧾 58mm Compact
         </button>
       </div>
     </div>
 
-    <div id="receipt-preview-wrapper" style="overflow-y:auto;max-height:60vh;padding:4px;">
+    <div id="receipt-preview-wrapper">
       ${getReceiptHTML(false)}
     </div>
   `;
+
 
   const footerHTML = `
     <button class="btn btn-ghost" onclick="closeModal()">Close</button>
@@ -1519,6 +1521,7 @@ function showReceiptModal(cartItems, result, storeInfo, timestamp = null) {
   `;
 
   openModal({
+    id: 'receipt-modal',
     title: `Transaction Completed · ${receiptNo}`,
     bodyHTML,
     footerHTML,

@@ -14,15 +14,17 @@ let activeModal = null;
  * @param {Function} [opts.onOpen]     — called after modal is in DOM
  * @param {Function} [opts.onClose]    — called when modal closes
  */
-function openModal({ title, bodyHTML, footerHTML = '', size = '', onOpen, onClose }) {
+function openModal({ id = '', title, bodyHTML, footerHTML = '', size = '', onOpen, onClose }) {
   closeModal(); // Ensure no stale modals
 
   const backdrop = document.createElement('div');
   backdrop.className = 'modal-backdrop';
   backdrop.id = 'active-modal-backdrop';
 
+  const modalId = id || 'active-modal';
+
   backdrop.innerHTML = `
-    <div class="modal ${size} animate-scale-in" id="active-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal ${size} animate-scale-in" id="${modalId}" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-header">
         <h2 class="modal-title" id="modal-title">${title}</h2>
         <button class="modal-close" id="modal-close-btn" aria-label="Close modal">
