@@ -49,10 +49,10 @@ async function renderInventory(container) {
     <div class="filter-bar" style="display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center;margin-bottom:var(--space-4);background:var(--surface);padding:var(--space-4);border-radius:var(--radius-lg);border:1px solid var(--border);">
       <!-- Search Input with clear icon -->
       <div class="filter-search-wrap" style="flex:1;min-width:240px;position:relative;">
-        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;">
-          ${icon('icon-search')}
+        <span class="filter-search-icon" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);pointer-events:none;">
+          ${icon('icon-search', 'filter-search-icon')}
         </span>
-        <input type="text" class="form-input" id="inv-search" placeholder="Search by name, SKU, barcode, category… (or scan barcode)" value="${inventorySearch}" style="padding-left:36px;font-size:0.875rem;">
+        <input type="text" class="form-input filter-search" id="inv-search" placeholder="Search by name, SKU, barcode, category… (or scan barcode)" value="${inventorySearch}" style="padding-left:36px;font-size:0.875rem;">
       </div>
 
       <!-- Stock Status Filters (Threshold Alert Pills) -->

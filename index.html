@@ -22,12 +22,12 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
 
-  <!-- Stylesheets (v=pure_neutral_final) -->
-  <link rel="stylesheet" href="styles/base.css?v=pure_neutral_final">
-  <link rel="stylesheet" href="styles/layout.css?v=pure_neutral_final">
-  <link rel="stylesheet" href="styles/components.css?v=pure_neutral_final">
-  <link rel="stylesheet" href="styles/pos.css?v=pure_neutral_final">
-  <link rel="stylesheet" href="styles/print.css?v=pure_neutral_final">
+  <!-- Stylesheets (v=pure_neutral_fix1) -->
+  <link rel="stylesheet" href="styles/base.css?v=pure_neutral_fix1">
+  <link rel="stylesheet" href="styles/layout.css?v=pure_neutral_fix1">
+  <link rel="stylesheet" href="styles/components.css?v=pure_neutral_fix1">
+  <link rel="stylesheet" href="styles/pos.css?v=pure_neutral_fix1">
+  <link rel="stylesheet" href="styles/print.css?v=pure_neutral_fix1">
 
   <!-- Instant Theme Execution (Zero-Flicker) -->
   <script>
@@ -1250,7 +1250,6 @@
             document.documentElement.setAttribute('data-theme', now);
             try { localStorage.setItem('pos_theme', now); } catch (e) { }
             syncThemeIcon(now);
-            toast.info('Theme Toggled', `Switched to ${now} mode.`);
           });
 
           const backupBtn = document.getElementById('topbar-backup-btn');

@@ -3,7 +3,7 @@
  * Offline-first asset caching, atomic cache cleanup, and resilient fallbacks.
  */
 
-const CACHE_NAME = 'inventory-pos-pure_neutral_final';
+const CACHE_NAME = 'inventory-pos-pure_neutral_fix1';
 
 const LOCAL_ASSETS = [
   './',
