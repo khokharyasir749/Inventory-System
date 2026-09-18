@@ -85,19 +85,28 @@
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  transition: border-color var(--transition-fast), transform var(--transition-fast);
+  transition:
+    border-color var(--transition-normal),
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
   user-select: none;
   box-shadow: none;
 }
 
 .pos-product-card:hover {
   border-color: var(--border-strong);
-  box-shadow: none;
-  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .pos-product-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 .pos-product-card:active {
-  transform: scale(0.98);
+  transform: scale(0.97) translateY(1px);
+  transition: transform var(--duration-instant) var(--ease-out);
 }
 
 .pos-product-card.out-of-stock {
@@ -999,8 +1008,14 @@
   transform: none;
 }
 
+.tender-tab-btn:active {
+  transform: scale(0.96) translateY(1px);
+  transition: transform var(--duration-instant) var(--ease-out);
+}
+
 .denom-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.95) translateY(1px);
+  transition: transform var(--duration-instant) var(--ease-out);
   box-shadow: none;
 }
 
@@ -1166,4 +1181,19 @@
 /* Error flash — red edges */
 #scan-flash-overlay.error {
   box-shadow: inset 0 0 0 2px var(--danger);
+}
+
+/* ── Cart Item Micro-Interactions ───────────────────────────── */
+.cart-item {
+  animation: cartItemEnter var(--duration-normal) var(--ease-spring) both;
+  transition: background var(--transition-fast);
+}
+
+.cart-item:hover {
+  background: var(--surface-hover) !important;
+}
+
+.cart-qty-btn:active {
+  transform: scale(0.92) translateY(1px) !important;
+  transition: transform var(--duration-instant) var(--ease-out) !important;
 }

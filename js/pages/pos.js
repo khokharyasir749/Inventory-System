@@ -664,7 +664,13 @@ function renderCart(container) {
   if (!itemsEl) return;
 
   const items = Cart.getItems();
-  countEl.textContent = Cart.getItemCount();
+  const newCount = Cart.getItemCount();
+  if (countEl.textContent !== String(newCount)) {
+    countEl.textContent = newCount;
+    countEl.classList.remove('cart-badge-bounce');
+    void countEl.offsetWidth;
+    countEl.classList.add('cart-badge-bounce');
+  }
 
   const quickCashBtn = container.querySelector('#btn-quick-cash');
   const checkoutBtn = container.querySelector('#checkout-btn');

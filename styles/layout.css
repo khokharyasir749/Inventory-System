@@ -473,7 +473,7 @@
 
 #search-results.visible {
   display: block;
-  animation: scaleIn var(--transition-fast) ease both;
+  animation: dropdownUnfold 140ms var(--ease-spring) both;
 }
 
 .search-result-item {

@@ -22,10 +22,13 @@ function handleRoute() {
     el.classList.toggle('active', el.dataset.route === hash);
   });
 
-  // Render the page
+  // Render the page with crisp mechanical entrance animation
   const content = document.getElementById('page-content');
   if (content && renderFn) {
     content.innerHTML = '';
+    content.classList.remove('page-enter');
+    void content.offsetWidth;
+    content.classList.add('page-enter');
     currentPage = hash;
     renderFn(content);
   }
