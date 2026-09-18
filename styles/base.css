@@ -330,8 +330,8 @@ h1, h2, h3, h4, h5 {
 h1 { font-size: 1.625rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.025em; }
 h2 { font-size: 1.25rem;  font-weight: 700; line-height: 1.3;  letter-spacing: -0.02em; }
 h3 { font-size: 1.0625rem; font-weight: 600; line-height: 1.35; letter-spacing: -0.015em; }
-h4 { font-size: 0.9375rem; font-weight: 600; line-height: 1.4; }
-h5 { font-size: 0.875rem;  font-weight: 600; line-height: 1.4; }
+h4 { font-size: 0.9375rem; font-weight: 600; line-height: 1.4;  letter-spacing: -0.01em; }
+h5 { font-size: 0.875rem;  font-weight: 600; line-height: 1.4;  letter-spacing: -0.005em; }
 
 p { line-height: 1.6; }
 
@@ -357,7 +357,21 @@ p { line-height: 1.6; }
 .text-amber     { color: var(--alert); }
 .text-red       { color: var(--danger); }
 
+/* Global Precision Tabular Numerics */
+.mono, .price, .num, .tabular, .cart-item-total, .cart-summary-value, .kpi-value, .tender-metric-val, td.mono, th.mono, .table-num {
+  font-variant-numeric: tabular-nums;
+}
 .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* Uppercase Micro-Label System */
+.micro-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
 
 /* ── Utility Classes ──────────────────────────────────────────── */
 .hidden   { display: none !important; }
@@ -395,7 +409,7 @@ p { line-height: 1.6; }
   align-items: center;
   gap: var(--space-1);
   padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.02em;
