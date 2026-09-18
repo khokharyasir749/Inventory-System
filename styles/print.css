@@ -388,21 +388,21 @@
   }
 
   #printable-proposal-doc .proposal-header {
-    border-bottom: 2pt solid #2563EB !important;
+    border-bottom: 2pt solid #18181B !important;
   }
 
   #printable-proposal-doc .proposal-brand-title {
-    color: #0F172A !important;
+    color: #18181B !important;
   }
 
   #printable-proposal-doc .proposal-brand-sub {
-    color: #2563EB !important;
+    color: #71717A !important;
   }
 
   #printable-proposal-doc .proposal-callout {
-    background: #F1F5F9 !important;
-    border: 1px solid #CBD5E1 !important;
-    border-left: 4px solid #2563EB !important;
+    background: #F4F4F5 !important;
+    border: 1px solid #E4E4E7 !important;
+    border-left: 4px solid #18181B !important;
   }
 
   #printable-proposal-doc .proposal-callout-name,

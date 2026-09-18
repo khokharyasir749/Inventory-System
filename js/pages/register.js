@@ -55,8 +55,8 @@ async function refreshRegisterView(container) {
     ]);
 
     const cashSalesTotal = cashSales.reduce((sum, s) => sum + (s.total || 0), 0);
-    const custPayTotal   = customerPayments.reduce((sum, t) => sum + (t.amount || 0), 0);
-    const creditCashTotal= creditSalesPartials.reduce((sum, s) => sum + (s.cash_received || 0), 0);
+    const custPayTotal = customerPayments.reduce((sum, t) => sum + (t.amount || 0), 0);
+    const creditCashTotal = creditSalesPartials.reduce((sum, s) => sum + (s.cash_received || 0), 0);
 
     const adjustments = Array.isArray(active.adjustments) ? active.adjustments : [];
     const cashInTotal = adjustments.filter(a => a.type === 'IN').reduce((sum, a) => sum + (a.amount || 0), 0);
@@ -141,9 +141,9 @@ async function refreshRegisterView(container) {
           <!-- Adjustments List -->
           <div style="margin-bottom:var(--space-4)">
             <div class="text-xs text-secondary font-semibold" style="margin-bottom:var(--space-2);text-transform:uppercase;letter-spacing:0.05em">Shift Adjustments Log</div>
-            ${adjustments.length === 0 
-              ? `<div class="text-xs text-muted" style="padding:var(--space-3);background:var(--surface-raised);border-radius:var(--radius-md);text-align:center">No manual float adjustments during this shift.</div>`
-              : `<div class="table-scroll" style="max-height:160px">
+            ${adjustments.length === 0
+        ? `<div class="text-xs text-muted" style="padding:var(--space-3);background:var(--surface-raised);border-radius:var(--radius-md);text-align:center">No manual float adjustments during this shift.</div>`
+        : `<div class="table-scroll" style="max-height:160px">
                   <table>
                     <thead>
                       <tr>
@@ -167,7 +167,7 @@ async function refreshRegisterView(container) {
                     </tbody>
                   </table>
                 </div>`
-            }
+      }
           </div>
 
           <!-- End of Day Reconciliation Trigger -->
@@ -198,14 +198,14 @@ async function refreshRegisterView(container) {
               </thead>
               <tbody>
                 ${pastSessions.filter(s => s.status === 'CLOSED').slice(0, 12).map(s => {
-                  let varianceBadge = `<span class="badge badge-green">Exact Match</span>`;
-                  if (s.difference < 0) {
-                    varianceBadge = `<span class="badge badge-red">Short ${fmt(Math.abs(s.difference))}</span>`;
-                  } else if (s.difference > 0) {
-                    varianceBadge = `<span class="badge badge-blue">Over +${fmt(s.difference)}</span>`;
-                  }
+        let varianceBadge = `<span class="badge badge-green">Exact Match</span>`;
+        if (s.difference < 0) {
+          varianceBadge = `<span class="badge badge-red">Short ${fmt(Math.abs(s.difference))}</span>`;
+        } else if (s.difference > 0) {
+          varianceBadge = `<span class="badge badge-amber">Over +${fmt(s.difference)}</span>`;
+        }
 
-                  return `
+        return `
                     <tr>
                       <td class="text-xs">${fmtDateTime(s.opened_at)}</td>
                       <td class="text-xs">${s.closed_at ? fmtDateTime(s.closed_at) : '—'}</td>
@@ -215,7 +215,7 @@ async function refreshRegisterView(container) {
                       <td>${varianceBadge}</td>
                     </tr>
                   `;
-                }).join('')}
+      }).join('')}
               </tbody>
             </table>
           </div>
@@ -286,14 +286,14 @@ async function refreshRegisterView(container) {
               </thead>
               <tbody>
                 ${pastSessions.slice(0, 10).map(s => {
-                  let varianceBadge = `<span class="badge badge-green">Exact</span>`;
-                  if (s.difference < 0) {
-                    varianceBadge = `<span class="badge badge-red">Short ${fmt(Math.abs(s.difference))}</span>`;
-                  } else if (s.difference > 0) {
-                    varianceBadge = `<span class="badge badge-blue">Over +${fmt(s.difference)}</span>`;
-                  }
+      let varianceBadge = `<span class="badge badge-green">Exact</span>`;
+      if (s.difference < 0) {
+        varianceBadge = `<span class="badge badge-red">Short ${fmt(Math.abs(s.difference))}</span>`;
+      } else if (s.difference > 0) {
+        varianceBadge = `<span class="badge badge-amber">Over +${fmt(s.difference)}</span>`;
+      }
 
-                  return `
+      return `
                     <tr>
                       <td class="text-xs">${fmtDateTime(s.opened_at)}</td>
                       <td class="text-xs">${s.closed_at ? fmtDateTime(s.closed_at) : '—'}</td>
@@ -303,7 +303,7 @@ async function refreshRegisterView(container) {
                       <td>${s.closed_at ? varianceBadge : '—'}</td>
                     </tr>
                   `;
-                }).join('')}
+    }).join('')}
               </tbody>
             </table>
           </div>
@@ -486,8 +486,8 @@ function showReconciliationModal(activeSession, expectedCash, pageContainer) {
     size: 'modal-lg',
     onOpen: (backdrop) => {
       const actualInp = backdrop.querySelector('#recon-actual-cash');
-      const diffBox   = backdrop.querySelector('#recon-diff-box');
-      const diffVal   = backdrop.querySelector('#recon-diff-val');
+      const diffBox = backdrop.querySelector('#recon-diff-box');
+      const diffVal = backdrop.querySelector('#recon-diff-val');
       const denomWrap = backdrop.querySelector('#denom-wrap');
       const toggleDenomBtn = backdrop.querySelector('#toggle-denom-btn');
 
@@ -504,7 +504,7 @@ function showReconciliationModal(activeSession, expectedCash, pageContainer) {
           diffVal.innerHTML = `<span class="badge badge-green">Exact Match (0.00)</span>`;
           diffBox.style.borderColor = 'var(--stock-in)';
         } else if (diff > 0) {
-          diffVal.innerHTML = `<span class="badge badge-blue">Surplus: +${fmt(diff)}</span>`;
+          diffVal.innerHTML = `<span class="badge badge-amber">Surplus: +${fmt(diff)}</span>`;
           diffBox.style.borderColor = 'var(--primary)';
         } else {
           diffVal.innerHTML = `<span class="badge badge-red">Shortage: −${fmt(Math.abs(diff))}</span>`;

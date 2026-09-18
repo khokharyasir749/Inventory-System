@@ -48,14 +48,20 @@ The user must be able to operate the app immediately on a touch screen or deskto
   * **Touch-Optimized:** Minimum touch target size of 48px for fast mobile and tablet operation under busy store conditions.
   * **Low-Stock Visual Alerts:** Items below their minimum threshold display an unmissable warm warning badge on their card.
 
-* **Color & Visual Palette (Balanced & High-Contrast):**
-  * Avoid stark default dark/light modes. Use a tailored, eye-strain-free industrial palette:
-  * **Canvas Background:** Soft Neutral Slate (`#F1F5F9`) for maximum contrast and readability under bright ambient light.
-  * **Surface Cards:** Clean Crisp White (`#FFFFFF`) with subtle slate borders (`#CBD5E1`).
-  * **Primary Action / Navigation:** Deep Teal (`#0F766E`) — professional, calm, and trustworthy.
-  * **Stock In / Add Flow:** Fresh Emerald Green (`#059669`).
-  * **Stock Out / Sale Flow:** Energetic Indigo (`#4F46E5`).
-  * **Alerts / Low Stock:** Warm Amber (`#D97706`) and Coral Red (`#DC2626`).
+* **Color & Visual Palette (Minimalist Enterprise — 0% Blue, Zero Shine):**
+  * Avoid neon colors, saturated blues, ambient glow orbs, and radial gradients. Use a calm, high-contrast, distraction-free enterprise palette:
+  * **Dark Mode:**
+    * **Canvas Background:** Deep Matte Carbon (`#0D0F12`).
+    * **Surface Cards:** Solid Dark Slate surfaces (`#15181E` / `#181B22`) with razor-thin hairline borders (`1px solid rgba(255, 255, 255, 0.08)`).
+    * **Primary Action & Navigation:** High-contrast Pure White (`#FFFFFF` with `#0D0F12` pitch text) or Muted Warm Amber (`#D97706`). Active navigation pill: solid `#222630`.
+  * **Light Mode:**
+    * **Canvas Background:** Clean Studio Alabaster (`#F8FAFC`).
+    * **Surface Cards:** Pure White (`#FFFFFF`) with subtle slate borders (`1px solid #E2E8F0`).
+    * **Primary Action & Navigation:** Solid Dark Slate (`#15181E` with `#FFFFFF` text) or Muted Warm Amber (`#D97706`). Active navigation pill: solid `#E2E8F0`.
+  * **Status & Inventory Flows:**
+    * **Stock In / Add Flow:** Muted Sage Green (`#059669` / `#10B981`).
+    * **Sale / Warning / Spoilage:** Warm Amber (`#D97706` / `#F59E0B`).
+    * **Critical Out-of-Stock / Danger:** Muted Brick Red (`#DC2626` / `#EF4444`).
 
 ---
 

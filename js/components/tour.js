@@ -51,12 +51,12 @@ function initTourBanner() {
     right: 24px;
     z-index: 10000;
     width: 380px;
-    background: var(--zeploy-navy);
-    color: white;
+    background: var(--surface);
+    color: var(--text-primary);
     padding: var(--space-4);
     border-radius: var(--radius-lg);
-    box-shadow: 0 10px 25px -5px rgba(15, 28, 63, 0.4), 0 8px 10px -6px rgba(15, 28, 63, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-strong);
     display: none;
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   `;
@@ -76,18 +76,18 @@ function renderTourStep() {
   tourBannerEl.style.display = 'block';
   tourBannerEl.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <span class="badge" style="background:rgba(59,130,246,0.2);color:#AFD2FA;font-size:0.75rem;padding:2px 8px">
+      <span class="badge badge-primary" style="font-size:0.75rem;padding:2px 8px">
         ZEPLOY DEMO TOUR (${currentTourStep + 1} / ${TOUR_STEPS.length})
       </span>
-      <button id="tour-close-btn" style="background:transparent;border:none;color:#94A3B8;cursor:pointer;font-size:1.1rem;line-height:1">✕</button>
+      <button id="tour-close-btn" style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;line-height:1">✕</button>
     </div>
-    <h4 style="font-size:1.05rem;font-weight:700;color:white;margin-bottom:6px">${step.title}</h4>
-    <p style="font-size:0.8125rem;color:#CBD5E1;line-height:1.5;margin-bottom:14px">${step.desc}</p>
+    <h4 style="font-size:1.05rem;font-weight:700;color:var(--text-primary);margin-bottom:6px">${step.title}</h4>
+    <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5;margin-bottom:14px">${step.desc}</p>
     <div style="display:flex;align-items:center;justify-content:space-between">
-      <button class="btn btn-ghost btn-xs" id="tour-prev-btn" style="color:white" ${currentTourStep === 0 ? 'disabled' : ''}>
+      <button class="btn btn-ghost btn-xs" id="tour-prev-btn" ${currentTourStep === 0 ? 'disabled' : ''}>
         ← Previous
       </button>
-      <button class="btn btn-primary btn-xs" id="tour-next-btn" style="background:var(--primary);color:white;padding:6px 14px">
+      <button class="btn btn-primary btn-xs" id="tour-next-btn" style="padding:6px 14px">
         ${currentTourStep === TOUR_STEPS.length - 1 ? 'Finish Tour' : 'Next Step →'}
       </button>
     </div>

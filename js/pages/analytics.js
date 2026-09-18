@@ -6,14 +6,14 @@
 
 let analyticsRange = 'month'; // 'today' | 'week' | 'month' | 'custom'
 let analyticsCustomFrom = '';
-let analyticsCustomTo   = '';
+let analyticsCustomTo = '';
 
 async function renderAnalytics(container) {
   // Set custom dates to past month by default
   const today = new Date().toISOString().split('T')[0];
   const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
   analyticsCustomFrom = monthAgo;
-  analyticsCustomTo   = today;
+  analyticsCustomTo = today;
 
   container.innerHTML = `
     <div class="page-header">
@@ -74,8 +74,8 @@ async function refreshAnalytics(container) {
 
   // 1. Determine date bounds
   let fromDate = new Date();
-  let toDate   = new Date();
-  const now    = new Date();
+  let toDate = new Date();
+  const now = new Date();
 
   if (analyticsRange === 'today') {
     fromDate.setHours(0, 0, 0, 0);
@@ -115,16 +115,16 @@ async function refreshAnalytics(container) {
 
   // 3. Perform Metric Calculations
   const grossRevenue = rangeSales.reduce((sum, s) => sum + (s.total || 0), 0);
-  const netRevenue   = rangeSales.reduce((sum, s) => sum + (s.subtotal - s.discount), 0);
-  const totalCogs    = rangeSaleItems.reduce((sum, si) => sum + ((si.cost_price || 0) * si.quantity), 0);
-  const grossProfit  = netRevenue - totalCogs;
+  const netRevenue = rangeSales.reduce((sum, s) => sum + (s.subtotal - s.discount), 0);
+  const totalCogs = rangeSaleItems.reduce((sum, si) => sum + ((si.cost_price || 0) * si.quantity), 0);
+  const grossProfit = netRevenue - totalCogs;
   const profitMargin = netRevenue > 0 ? (grossProfit / netRevenue * 100) : 0;
 
   // Valuation
-  const totalStockValCost   = items.filter(it => !it.is_composite).reduce((sum, it) => sum + (it.cost_price * (it.stock_quantity || 0)), 0);
+  const totalStockValCost = items.filter(it => !it.is_composite).reduce((sum, it) => sum + (it.cost_price * (it.stock_quantity || 0)), 0);
   const totalStockValRetail = items.filter(it => !it.is_composite).reduce((sum, it) => sum + (it.selling_price * (it.stock_quantity || 0)), 0);
-  const potentialProfit     = totalStockValRetail - totalStockValCost;
-  const lowStockCount       = items.filter(it => !it.is_composite && it.stock_quantity <= it.min_stock_alert).length;
+  const potentialProfit = totalStockValRetail - totalStockValCost;
+  const lowStockCount = items.filter(it => !it.is_composite && it.stock_quantity <= it.min_stock_alert).length;
 
   // 4. Product Sales Grouping
   const prodSalesMap = {};
@@ -137,10 +137,10 @@ async function refreshAnalytics(container) {
       prodSalesMap[si.item_id] = { name: 'Deleted Item', category: 'Other', qty: 0, revenue: 0, cost: 0, profit: 0, stock: 0 };
     }
     const o = prodSalesMap[si.item_id];
-    o.qty     += si.quantity;
+    o.qty += si.quantity;
     o.revenue += si.line_total;
-    o.cost    += (si.cost_price || 0) * si.quantity;
-    o.profit  += si.line_total - ((si.cost_price || 0) * si.quantity);
+    o.cost += (si.cost_price || 0) * si.quantity;
+    o.profit += si.line_total - ((si.cost_price || 0) * si.quantity);
   });
 
   const productStats = Object.values(prodSalesMap);
@@ -229,9 +229,9 @@ async function refreshAnalytics(container) {
         </div>
         <div style="height:250px;width:100%;overflow-y:auto;display:flex;flex-direction:column;gap:var(--space-2);justify-content:center">
           ${categoriesChartData.length === 0
-            ? '<p class="text-sm text-secondary" style="text-align:center">No category data for this period.</p>'
-            : generateSVGBars(categoriesChartData)
-          }
+      ? '<p class="text-sm text-secondary" style="text-align:center">No category data for this period.</p>'
+      : generateSVGBars(categoriesChartData)
+    }
         </div>
       </div>
     </div>
@@ -276,18 +276,18 @@ async function refreshAnalytics(container) {
             </thead>
             <tbody>
               ${topSelling.length === 0
-                ? '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">No items sold</td></tr>'
-                : topSelling.map(p => {
-                    const margin = p.revenue > 0 ? (p.profit / p.revenue * 100).toFixed(0) : 0;
-                    return `
+      ? '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">No items sold</td></tr>'
+      : topSelling.map(p => {
+        const margin = p.revenue > 0 ? (p.profit / p.revenue * 100).toFixed(0) : 0;
+        return `
                       <tr>
                         <td class="font-semibold">${p.name}</td>
                         <td class="mono font-bold">${p.qty}</td>
                         <td class="mono">${fmt(p.revenue)}</td>
                         <td class="mono"><span class="badge badge-green">${margin}%</span></td>
                       </tr>`;
-                  }).join('')
-              }
+      }).join('')
+    }
             </tbody>
           </table>
         </div>
@@ -309,15 +309,15 @@ async function refreshAnalytics(container) {
             </thead>
             <tbody>
               ${slowMoving.length === 0
-                ? '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">All items sold out</td></tr>'
-                : slowMoving.map(p => `
+      ? '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">All items sold out</td></tr>'
+      : slowMoving.map(p => `
                     <tr>
                       <td class="font-semibold">${p.name}</td>
                       <td class="mono font-bold">${p.stock}</td>
                       <td class="mono text-muted">${p.qty} sold</td>
                       <td class="mono text-red">${fmt(p.stock * (p.revenue / (p.qty || 1) || 0))}</td>
                     </tr>`).join('')
-              }
+    }
             </tbody>
           </table>
         </div>
@@ -331,11 +331,11 @@ function generateSVGLineChart(points) {
   if (points.length === 0) return '<p class="text-sm text-secondary">No data to display.</p>';
 
   const maxVal = Math.max(...points.map(p => p.revenue), 1000);
-  const width  = 500;
+  const width = 500;
   const height = 200;
   const padding = 20;
 
-  const chartWidth  = width - padding * 2;
+  const chartWidth = width - padding * 2;
   const chartHeight = height - padding * 2;
 
   // Map to SVG coordinates
@@ -374,7 +374,7 @@ function generateSVGLineChart(points) {
       <!-- Axis Labels (First & Last) -->
       ${coords.length > 0 ? `
         <text x="${coords[0].x}" y="${height - 4}" font-size="9" fill="var(--text-secondary)" text-anchor="start">${coords[0].label}</text>
-        <text x="${coords[coords.length-1].x}" y="${height - 4}" font-size="9" fill="var(--text-secondary)" text-anchor="end">${coords[coords.length-1].label}</text>
+        <text x="${coords[coords.length - 1].x}" y="${height - 4}" font-size="9" fill="var(--text-secondary)" text-anchor="end">${coords[coords.length - 1].label}</text>
         <text x="${padding + 5}" y="${padding + 10}" font-size="8" fill="var(--text-muted)" font-weight="700">MAX: ${fmt(maxVal)}</text>
       ` : ''}
     </svg>

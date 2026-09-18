@@ -6,14 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="Local-First Inventory & POS app for retail shops and fast-food restaurants. Fully offline, zero hosting cost.">
-  <meta name="theme-color" content="#0F766E">
+  <meta name="theme-color" content="#0D0F12">
 
   <title>InventoryPOS — Local Inventory & Point of Sale</title>
 
   <!-- PWA Manifest & Service Worker registration -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230F766E'/><text y='22' x='5' font-size='20' fill='white'>📦</text></svg>">
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2318181B'/><text y='22' x='5' font-size='20' fill='white'>📦</text></svg>">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,22 +22,22 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
 
-  <!-- Stylesheets (cache-busted: glass_4 — ambient orbs + true glass surfaces) -->
-  <link rel="stylesheet" href="styles/base.css?v=glass_4">
-  <link rel="stylesheet" href="styles/layout.css?v=glass_4">
-  <link rel="stylesheet" href="styles/components.css?v=glass_4">
-  <link rel="stylesheet" href="styles/pos.css?v=glass_4">
-  <link rel="stylesheet" href="styles/print.css?v=glass_4">
+  <!-- Stylesheets (v=pure_neutral_final) -->
+  <link rel="stylesheet" href="styles/base.css?v=pure_neutral_final">
+  <link rel="stylesheet" href="styles/layout.css?v=pure_neutral_final">
+  <link rel="stylesheet" href="styles/components.css?v=pure_neutral_final">
+  <link rel="stylesheet" href="styles/pos.css?v=pure_neutral_final">
+  <link rel="stylesheet" href="styles/print.css?v=pure_neutral_final">
 
   <!-- Instant Theme Execution (Zero-Flicker) -->
   <script>
-    (function() {
+    (function () {
       try {
         const savedTheme = localStorage.getItem('pos_theme');
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', initialTheme);
-      } catch (e) {}
+      } catch (e) { }
     })();
   </script>
 
@@ -47,69 +47,22 @@
 
 <body>
 
-  <!-- ── Ambient Light Orbs — ALWAYS behind everything, makes glass visible ── -->
-  <div id="ambient-orbs" aria-hidden="true" style="
-    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-  ">
-    <!-- Indigo/Violet orb — top-left -->
-    <div style="
-      position: absolute; top: -10%; left: -5%;
-      width: 60vw; height: 65vh;
-      background: radial-gradient(ellipse at center, rgba(99,102,241,0.36) 0%, transparent 70%);
-      filter: blur(40px); transform-origin: center;
-      animation: orbDrift1 18s ease-in-out infinite alternate;
-    "></div>
-    <!-- Cyan/Sky orb — top-right -->
-    <div style="
-      position: absolute; top: -8%; right: -8%;
-      width: 55vw; height: 60vh;
-      background: radial-gradient(ellipse at center, rgba(6,182,212,0.26) 0%, transparent 70%);
-      filter: blur(50px);
-      animation: orbDrift2 22s ease-in-out infinite alternate;
-    "></div>
-    <!-- Violet/Purple orb — bottom center -->
-    <div style="
-      position: absolute; bottom: -15%; left: 20%;
-      width: 60vw; height: 60vh;
-      background: radial-gradient(ellipse at center, rgba(168,85,247,0.28) 0%, transparent 70%);
-      filter: blur(45px);
-      animation: orbDrift3 26s ease-in-out infinite alternate;
-    "></div>
-    <!-- Emerald micro-orb — mid-right accent -->
-    <div style="
-      position: absolute; top: 35%; right: 10%;
-      width: 30vw; height: 35vh;
-      background: radial-gradient(ellipse at center, rgba(52,211,153,0.16) 0%, transparent 70%);
-      filter: blur(35px);
-      animation: orbDrift2 30s ease-in-out infinite alternate-reverse;
-    "></div>
-  </div>
-
-  <style>
-    @keyframes orbDrift1 {
-      0%   { transform: translate(0,   0)   scale(1); }
-      100% { transform: translate(4%,  6%)  scale(1.08); }
-    }
-    @keyframes orbDrift2 {
-      0%   { transform: translate(0,   0)   scale(1); }
-      100% { transform: translate(-5%, 4%)  scale(1.06); }
-    }
-    @keyframes orbDrift3 {
-      0%   { transform: translate(0,   0)   scale(1); }
-      100% { transform: translate(3%,  -5%) scale(1.10); }
-    }
-    /* Hide orbs in light mode — they're too strong on white */
-    [data-theme="light"] #ambient-orbs { opacity: 0.45; }
-  </style>
-
   <!-- Security PIN Lock Screen Overlay -->
   <div id="pin-lock-screen"
-    style="display:none;position:fixed;inset:0;background:rgba(4,7,17,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:white;z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
-    <div style="background:var(--surface);border:1px solid var(--border-strong);padding:var(--space-8);border-radius:var(--radius-xl);box-shadow:var(--shadow-2xl);display:flex;flex-direction:column;align-items:center;gap:14px;max-width:380px;width:90%;color:var(--text-primary);text-align:center;">
-      <div style="width:48px;height:48px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin-bottom:4px;">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.70);color:white;z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+    <div
+      style="background:var(--surface);border:1px solid var(--border-strong);padding:var(--space-8);border-radius:var(--radius-xl);box-shadow:var(--shadow-2xl);display:flex;flex-direction:column;align-items:center;gap:14px;max-width:360px;width:90%;color:var(--text-primary);text-align:center;">
+
+      <div
+        style="width:48px;height:48px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin-bottom:4px;">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
       </div>
-      <div style="font-size:1.35rem;font-weight:700;letter-spacing:-0.02em;color:var(--text-primary)">Store Terminal Locked</div>
+      <div style="font-size:1.35rem;font-weight:700;letter-spacing:-0.02em;color:var(--text-primary)">Store Terminal
+        Locked</div>
       <div class="text-xs text-secondary">Enter 4-digit security PIN to resume session</div>
       <input type="password" id="pin-input" maxlength="4"
         style="font-size:2rem;text-align:center;width:150px;letter-spacing:12px;padding:8px 12px;background:var(--surface-raised);color:var(--text-primary);border:1px solid var(--border);border-radius:var(--radius-md);outline:none;transition:all var(--transition-fast);"
@@ -122,7 +75,7 @@
   <!-- Commercial 4-Step Onboarding Setup Wizard Overlay -->
   <div id="template-picker-screen" class="wizard-overlay" style="display:none">
     <div class="wizard-card">
-      
+
       <!-- Wizard Progress Stepper Header -->
       <div class="wizard-card-header">
         <div class="wizard-brand-row">
@@ -136,7 +89,7 @@
         <!-- Connected Stepper -->
         <div class="wizard-stepper" id="wizard-steps-pills">
           <div class="stepper-step active" id="wstep-step-1">
-            <span class="badge badge-blue" id="wstep-pill-1">1. Store Info</span>
+            <span class="badge badge-primary" id="wstep-pill-1">1. Store Info</span>
           </div>
           <div class="stepper-step" id="wstep-step-2">
             <span class="badge" id="wstep-pill-2">2. Business Type</span>
@@ -153,20 +106,25 @@
       <div class="wizard-body">
         <!-- Step 1: Business Details -->
         <div id="wstep-1-content" class="animate-fade-in">
-          <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-primary);margin-bottom:6px">Step 1: Store & Business Details</h3>
-          <p class="text-sm text-secondary" style="margin-bottom:var(--space-5)">Enter your store brand name and contact details for thermal receipt headers.</p>
+          <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-primary);margin-bottom:6px">Step 1: Store &
+            Business Details</h3>
+          <p class="text-sm text-secondary" style="margin-bottom:var(--space-5)">Enter your store brand name and contact
+            details for thermal receipt headers.</p>
 
           <form id="wizard-info-form" style="display:flex;flex-direction:column;gap:var(--space-4)">
             <div class="form-group">
-              <label class="form-label" for="wiz-store-name">Store / Company Name <span class="required">*</span></label>
+              <label class="form-label" for="wiz-store-name">Store / Company Name <span
+                  class="required">*</span></label>
               <div class="input-group">
                 <span class="input-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9 22 9 12 15 12 15 22"/>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
                   </svg>
                 </span>
-                <input type="text" class="form-input" id="wiz-store-name" value="Metro Supermarket" required placeholder="e.g. Metro Supermarket">
+                <input type="text" class="form-input" id="wiz-store-name" value="Metro Supermarket" required
+                  placeholder="e.g. Metro Supermarket">
               </div>
             </div>
 
@@ -175,11 +133,14 @@
                 <label class="form-label" for="wiz-phone">Phone Number</label>
                 <div class="input-group">
                   <span class="input-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                     </svg>
                   </span>
-                  <input type="text" class="form-input" id="wiz-phone" value="+92 300 1234567" placeholder="+92 300 1234567">
+                  <input type="text" class="form-input" id="wiz-phone" value="+92 300 1234567"
+                    placeholder="+92 300 1234567">
                 </div>
               </div>
 
@@ -187,12 +148,14 @@
                 <label class="form-label" for="wiz-address">Address / City</label>
                 <div class="input-group">
                   <span class="input-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                      <circle cx="12" cy="10" r="3"/>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
                     </svg>
                   </span>
-                  <input type="text" class="form-input" id="wiz-address" value="Sector F-7, Islamabad" placeholder="City, Location">
+                  <input type="text" class="form-input" id="wiz-address" value="Sector F-7, Islamabad"
+                    placeholder="City, Location">
                 </div>
               </div>
             </div>
@@ -201,20 +164,24 @@
             <div class="form-group" style="margin-top:var(--space-1)">
               <label class="form-label">Brand / Store Logo (Optional)</label>
               <div style="display:flex;gap:var(--space-3);align-items:center">
-                <div id="wiz-brand-logo-preview" class="brand-logo-preview-box" style="width:52px;height:52px;padding:4px">
+                <div id="wiz-brand-logo-preview" class="brand-logo-preview-box"
+                  style="width:52px;height:52px;padding:4px">
                   <span class="text-xs text-muted">No logo</span>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:4px">
                   <label class="btn btn-ghost btn-sm" style="cursor:pointer;padding:6px 12px">
                     <span>Upload Brand Logo</span>
-                    <input type="file" id="wiz-logo-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none">
+                    <input type="file" id="wiz-logo-input" accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                      style="display:none">
                   </label>
-                  <button type="button" class="btn btn-ghost-danger btn-xs" id="wiz-reset-logo-btn" style="display:none;width:fit-content">Remove</button>
+                  <button type="button" class="btn btn-ghost-danger btn-xs" id="wiz-reset-logo-btn"
+                    style="display:none;width:fit-content">Remove</button>
                 </div>
               </div>
             </div>
 
-            <button class="btn btn-primary" type="button" id="wiz-goto-step2-btn" style="margin-top:var(--space-2);width:100%;height:44px;font-size:0.95rem">
+            <button class="btn btn-primary" type="button" id="wiz-goto-step2-btn"
+              style="margin-top:var(--space-2);width:100%;height:44px;font-size:0.95rem">
               Next: Select Business Type →
             </button>
           </form>
@@ -222,42 +189,59 @@
 
         <!-- Step 2: Select Retail Profile -->
         <div id="wstep-2-content" style="display:none" class="animate-fade-in">
-          <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-primary);margin-bottom:6px">Step 2: Select Retail Business Profile</h3>
-          <p class="text-sm text-secondary" style="margin-bottom:var(--space-5)">Choose your retail industry type to automatically seed sample products, categories, recipes, and barcode items.</p>
+          <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-primary);margin-bottom:6px">Step 2: Select
+            Retail Business Profile</h3>
+          <p class="text-sm text-secondary" style="margin-bottom:var(--space-5)">Choose your retail industry type to
+            automatically seed sample products, categories, recipes, and barcode items.</p>
 
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:var(--space-3);margin-bottom:var(--space-6)" id="template-options-grid">
+          <div
+            style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:var(--space-3);margin-bottom:var(--space-6)"
+            id="template-options-grid">
             <!-- Profiles injected dynamically -->
           </div>
 
           <div style="display:flex;gap:var(--space-3)">
-            <button class="btn btn-ghost" type="button" id="wiz-backto-step1-btn" style="height:44px;padding:0 var(--space-5)">← Back</button>
-            <button class="btn btn-primary" id="template-picker-submit-btn" disabled style="flex:1;height:44px;font-size:0.95rem">Load Demo Data & Provisions →</button>
+            <button class="btn btn-ghost" type="button" id="wiz-backto-step1-btn"
+              style="height:44px;padding:0 var(--space-5)">← Back</button>
+            <button class="btn btn-primary" id="template-picker-submit-btn" disabled
+              style="flex:1;height:44px;font-size:0.95rem">Load Demo Data & Provisions →</button>
           </div>
         </div>
 
         <!-- Step 3: Seeding Progress -->
-        <div id="wstep-3-content" style="display:none;text-align:center;padding:var(--space-6) 0" class="animate-fade-in">
+        <div id="wstep-3-content" style="display:none;text-align:center;padding:var(--space-6) 0"
+          class="animate-fade-in">
           <div style="font-size:3rem;margin-bottom:var(--space-3);animation:pulse 1.2s infinite">⚡</div>
-          <h3 style="font-size:1.35rem;font-weight:800;color:var(--text-primary);margin-bottom:6px">Provisioning Store & Seeding 30-Day Data...</h3>
-          <p class="text-sm text-secondary" style="margin-bottom:var(--space-4);max-width:500px;margin-left:auto;margin-right:auto">Generating sales transactions, inventory reduction logs, and customer ledgers offline in IndexedDB.</p>
+          <h3 style="font-size:1.35rem;font-weight:800;color:var(--text-primary);margin-bottom:6px">Provisioning Store &
+            Seeding 30-Day Data...</h3>
+          <p class="text-sm text-secondary"
+            style="margin-bottom:var(--space-4);max-width:500px;margin-left:auto;margin-right:auto">Generating sales
+            transactions, inventory reduction logs, and customer ledgers offline in IndexedDB.</p>
           <div class="wizard-progress-track">
             <div class="wizard-progress-fill"></div>
           </div>
         </div>
 
         <!-- Step 4: Ready -->
-        <div id="wstep-4-content" style="display:none;text-align:center;padding:var(--space-4) 0" class="animate-fade-in">
+        <div id="wstep-4-content" style="display:none;text-align:center;padding:var(--space-4) 0"
+          class="animate-fade-in">
           <div style="font-size:3.5rem;margin-bottom:var(--space-2)">🎉</div>
-          <h3 style="font-size:1.5rem;font-weight:800;color:var(--stock-in);margin-bottom:6px">Store Provisioned & Ready!</h3>
-          <p class="text-sm text-secondary" style="margin-bottom:var(--space-6);max-width:480px;margin-left:auto;margin-right:auto">Your local POS environment is fully configured and ready for offline sales operations and client demonstration.</p>
-          <button class="btn btn-primary" id="wiz-launch-btn" style="min-width:240px;height:46px;font-size:1rem;padding:12px 28px;box-shadow:var(--shadow-lg)">
+          <h3 style="font-size:1.5rem;font-weight:800;color:var(--stock-in);margin-bottom:6px">Store Provisioned &
+            Ready!</h3>
+          <p class="text-sm text-secondary"
+            style="margin-bottom:var(--space-6);max-width:480px;margin-left:auto;margin-right:auto">Your local POS
+            environment is fully configured and ready for offline sales operations and client demonstration.</p>
+          <button class="btn btn-primary" id="wiz-launch-btn"
+            style="min-width:240px;height:46px;font-size:1rem;padding:12px 28px">
             Launch Zeploy POS →
           </button>
         </div>
       </div>
 
-      <div style="text-align:center;padding:var(--space-4);border-top:1px solid var(--border);background:var(--surface-raised)">
-        <div class="text-xs text-secondary" style="opacity:0.8">Powered by Zeploy Tech — Enterprise Retail Infrastructure</div>
+      <div
+        style="text-align:center;padding:var(--space-4);border-top:1px solid var(--border);background:var(--surface-raised)">
+        <div class="text-xs text-secondary" style="opacity:0.8">Powered by Zeploy Tech — Enterprise Retail
+          Infrastructure</div>
       </div>
     </div>
   </div>
@@ -610,8 +594,9 @@
       <!-- Logo -->
       <div class="sidebar-logo">
         <div class="sidebar-logo-mark" id="sidebar-logo-mark">
-          <div id="sidebar-logo-container" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:inherit">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"
+          <div id="sidebar-logo-container"
+            style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:inherit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round">
               <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
@@ -620,7 +605,7 @@
         </div>
         <div class="sidebar-logo-text">
           <span class="sidebar-logo-name" id="sidebar-store-name">Zeploy POS</span>
-          <span class="sidebar-logo-sub" style="color:#AFD2FA;font-weight:600">Commercial Edition</span>
+          <span class="sidebar-logo-sub" style="color:var(--text-muted);font-weight:600">Commercial Edition</span>
         </div>
       </div>
 
@@ -751,7 +736,8 @@
             Config
           </button>
         </div>
-        <div style="font-size:0.7rem;color:#AFD2FA;text-align:center;padding:8px 0 2px 0;opacity:0.85;font-weight:500;line-height:1.2">
+        <div
+          style="font-size:0.7rem;color:var(--text-muted);text-align:center;padding:8px 0 2px 0;opacity:0.85;font-weight:500;line-height:1.2">
           Powered by Zeploy Tech<br>
           <span style="opacity:0.6;font-size:0.65rem">We Deploy Your Vision</span>
         </div>
@@ -784,8 +770,10 @@
 
         <!-- Topbar Actions -->
         <div class="topbar-actions">
-          <button class="topbar-btn no-print" id="topbar-theme-btn" title="Toggle Dark / Light Theme" aria-label="Toggle Dark or Light Mode">
-            <svg class="theme-icon-sun hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="topbar-btn no-print" id="topbar-theme-btn" title="Toggle Dark / Light Theme"
+            aria-label="Toggle Dark or Light Mode">
+            <svg class="theme-icon-sun hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="1" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -796,12 +784,16 @@
               <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
-            <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
           </button>
-          <button class="topbar-btn no-print" id="topbar-pres-btn" title="Toggle Sales Presentation Mode" style="color:var(--primary)">
-            <svg aria-hidden="true"><use href="icons/sprite.svg#icon-trending-up" /></svg>
+          <button class="topbar-btn no-print" id="topbar-pres-btn" title="Toggle Sales Presentation Mode"
+            style="color:var(--primary)">
+            <svg aria-hidden="true">
+              <use href="icons/sprite.svg#icon-trending-up" />
+            </svg>
           </button>
           <button class="topbar-btn no-print" id="topbar-lock-btn" title="Lock POS screen">
             <svg aria-hidden="true" style="color:var(--danger)">
@@ -818,16 +810,18 @@
               <use href="icons/sprite.svg#icon-settings" />
             </svg>
           </button>
-          <button class="topbar-store-pill no-print" id="topbar-store-pill" title="Click to customize Brand Name & Logo">
+          <button class="topbar-store-pill no-print" id="topbar-store-pill"
+            title="Click to customize Brand Name & Logo">
             <div class="topbar-store-logo-wrap" id="topbar-store-logo-wrap">
               <span class="topbar-logo-fallback">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 </svg>
               </span>
             </div>
             <span class="topbar-store-name" id="topbar-store-name">Zeploy POS</span>
-            <svg class="topbar-store-edit-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="topbar-store-edit-icon" viewBox="0 0 24 24" width="13" height="13" fill="none"
+              stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
             </svg>
@@ -1003,7 +997,7 @@
           let wizLogoData = '';
           const wizLogoInput = document.getElementById('wiz-logo-input');
           const wizLogoReset = document.getElementById('wiz-reset-logo-btn');
-          const wizLogoPrev  = document.getElementById('wiz-brand-logo-preview');
+          const wizLogoPrev = document.getElementById('wiz-brand-logo-preview');
 
           wizLogoInput?.addEventListener('change', async (e) => {
             const file = e.target.files?.[0];
@@ -1109,8 +1103,8 @@
 
               lockScreen.style.display = 'flex';
               if (appEl) {
-                appEl.style.filter = 'blur(12px)';
                 appEl.style.pointerEvents = 'none';
+                appEl.style.userSelect = 'none';
               }
               input.focus();
 
@@ -1118,8 +1112,8 @@
                 if (input.value === pin) {
                   lockScreen.style.display = 'none';
                   if (appEl) {
-                    appEl.style.filter = '';
                     appEl.style.pointerEvents = '';
+                    appEl.style.userSelect = '';
                   }
                   input.value = '';
                   err.textContent = '';
@@ -1254,7 +1248,7 @@
           themeBtn?.addEventListener('click', () => {
             const now = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', now);
-            try { localStorage.setItem('pos_theme', now); } catch (e) {}
+            try { localStorage.setItem('pos_theme', now); } catch (e) { }
             syncThemeIcon(now);
             toast.info('Theme Toggled', `Switched to ${now} mode.`);
           });
@@ -1316,17 +1310,17 @@
     })();
 
     // -- Global Error Handler
-    window.onerror = function(msg, src, line, col, err) {
+    window.onerror = function (msg, src, line, col, err) {
       console.error('[Global Error]', msg, src, line, col, err);
       if (window.toast) { toast.error('Unexpected Error', String(msg).substring(0, 120)); }
       return false;
     };
-    window.addEventListener('unhandledrejection', function(ev) {
+    window.addEventListener('unhandledrejection', function (ev) {
       console.error('[Unhandled Promise]', ev.reason);
       if (window.toast && ev.reason && ev.reason.message) { toast.error('Operation Failed', String(ev.reason.message).substring(0, 120)); }
     });
     // -- Escape to close modals
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
         var backdrop = document.querySelector('.modal-backdrop');
         if (backdrop) { var cb = backdrop.querySelector('.modal-close, #confirm-close, #confirm-cancel'); if (cb) cb.click(); }

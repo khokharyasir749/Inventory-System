@@ -26,7 +26,7 @@ async function renderLogs(container) {
         <input type="text" class="filter-search" id="logs-search" placeholder="Search item name...">
       </div>
       <div class="filter-pills" id="logs-type-pills">
-        ${['ALL','IN','SALE','OUT','ADJUSTMENT','SPOILAGE'].map(t => `
+        ${['ALL', 'IN', 'SALE', 'OUT', 'ADJUSTMENT', 'SPOILAGE'].map(t => `
           <button class="btn btn-pill btn-ghost ${logsFilter.type === t ? 'active' : ''}" data-type="${t}">${t}</button>
         `).join('')}
       </div>
@@ -140,11 +140,11 @@ async function refreshLogsTable(container) {
   }
 
   const BADGE = {
-    'IN':         `<span class="badge badge-green">Stock In</span>`,
-    'SALE':       `<span class="badge badge-indigo">Sale</span>`,
-    'OUT':        `<span class="badge badge-amber">Stock Out</span>`,
+    'IN': `<span class="badge badge-green">Stock In</span>`,
+    'SALE': `<span class="badge badge-amber">Sale</span>`,
+    'OUT': `<span class="badge badge-amber">Stock Out</span>`,
     'ADJUSTMENT': `<span class="badge badge-primary">Adjustment</span>`,
-    'SPOILAGE':   `<span class="badge badge-purple">Spoilage</span>`
+    'SPOILAGE': `<span class="badge badge-red">Spoilage</span>`
   };
 
   tableWrap.innerHTML = `
@@ -163,10 +163,10 @@ async function refreshLogsTable(container) {
           </thead>
           <tbody>
             ${page.map(log => {
-              const it   = itemMap[log.item_id];
-              const sign = log.change_type === 'IN' ? '+' : '−';
-              const isIn = log.change_type === 'IN';
-              return `
+    const it = itemMap[log.item_id];
+    const sign = log.change_type === 'IN' ? '+' : '−';
+    const isIn = log.change_type === 'IN';
+    return `
                 <tr>
                   <td class="mono text-sm" style="white-space:nowrap">${fmtDateTime(log.timestamp)}</td>
                   <td>
@@ -180,11 +180,11 @@ async function refreshLogsTable(container) {
                   <td class="text-sm text-muted">${log.notes || '—'}</td>
                   <td>
                     ${log.sync_status === 'SYNCED'
-                      ? `<span class="badge badge-green">Synced</span>`
-                      : `<span class="badge badge-amber">Pending</span>`}
+        ? `<span class="badge badge-green">Synced</span>`
+        : `<span class="badge badge-amber">Pending</span>`}
                   </td>
                 </tr>`;
-            }).join('')}
+  }).join('')}
           </tbody>
         </table>
       </div>
@@ -197,10 +197,10 @@ async function refreshLogsTable(container) {
         <div class="pagination-controls">
           <button class="page-btn" id="logs-prev" ${logsPage <= 1 ? 'disabled' : ''}>${icon('icon-chevron-left')}</button>
           ${generatePageNumbers(logsPage, totalPages).map(p =>
-            p === '...'
-              ? `<span class="page-btn" style="cursor:default">…</span>`
-              : `<button class="page-btn ${p === logsPage ? 'active' : ''}" data-page="${p}">${p}</button>`
-          ).join('')}
+    p === '...'
+      ? `<span class="page-btn" style="cursor:default">…</span>`
+      : `<button class="page-btn ${p === logsPage ? 'active' : ''}" data-page="${p}">${p}</button>`
+  ).join('')}
           <button class="page-btn" id="logs-next" ${logsPage >= totalPages ? 'disabled' : ''}>${icon('icon-chevron-right')}</button>
         </div>
       </div>
@@ -208,8 +208,8 @@ async function refreshLogsTable(container) {
   `;
 
   // Pagination events
-  tableWrap.querySelector('#logs-prev')?.addEventListener('click', async () => { if (logsPage > 1) { logsPage--; await refreshLogsTable(container); }});
-  tableWrap.querySelector('#logs-next')?.addEventListener('click', async () => { if (logsPage < totalPages) { logsPage++; await refreshLogsTable(container); }});
+  tableWrap.querySelector('#logs-prev')?.addEventListener('click', async () => { if (logsPage > 1) { logsPage--; await refreshLogsTable(container); } });
+  tableWrap.querySelector('#logs-next')?.addEventListener('click', async () => { if (logsPage < totalPages) { logsPage++; await refreshLogsTable(container); } });
   tableWrap.querySelectorAll('[data-page]').forEach(btn => {
     btn.addEventListener('click', async () => {
       logsPage = parseInt(btn.dataset.page);

@@ -8,9 +8,9 @@
  * 5. Statement CSV export
  */
 
-let customersList    = [];
-let customerSearch   = '';
-let customerPage     = 1;
+let customersList = [];
+let customerSearch = '';
+let customerPage = 1;
 const CUSTOMERS_PER_PAGE = 30;
 
 let selectedCustomerForLedger = null;
@@ -49,7 +49,7 @@ async function renderCustomers(container) {
   await loadAndRenderCustomers(container);
 
   container.querySelector('#customer-add-btn').addEventListener('click', () => showCustomerEditModal(null, container));
-  
+
   const searchInp = container.querySelector('#customer-search');
   searchInp.addEventListener('input', debounce(async (e) => {
     customerSearch = e.target.value;
@@ -110,11 +110,11 @@ function renderCustomersListTable(container) {
           </thead>
           <tbody>
             ${page.map(c => {
-              const cleanPhone = (c.phone || '').replace(/[^0-9]/g, '');
-              const waText = encodeURIComponent(`Assalam-o-Alaikum ${c.name},\nThis is a friendly reminder regarding your outstanding balance of ${fmt(c.current_balance)} at our store.\nThank you!`);
-              const hasBalance = (c.current_balance || 0) > 0;
+    const cleanPhone = (c.phone || '').replace(/[^0-9]/g, '');
+    const waText = encodeURIComponent(`Assalam-o-Alaikum ${c.name},\nThis is a friendly reminder regarding your outstanding balance of ${fmt(c.current_balance)} at our store.\nThank you!`);
+    const hasBalance = (c.current_balance || 0) > 0;
 
-              return `
+    return `
                 <tr>
                   <td class="font-semibold">
                     <div style="font-size:0.925rem;color:var(--text-primary)">${c.name}</div>
@@ -139,10 +139,10 @@ function renderCustomersListTable(container) {
                     ${fmt(c.current_balance)}
                   </td>
                   <td>
-                    ${hasBalance 
-                      ? `<span class="badge badge-red">Receivable Due</span>`
-                      : `<span class="badge badge-green">Cleared</span>`
-                    }
+                    ${hasBalance
+        ? `<span class="badge badge-red">Receivable Due</span>`
+        : `<span class="badge badge-green">Cleared</span>`
+      }
                   </td>
                   <td class="table-actions">
                     <button class="btn btn-ghost btn-sm" data-view-ledger="${c.id}" title="Statement">
@@ -158,7 +158,7 @@ function renderCustomersListTable(container) {
                     </button>
                   </td>
                 </tr>`;
-            }).join('')}
+  }).join('')}
           </tbody>
         </table>
       </div>
@@ -177,9 +177,9 @@ function renderCustomersListTable(container) {
   `;
 
   // Events
-  tableContainer.querySelector('#c-prev')?.addEventListener('click', async () => { if (customerPage > 1) { customerPage--; renderCustomersListTable(container); }});
-  tableContainer.querySelector('#c-next')?.addEventListener('click', async () => { if (customerPage < totalPages) { customerPage++; renderCustomersListTable(container); }});
-  
+  tableContainer.querySelector('#c-prev')?.addEventListener('click', async () => { if (customerPage > 1) { customerPage--; renderCustomersListTable(container); } });
+  tableContainer.querySelector('#c-next')?.addEventListener('click', async () => { if (customerPage < totalPages) { customerPage++; renderCustomersListTable(container); } });
+
   tableContainer.querySelectorAll('[data-view-ledger]').forEach(btn => {
     btn.addEventListener('click', () => {
       const cId = parseInt(btn.dataset.viewLedger);
@@ -208,7 +208,7 @@ function renderCustomersListTable(container) {
 // ── Customer Ledger Statement View ────────────────────────────
 async function renderCustomerLedgerView(container, customer) {
   selectedCustomerForLedger = customer;
-  
+
   const outlet = container.querySelector('#customers-view-outlet');
   if (!outlet) return;
 
@@ -339,11 +339,11 @@ async function loadAndRenderTransactions(outlet, customerId) {
         </thead>
         <tbody>
           ${displayTransactions.map(t => {
-            const isCredit = t.transaction_type === 'CREDIT';
-            const badge = isCredit
-              ? `<span class="badge badge-amber">Credit Sale</span>`
-              : `<span class="badge badge-green">Payment Settled</span>`;
-            return `
+    const isCredit = t.transaction_type === 'CREDIT';
+    const badge = isCredit
+      ? `<span class="badge badge-amber">Credit Sale</span>`
+      : `<span class="badge badge-green">Payment Settled</span>`;
+    return `
               <tr>
                 <td class="mono text-xs">${fmtDateTime(t.timestamp)}</td>
                 <td class="text-xs">${t.sale_id ? `Invoice: <strong>${saleMap[t.sale_id] || t.sale_id}</strong>` : 'Direct Payment / Opening Balance'}</td>
@@ -355,7 +355,7 @@ async function loadAndRenderTransactions(outlet, customerId) {
                   ${fmt(t.running_balance)}
                 </td>
               </tr>`;
-          }).join('')}
+  }).join('')}
         </tbody>
       </table>
     </div>
@@ -462,7 +462,7 @@ function showPaymentModal(customer, pageContainer) {
 
         closeModal();
         toast.success('Payment Recorded', `Successfully recorded payment of ${fmt(amt)} for ${customer.name}.`);
-        
+
         customer.current_balance = newBalance;
         const outlet = pageContainer.querySelector('#customers-view-outlet');
         if (outlet && selectedCustomerForLedger) {
@@ -512,7 +512,8 @@ function showCustomerEditModal(customer, pageContainer) {
     <button class="btn btn-primary" id="c-save-btn">${icon('icon-check')} ${isEdit ? 'Update Details' : 'Create Customer'}</button>
   `;
 
-  openModal({ title: isEdit ? 'Modify Customer Profile' : 'Add New Customer Account', bodyHTML, footerHTML,
+  openModal({
+    title: isEdit ? 'Modify Customer Profile' : 'Add New Customer Account', bodyHTML, footerHTML,
     onOpen: (backdrop) => {
       backdrop.querySelector('#c-save-btn').addEventListener('click', async () => {
         const name = backdrop.querySelector('#c-name').value.trim();

@@ -115,7 +115,7 @@ async function refreshDashboardContent(container) {
     <!-- Row 1: Interactive Executive KPI Grid -->
     <div class="kpi-grid" style="margin-bottom:var(--space-4)">
       <!-- KPI 1: Today Revenue -->
-      <div class="kpi-card" style="border-left:4px solid var(--primary)">
+      <div class="kpi-card">
         <div class="kpi-card-body">
           <div class="kpi-value text-primary mono">${fmt(todayRev)}</div>
           <div class="kpi-label">Today's Revenue</div>
@@ -129,7 +129,7 @@ async function refreshDashboardContent(container) {
       </div>
 
       <!-- KPI 2: Today Net Profit & Margin -->
-      <div class="kpi-card" style="border-left:4px solid var(--emerald, #10b981)">
+      <div class="kpi-card">
         <div class="kpi-card-body">
           <div class="kpi-value text-green mono">${fmt(todayProfit)}</div>
           <div class="kpi-label">Net Profit Today</div>
@@ -153,7 +153,7 @@ async function refreshDashboardContent(container) {
       </div>
 
       <!-- KPI 4: Stock Risk Counter -->
-      <div class="kpi-card" style="border-left:4px solid var(--danger);cursor:pointer;" id="kpi-stock-risk" title="Click to view low/out-of-stock items">
+      <div class="kpi-card" style="cursor:pointer;" id="kpi-stock-risk" title="Click to view low/out-of-stock items">
         <div class="kpi-card-body">
           <div class="kpi-value text-red mono">${outOfStockItems.length + lowStockItems.length}</div>
           <div class="kpi-label">Stock Risk Items</div>
@@ -167,7 +167,7 @@ async function refreshDashboardContent(container) {
       <!-- KPI 5: Month-to-date Revenue -->
       <div class="kpi-card">
         <div class="kpi-card-body">
-          <div class="kpi-value text-indigo mono">${fmt(monthRev)}</div>
+          <div class="kpi-value text-primary mono">${fmt(monthRev)}</div>
           <div class="kpi-label">Month-to-Date Revenue</div>
           <div class="kpi-subtext">Current billing cycle</div>
         </div>
@@ -485,7 +485,7 @@ function renderTopProducts(sales, saleItems, items) {
           </div>
         </div>
         <div style="height:6px;background:var(--canvas);border-radius:var(--radius-full);overflow:hidden;border:1px solid var(--border-soft);">
-          <div style="width:${pct}%;height:100%;background:linear-gradient(90deg, var(--primary), var(--teal, #0d9488));border-radius:var(--radius-full);"></div>
+          <div style="width:${pct}%;height:100%;background:var(--primary);border-radius:var(--radius-full);"></div>
         </div>
       </div>
     `;

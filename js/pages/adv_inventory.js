@@ -60,7 +60,7 @@ async function renderActiveAdvTab(container) {
     actionBtnWrap.querySelector('#batch-add-btn').addEventListener('click', () => showAddBatchModal(container));
 
     const batches = await db.batches.toArray();
-    
+
     // Sort batches by expiry date
     batches.sort((a, b) => new Date(a.expiry_date) - new Date(b.expiry_date));
 
@@ -70,7 +70,7 @@ async function renderActiveAdvTab(container) {
       const diffDays = Math.ceil((exp - now) / 86400000);
       let alertClass = '';
       let statusText = '';
-      
+
       if (diffDays <= 0) {
         alertClass = 'badge-red';
         statusText = 'Expired';
@@ -126,10 +126,10 @@ async function renderActiveAdvTab(container) {
             </thead>
             <tbody>
               ${activeAlerts.length === 0
-                ? '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:var(--space-4)">No batches expiring within 90 days.</td></tr>'
-                : activeAlerts.map(a => {
-                    const it = itemMap[a.item_id];
-                    return `
+        ? '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:var(--space-4)">No batches expiring within 90 days.</td></tr>'
+        : activeAlerts.map(a => {
+          const it = itemMap[a.item_id];
+          return `
                       <tr>
                         <td class="font-semibold">${it ? it.name : 'Unknown Item'}</td>
                         <td class="mono font-medium">${a.batch_number}</td>
@@ -137,8 +137,8 @@ async function renderActiveAdvTab(container) {
                         <td class="mono font-bold">${a.quantity} ${it ? it.unit : ''}</td>
                         <td><span class="badge ${a.alertClass}">${a.statusText}</span></td>
                       </tr>`;
-                  }).join('')
-              }
+        }).join('')
+      }
             </tbody>
           </table>
         </div>
@@ -162,10 +162,10 @@ async function renderActiveAdvTab(container) {
             </thead>
             <tbody>
               ${batches.length === 0
-                ? '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:var(--space-4)">No batch records registered yet.</td></tr>'
-                : batches.map(b => {
-                    const it = itemMap[b.item_id];
-                    return `
+        ? '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:var(--space-4)">No batch records registered yet.</td></tr>'
+        : batches.map(b => {
+          const it = itemMap[b.item_id];
+          return `
                       <tr>
                         <td class="font-semibold">${it ? it.name : 'Unknown Item'}</td>
                         <td class="mono">${b.batch_number}</td>
@@ -178,8 +178,8 @@ async function renderActiveAdvTab(container) {
                           </button>
                         </td>
                       </tr>`;
-                  }).join('')
-              }
+        }).join('')
+      }
             </tbody>
           </table>
         </div>
@@ -228,11 +228,11 @@ async function renderActiveAdvTab(container) {
             </thead>
             <tbody>
               ${counts.map(c => {
-                const isDraft = c.status === 'DRAFT';
-                const badge = isDraft
-                  ? `<span class="badge badge-amber">Drafting Count</span>`
-                  : `<span class="badge badge-green">Completed</span>`;
-                return `
+      const isDraft = c.status === 'DRAFT';
+      const badge = isDraft
+        ? `<span class="badge badge-amber">Drafting Count</span>`
+        : `<span class="badge badge-green">Completed</span>`;
+      return `
                   <tr>
                     <td class="mono text-xs font-semibold">AUD-#${c.id}</td>
                     <td class="text-sm">${fmtDateTime(c.date)}</td>
@@ -244,7 +244,7 @@ async function renderActiveAdvTab(container) {
                       </button>
                     </td>
                   </tr>`;
-              }).join('')}
+    }).join('')}
             </tbody>
           </table>
         </div>
@@ -290,15 +290,15 @@ async function renderActiveAdvTab(container) {
             </thead>
             <tbody>
               ${adjustments.map(a => {
-                const it = itemMap[a.item_id];
-                const badge = {
-                  'DAMAGE':  '<span class="badge badge-red">Damaged</span>',
-                  'SPOILAGE': '<span class="badge badge-purple">Spoiled</span>',
-                  'THEFT':    '<span class="badge badge-dark">Theft / Shoplift</span>',
-                  'EXPIRED':  '<span class="badge badge-red">Expired</span>'
-                }[a.type] || '<span class="badge badge-gray">Adjusted</span>';
+      const it = itemMap[a.item_id];
+      const badge = {
+        'DAMAGE': '<span class="badge badge-red">Damaged</span>',
+        'SPOILAGE': '<span class="badge badge-amber">Spoiled</span>',
+        'THEFT': '<span class="badge badge-dark">Theft / Shoplift</span>',
+        'EXPIRED': '<span class="badge badge-red">Expired</span>'
+      }[a.type] || '<span class="badge badge-gray">Adjusted</span>';
 
-                return `
+      return `
                   <tr>
                     <td class="mono text-xs">${fmtDateTime(a.timestamp)}</td>
                     <td class="font-semibold">${it ? it.name : 'Unknown Item'}</td>
@@ -306,7 +306,7 @@ async function renderActiveAdvTab(container) {
                     <td>${badge}</td>
                     <td class="text-sm text-secondary">${a.notes || '—'}</td>
                   </tr>`;
-              }).join('')}
+    }).join('')}
             </tbody>
           </table>
         </div>
@@ -366,7 +366,8 @@ async function showAddBatchModal(pageContainer) {
     <button class="btn btn-primary" id="batch-submit-btn">${icon('icon-check')} Save Batch Record</button>
   `;
 
-  openModal({ title: 'Add Product Batch', bodyHTML, footerHTML,
+  openModal({
+    title: 'Add Product Batch', bodyHTML, footerHTML,
     onOpen: (backdrop) => {
       backdrop.querySelector('#batch-submit-btn').addEventListener('click', async () => {
         const itemId = parseInt(backdrop.querySelector('#batch-item-select').value);
@@ -411,7 +412,8 @@ async function showCountCreateModal(pageContainer) {
     <button class="btn btn-primary" id="count-start-btn">Start Count Sheet</button>
   `;
 
-  openModal({ title: 'Perform Stock Audit', bodyHTML, footerHTML,
+  openModal({
+    title: 'Perform Stock Audit', bodyHTML, footerHTML,
     onOpen: (backdrop) => {
       backdrop.querySelector('#count-start-btn').addEventListener('click', async () => {
         const notes = backdrop.querySelector('#count-notes').value.trim() || 'Physical inventory audit';
@@ -439,7 +441,7 @@ async function showCountCreateModal(pageContainer) {
 
         closeModal();
         toast.success('Audit Sheet Created', `AUD-#${countId} opened.`);
-        
+
         // Show detail counts edit modal immediately
         const countObj = await db.inventory_counts.get(countId);
         showCountDetailsModal(countObj, pageContainer);
@@ -485,10 +487,10 @@ async function showCountDetailsModal(count, pageContainer) {
         </thead>
         <tbody id="audit-items-tbody">
           ${countItems.map((ci, idx) => {
-            const it = itemMap[ci.item_id];
-            const diff = ci.physical_qty - ci.system_qty;
-            const diffColor = diff < 0 ? 'color:var(--danger)' : diff > 0 ? 'color:var(--stock-in)' : '';
-            return `
+    const it = itemMap[ci.item_id];
+    const diff = ci.physical_qty - ci.system_qty;
+    const diffColor = diff < 0 ? 'color:var(--danger)' : diff > 0 ? 'color:var(--stock-in)' : '';
+    return `
               <tr data-ci-id="${ci.id}">
                 <td class="font-semibold">${it ? it.name : 'Unknown Item'}</td>
                 <td class="mono">${ci.system_qty} ${it ? it.unit : ''}</td>
@@ -499,7 +501,7 @@ async function showCountDetailsModal(count, pageContainer) {
                   ${diff > 0 ? '+' : ''}${diff}
                 </td>
               </tr>`;
-          }).join('')}
+  }).join('')}
         </tbody>
       </table>
     </div>
@@ -513,7 +515,8 @@ async function showCountDetailsModal(count, pageContainer) {
     ` : ''}
   `;
 
-  openModal({ title: `Audit count details: AUD-#${count.id}`, bodyHTML, footerHTML, size: 'modal-lg',
+  openModal({
+    title: `Audit count details: AUD-#${count.id}`, bodyHTML, footerHTML, size: 'modal-lg',
     onOpen: (backdrop) => {
       const inputs = backdrop.querySelectorAll('.count-actual-input');
       const diffCells = backdrop.querySelectorAll('.count-diff-cell');
@@ -616,7 +619,8 @@ async function showAddAdjustmentModal(pageContainer) {
     <button class="btn btn-danger" id="adj-submit-btn">${icon('icon-trash')} Record Stock Loss</button>
   `;
 
-  openModal({ title: 'Record Inventory Stock Loss', bodyHTML, footerHTML,
+  openModal({
+    title: 'Record Inventory Stock Loss', bodyHTML, footerHTML,
     onOpen: (backdrop) => {
       backdrop.querySelector('#adj-submit-btn').addEventListener('click', async () => {
         const itemId = parseInt(backdrop.querySelector('#adj-item-select').value);

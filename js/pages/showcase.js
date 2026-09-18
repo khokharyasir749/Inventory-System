@@ -270,7 +270,7 @@ function renderProfileDetails(container, profileId) {
 
   detailsEl.innerHTML = `
     <div style="background:var(--canvas);padding:var(--space-4);border-radius:var(--radius-lg);margin-bottom:var(--space-3)">
-      <span class="badge badge-indigo" style="margin-bottom:6px">${p.badge}</span>
+      <span class="badge badge-primary" style="margin-bottom:6px">${p.badge}</span>
       <p class="text-sm font-semibold" style="margin-bottom:12px;color:var(--text-primary)">${p.desc}</p>
       
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:var(--space-3)">
@@ -294,18 +294,18 @@ function renderProfileDetails(container, profileId) {
       // Show loading overlay
       const picker = document.getElementById('template-picker-screen');
       const submitBtn = document.getElementById('template-picker-submit-btn');
-      
+
       picker.style.display = 'flex';
       submitBtn.disabled = true;
       submitBtn.innerHTML = `<span class="animate-spin" style="display:inline-block;margin-right:8px;animation:spin 1s linear infinite">⌛</span>Initializing "${profileId}"...`;
-      
+
       try {
         await seedBusinessTemplate(profileId);
         await generate30DaysDemoTransactions();
-        
+
         picker.style.display = 'none';
         toast.success('Store Initialized', `Loaded the ${profileId} profile!`);
-        
+
         // Refresh app and navigate to dashboard
         window.location.reload();
       } catch (err) {

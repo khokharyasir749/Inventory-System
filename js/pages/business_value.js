@@ -18,21 +18,21 @@ async function renderBusinessValue(container) {
     </div>
 
     <!-- Hero Banner -->
-    <div class="section-card" style="background:linear-gradient(135deg, var(--zeploy-navy), var(--zeploy-midnight));color:white;padding:var(--space-6);margin-bottom:var(--space-6);border-left:5px solid var(--primary)">
+    <div class="section-card" style="background:var(--surface);border:1px solid var(--border);padding:var(--space-6);margin-bottom:var(--space-6);border-radius:var(--radius-lg)">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap">
         <div style="max-width:640px">
-          <div class="badge" style="background:rgba(59,130,246,0.2);color:#AFD2FA;margin-bottom:var(--space-2)">
+          <div class="badge badge-primary" style="margin-bottom:var(--space-2)">
             POWERED BY ZEPLOY TECH
           </div>
-          <h2 style="font-size:1.75rem;font-weight:800;color:white;margin-bottom:var(--space-2);letter-spacing:-0.02em">
+          <h2 style="font-size:1.75rem;font-weight:800;color:var(--text-primary);margin-bottom:var(--space-2);letter-spacing:-0.02em">
             Commercial Business Edition
           </h2>
-          <p style="color:#CBD5E1;font-size:0.95rem;line-height:1.6">
+          <p style="color:var(--text-secondary);font-size:0.95rem;line-height:1.6">
             Eliminate inventory shrinkage, prevent out-of-stock losses, and maintain complete real-time profit visibility across your retail store operations — completely offline with zero monthly cloud fees.
           </p>
         </div>
         <div>
-          <a href="#proposal" class="btn" style="background:white;color:var(--zeploy-navy);font-weight:700;padding:12px 24px">
+          <a href="#proposal" class="btn btn-primary" style="padding:12px 24px">
             ${icon('icon-print')} View Printable Proposal
           </a>
         </div>
@@ -44,7 +44,7 @@ async function renderBusinessValue(container) {
       
       <!-- Card 1 -->
       <div class="section-card" style="display:flex;gap:var(--space-4);align-items:flex-start">
-        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(59,130,246,0.1);color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           ${icon('icon-x-circle')}
         </div>
         <div>
@@ -57,7 +57,7 @@ async function renderBusinessValue(container) {
 
       <!-- Card 2 -->
       <div class="section-card" style="display:flex;gap:var(--space-4);align-items:flex-start">
-        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(5,150,105,0.1);color:var(--stock-in);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(16,185,129,0.1);color:var(--stock-in);border:1px solid rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           ${icon('icon-package')}
         </div>
         <div>
@@ -70,7 +70,7 @@ async function renderBusinessValue(container) {
 
       <!-- Card 3 -->
       <div class="section-card" style="display:flex;gap:var(--space-4);align-items:flex-start">
-        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(79,70,229,0.1);color:var(--sale);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(245,158,11,0.1);color:var(--primary);border:1px solid rgba(245,158,11,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           ${icon('icon-trending-up')}
         </div>
         <div>
@@ -83,7 +83,7 @@ async function renderBusinessValue(container) {
 
       <!-- Card 4 -->
       <div class="section-card" style="display:flex;gap:var(--space-4);align-items:flex-start">
-        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(217,119,6,0.1);color:var(--alert);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(245,158,11,0.1);color:var(--alert);border:1px solid rgba(245,158,11,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           ${icon('icon-zap')}
         </div>
         <div>
@@ -96,7 +96,7 @@ async function renderBusinessValue(container) {
 
       <!-- Card 5 -->
       <div class="section-card" style="display:flex;gap:var(--space-4);align-items:flex-start">
-        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(15,118,110,0.1);color:var(--primary-dark);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:var(--surface-raised);color:var(--text-primary);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           ${icon('icon-users')}
         </div>
         <div>
@@ -109,7 +109,7 @@ async function renderBusinessValue(container) {
 
       <!-- Card 6 -->
       <div class="section-card" style="display:flex;gap:var(--space-4);align-items:flex-start">
-        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(124,58,237,0.1);color:var(--spoilage);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(245,158,11,0.1);color:var(--warning);border:1px solid rgba(245,158,11,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           ${icon('icon-layers')}
         </div>
         <div>
@@ -122,7 +122,7 @@ async function renderBusinessValue(container) {
 
       <!-- Card 7 -->
       <div class="section-card" style="display:flex;gap:var(--space-4);align-items:flex-start">
-        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(59,130,246,0.1);color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:var(--surface-raised);color:var(--text-primary);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           ${icon('icon-shield')}
         </div>
         <div>
@@ -135,7 +135,7 @@ async function renderBusinessValue(container) {
 
       <!-- Card 8 -->
       <div class="section-card" style="display:flex;gap:var(--space-4);align-items:flex-start">
-        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(5,150,105,0.1);color:var(--stock-in);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:48px;height:48px;border-radius:var(--radius-md);background:rgba(16,185,129,0.1);color:var(--stock-in);border:1px solid rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           ${icon('icon-backup')}
         </div>
         <div>
