@@ -452,7 +452,7 @@ input[type="range"]::-webkit-slider-thumb {
 .kpi-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   line-height: 1.2;
@@ -538,12 +538,12 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   align-items: center;
   gap: 3px;
-  box-shadow: 0 2px 6px rgb(217 119 6 / 0.4);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .product-card-low-stock-badge.critical {
   background: var(--danger);
-  box-shadow: 0 2px 6px rgb(220 38 38 / 0.4);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .product-card-body {
@@ -676,7 +676,7 @@ thead th {
 }
 
 [data-theme="dark"] thead th {
-  background: #181B22;
+  background: #1E222D;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -716,7 +716,7 @@ tbody td {
 }
 
 [data-theme="dark"] tbody td {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 [data-theme="light"] tbody td,
@@ -782,7 +782,7 @@ tbody tr:last-child td {
 
 .modal {
   background: var(--surface);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-2xl);
   width: 100%;
@@ -1807,7 +1807,7 @@ tbody tr:last-child td {
   width: 100%;
   max-width: 440px;
   aspect-ratio: 4/3;
-  background: #0D0F12;
+  background: #0E1117;
   border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;

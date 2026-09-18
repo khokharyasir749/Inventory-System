@@ -481,7 +481,7 @@
 }
 
 [data-theme="dark"] .cart-summary-row.total {
-  background: #181B22;
+  background: #1E222D;
   border-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -819,7 +819,7 @@
 }
 
 [data-theme="dark"] .hotkey-pill kbd {
-  background: #181B22;
+  background: #1E222D;
   border-color: rgba(255, 255, 255, 0.14);
 }
 
@@ -989,7 +989,7 @@
 
 [data-theme="dark"] .tender-tab-btn.active {
   background: #FFFFFF;
-  color: #0D0F12;
+  color: #0E1117;
 }
 
 [data-theme="light"] .tender-tab-btn.active,
@@ -1045,13 +1045,13 @@
 }
 
 [data-theme="dark"] .denom-btn {
-  background: #181B22;
+  background: #1E222D;
   border-color: rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .denom-btn:hover {
   border-color: rgba(255, 255, 255, 0.24);
-  background: #222630;
+  background: #262B38;
 }
 
 [data-theme="light"] .denom-btn {

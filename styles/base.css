@@ -39,6 +39,8 @@
   --surface-raised:     #F1F5F9;
   --surface-hover:      #E2E8F0;
   --surface-glass:      #FFFFFF;
+  --sidebar-bg:         #FFFFFF;
+  --header-bg:          #FFFFFF;
   --border:             #E2E8F0;
   --border-soft:        #F1F5F9;
   --border-strong:      #CBD5E1;
@@ -163,57 +165,59 @@
 
 /* ── Dark Mode Token Overrides ───────────────────────────────── */
 [data-theme="dark"] {
-  /* Deep Charcoal / Carbon Canvas — #0D0F12 */
-  --canvas:             #0D0F12;
-  --surface:            #15181E;
-  --surface-raised:     #181B22;
-  --surface-hover:      #222630;
-  --surface-glass:      #15181E;
+  /* Rich Midnight Graphite & Obsidian Slate Canvas - #0E1117 */
+  --canvas:             #0E1117;
+  --surface:            #161922;
+  --surface-raised:     #1E222D;
+  --surface-hover:      #262B38;
+  --surface-glass:      #161922;
+  --sidebar-bg:         #111318;
+  --header-bg:          #111318;
   --border:             rgba(255, 255, 255, 0.08);
   --border-soft:        rgba(255, 255, 255, 0.04);
-  --border-strong:      rgba(255, 255, 255, 0.12);
+  --border-strong:      rgba(255, 255, 255, 0.14);
   --specular-highlight: none;
   --shadow-glass:       none;
 
-  /* Buttons — Minimalist Pure Platinum White with #0D0F12 pitch text */
+  /* Buttons - High-contrast monochrome pure white with #0E1117 pitch text */
   --btn-primary-bg:     #FFFFFF;
-  --btn-primary-text:   #0D0F12;
-  --btn-primary-hover:  #F4F4F5;
+  --btn-primary-text:   #0E1117;
+  --btn-primary-hover:  #F1F5F9;
   --btn-primary-border: #FFFFFF;
 
-  --btn-secondary-bg:     #15181E;
+  --btn-secondary-bg:     #161922;
   --btn-secondary-text:   #F8FAFC;
-  --btn-secondary-hover:  #181B22;
+  --btn-secondary-hover:  #1E222D;
   --btn-secondary-border: rgba(255, 255, 255, 0.08);
 
-  /* Navigation Active Pill — solid monochrome white */
+  /* Navigation Active Pill - solid monochrome white with #0E1117 pitch text */
   --active-nav-bg:   #FFFFFF;
-  --active-nav-text: #0D0F12;
+  --active-nav-text: #0E1117;
 
   /* Input Focus Border */
-  --input-focus-border: #64748B;
+  --input-focus-border: #94A3B8;
 
-  /* Primary Accent — Muted Warm Amber (#D97706) */
+  /* Primary Accent - Refined Warm Amber (#D97706) */
   --primary:        #D97706;
   --primary-hover:  #F59E0B;
   --primary-dark:   #B45309;
   --primary-light:  rgba(217, 119, 6, 0.14);
   --primary-muted:  rgba(217, 119, 6, 0.08);
   --primary-glow:   transparent;
-  --accent-neutral: #A1A1AA;
+  --accent-neutral: #94A3B8;
 
-  --zeploy-midnight: #0D0F12;
-  --zeploy-surface:  #15181E;
-  --zeploy-header:   #181B22;
+  --zeploy-midnight: #0E1117;
+  --zeploy-surface:  #161922;
+  --zeploy-header:   #111318;
   --zeploy-accent:   #D97706;
 
-  /* Text — pure crisp white & warm zinc */
+  /* Text - Pure crisp white & readable warm slate */
   --text-primary:   #F8FAFC;
   --text-secondary: #94A3B8;
   --text-muted:     #64748B;
-  --text-inverse:   #0D0F12;
+  --text-inverse:   #0E1117;
 
-  /* Status Colors — Muted Sage Green, Warm Amber, Muted Brick Red */
+  /* Status Colors - Muted Sage Green, Warm Amber, Muted Brick Red (0% neon) */
   --stock-in:       #10B981;
   --stock-in-bg:    rgba(16, 185, 129, 0.12);
   --sale:           #F59E0B;
@@ -228,7 +232,7 @@
   --success-bg:     rgba(16, 185, 129, 0.12);
   --warning:        #F59E0B;
   --warning-bg:     rgba(245, 158, 11, 0.12);
-  --info:           #A1A1AA;
+  --info:           #94A3B8;
   --info-bg:        rgba(255, 255, 255, 0.06);
   --teal:           #10B981;
   --teal-bg:        rgba(16, 185, 129, 0.12);
@@ -240,6 +244,7 @@
   --shadow-lg:  0 4px 12px rgba(0, 0, 0, 0.55);
   --shadow-xl:  0 8px 24px rgba(0, 0, 0, 0.60);
   --shadow-2xl: 0 12px 32px rgba(0, 0, 0, 0.65);
+  --shadow-glow: none;
   --shadow-focus: none;
 }
 
@@ -325,6 +330,7 @@ hr {
 /* ── Typography ───────────────────────────────────────────────── */
 h1, h2, h3, h4, h5 {
   font-family: var(--font-display);
+  color: var(--text-primary);
 }
 
 h1 { font-size: 1.625rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.025em; }
@@ -369,7 +375,7 @@ p { line-height: 1.6; }
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: 1.2;
 }
 
