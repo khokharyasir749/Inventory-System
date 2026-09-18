@@ -965,13 +965,14 @@
 }
 
 [data-theme="dark"] .tender-tab-btn.active {
-  background: #222630;
-  color: #FFFFFF;
+  background: #FFFFFF;
+  color: #0D0F12;
 }
 
-[data-theme="light"] .tender-tab-btn.active {
-  background: #E2E8F0;
-  color: #0F172A;
+[data-theme="light"] .tender-tab-btn.active,
+:root:not([data-theme="dark"]) .tender-tab-btn.active {
+  background: #0F172A;
+  color: #FFFFFF;
 }
 
 .denom-presets-bar {

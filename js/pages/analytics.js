@@ -190,9 +190,9 @@ async function refreshAnalytics(container) {
         </div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card-header"><div class="kpi-icon kpi-icon-indigo">${icon('icon-package')}</div></div>
+        <div class="kpi-card-header"><div class="kpi-icon kpi-icon-sale">${icon('icon-package')}</div></div>
         <div class="kpi-card-body">
-          <div class="kpi-value text-indigo">${fmt(totalCogs)}</div>
+          <div class="kpi-value text-sale">${fmt(totalCogs)}</div>
           <div class="kpi-label">Cost of Goods Sold (COGS)</div>
         </div>
       </div>

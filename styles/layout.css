@@ -134,13 +134,14 @@
 }
 
 [data-theme="dark"] .nav-item.active {
-  background: #222630;
-  color: #FFFFFF;
+  background: #FFFFFF;
+  color: #0D0F12;
 }
 
-[data-theme="light"] .nav-item.active {
-  background: #E2E8F0;
-  color: #0F172A;
+[data-theme="light"] .nav-item.active,
+:root:not([data-theme="dark"]) .nav-item.active {
+  background: #0F172A;
+  color: #FFFFFF;
 }
 
 .nav-item.active:hover {

@@ -1203,7 +1203,7 @@ function showStockMovementModal(item, defaultType = 'IN', pageContainer) {
         confirmBtn.className = 'btn';
         if (selectedMovement === 'IN') confirmBtn.classList.add('btn-success');
         else if (selectedMovement === 'OUT') confirmBtn.classList.add('btn-amber');
-        else if (selectedMovement === 'ADJUSTMENT') confirmBtn.classList.add('btn-indigo');
+        else if (selectedMovement === 'ADJUSTMENT') confirmBtn.classList.add('btn-sale');
         else confirmBtn.classList.add('btn-primary');
       };
 

@@ -99,10 +99,10 @@ async function refreshRegisterView(container) {
         <div class="kpi-card">
           <div class="kpi-card-header">
             <span class="kpi-card-title">Manual Float Adj.</span>
-            ${icon('icon-edit', 'text-indigo')}
+            ${icon('icon-edit', 'text-sale')}
           </div>
           <div class="kpi-card-body">
-            <div class="kpi-value mono ${cashInTotal >= cashOutTotal ? 'text-indigo' : 'text-red'}">
+            <div class="kpi-value mono ${cashInTotal >= cashOutTotal ? 'text-sale' : 'text-red'}">
               ${cashInTotal >= cashOutTotal ? '+' : '−'} ${fmt(Math.abs(cashInTotal - cashOutTotal))}
             </div>
             <div class="kpi-label">+${fmt(cashInTotal)} In / −${fmt(cashOutTotal)} Out</div>

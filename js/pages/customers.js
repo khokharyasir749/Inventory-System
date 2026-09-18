@@ -253,7 +253,7 @@ async function renderCustomerLedgerView(container, customer) {
       </div>
       <div class="kpi-card">
         <div class="kpi-card-body">
-          <div class="kpi-value text-indigo mono" id="ledger-kpi-sales">Rs. 0</div>
+          <div class="kpi-value text-sale mono" id="ledger-kpi-sales">Rs. 0</div>
           <div class="kpi-label">Total Credit Sales (Receivables)</div>
         </div>
       </div>
@@ -348,7 +348,7 @@ async function loadAndRenderTransactions(outlet, customerId) {
                 <td class="mono text-xs">${fmtDateTime(t.timestamp)}</td>
                 <td class="text-xs">${t.sale_id ? `Invoice: <strong>${saleMap[t.sale_id] || t.sale_id}</strong>` : 'Direct Payment / Opening Balance'}</td>
                 <td>${badge}</td>
-                <td class="mono font-bold text-xs ${isCredit ? 'text-indigo' : 'text-green'}">
+                <td class="mono font-bold text-xs ${isCredit ? 'text-sale' : 'text-green'}">
                   ${isCredit ? '+' : '−'} ${fmt(t.amount)}
                 </td>
                 <td class="mono font-bold text-xs" style="text-align:right">

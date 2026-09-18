@@ -33,7 +33,7 @@
   --slate-900: #18181B;
   --slate-950: #09090B;
 
-  /* Canvas & Surfaces — clean studio alabaster (#F8FAFC), pure white (#FFFFFF), zero blue */
+  /* Canvas & Surfaces — clean studio alabaster (#F8FAFC), pure white (#FFFFFF) */
   --canvas:             #F8FAFC;
   --surface:            #FFFFFF;
   --surface-raised:     #F1F5F9;
@@ -46,24 +46,24 @@
   --shadow-glass:       none;
 
   /* Buttons — high-contrast monochrome flat */
-  --btn-primary-bg:     #15181E;
+  --btn-primary-bg:     #0F172A;
   --btn-primary-text:   #FFFFFF;
-  --btn-primary-hover:  #222630;
-  --btn-primary-border: #15181E;
+  --btn-primary-hover:  #1E293B;
+  --btn-primary-border: #0F172A;
 
   --btn-secondary-bg:     #FFFFFF;
-  --btn-secondary-text:   #15181E;
+  --btn-secondary-text:   #0F172A;
   --btn-secondary-hover:  #F8FAFC;
   --btn-secondary-border: #E2E8F0;
 
   /* Navigation Active Pill */
-  --active-nav-bg:   #E2E8F0;
-  --active-nav-text: #15181E;
+  --active-nav-bg:   #0F172A;
+  --active-nav-text: #FFFFFF;
 
   /* Input Focus Border */
   --input-focus-border: #64748B;
 
-  /* Primary Accent — Muted Warm Amber (#D97706) (0% Blue) */
+  /* Primary Accent — Muted Warm Amber (#D97706) */
   --primary:        #D97706;
   --primary-hover:  #B45309;
   --primary-dark:   #92400E;
@@ -163,7 +163,7 @@
 
 /* ── Dark Mode Token Overrides ───────────────────────────────── */
 [data-theme="dark"] {
-  /* Deep Charcoal / Carbon Canvas — #0D0F12 (pure neutral carbon, 0% blue) */
+  /* Deep Charcoal / Carbon Canvas — #0D0F12 */
   --canvas:             #0D0F12;
   --surface:            #15181E;
   --surface-raised:     #181B22;
@@ -186,14 +186,14 @@
   --btn-secondary-hover:  #181B22;
   --btn-secondary-border: rgba(255, 255, 255, 0.08);
 
-  /* Navigation Active Pill — solid warm-zinc fill (#222630) with crisp white text */
-  --active-nav-bg:   #222630;
-  --active-nav-text: #FFFFFF;
+  /* Navigation Active Pill — solid monochrome white */
+  --active-nav-bg:   #FFFFFF;
+  --active-nav-text: #0D0F12;
 
   /* Input Focus Border */
   --input-focus-border: #64748B;
 
-  /* Primary Accent — Muted Warm Amber (#D97706) (0% blue) */
+  /* Primary Accent — Muted Warm Amber (#D97706) */
   --primary:        #D97706;
   --primary-hover:  #F59E0B;
   --primary-dark:   #B45309;
@@ -353,7 +353,7 @@ p { line-height: 1.6; }
 .text-muted     { color: var(--text-muted); }
 .text-teal      { color: var(--primary); }
 .text-green     { color: var(--stock-in); }
-.text-indigo    { color: var(--sale); }
+.text-sale      { color: var(--sale); }
 .text-amber     { color: var(--alert); }
 .text-red       { color: var(--danger); }
 
@@ -405,12 +405,11 @@ p { line-height: 1.6; }
 }
 
 .badge-primary   { background: var(--primary-light);  color: var(--primary);       border-color: rgba(217, 119, 6, 0.20); }
-.badge-blue      { background: var(--surface-raised); color: var(--text-primary);   border-color: var(--border); }
+.badge-surface   { background: var(--surface-raised); color: var(--text-primary);   border-color: var(--border); }
 .badge-green     { background: var(--stock-in-bg);    color: var(--stock-in);      border-color: rgba(16, 185, 129, 0.20); }
-.badge-indigo    { background: var(--sale-bg);        color: var(--sale);          border-color: rgba(217, 119, 6, 0.20); }
+.badge-sale      { background: var(--sale-bg);        color: var(--sale);          border-color: rgba(217, 119, 6, 0.20); }
 .badge-amber     { background: var(--alert-bg);       color: var(--alert);         border-color: rgba(217, 119, 6, 0.20); }
 .badge-red       { background: var(--danger-bg);      color: var(--danger);        border-color: rgba(239, 68, 68, 0.20); }
-.badge-purple    { background: var(--alert-bg);       color: var(--alert);         border-color: rgba(217, 119, 6, 0.20); }
 .badge-gray      { background: var(--surface-raised); color: var(--text-secondary); border-color: var(--border); }
 .badge-dark      { background: var(--zinc-800);       color: var(--zinc-100);      border-color: var(--zinc-700); }
 

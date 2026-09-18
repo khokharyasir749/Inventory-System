@@ -100,14 +100,12 @@
 }
 
 /* Sale / Amber Button */
-.btn-indigo,
 .btn-sale {
   background: var(--sale);
   color: white;
   border: 1px solid var(--sale);
   box-shadow: none;
 }
-.btn-indigo:hover,
 .btn-sale:hover {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
@@ -433,7 +431,6 @@ input[type="range"]::-webkit-slider-thumb {
 .kpi-icon-teal,
 .kpi-icon-amber   { background: var(--alert-bg);        color: var(--alert); }
 .kpi-icon-green   { background: var(--stock-in-bg);     color: var(--stock-in); }
-.kpi-icon-indigo,
 .kpi-icon-sale    { background: var(--sale-bg);         color: var(--sale); }
 .kpi-icon-red     { background: var(--danger-bg);       color: var(--danger); }
 
@@ -1482,7 +1479,7 @@ tbody tr:last-child td {
 
 /* Stepper States (Synced with badge/pill classes) */
 .stepper-step.active .stepper-circle,
-.badge.badge-blue {
+.badge.badge-surface {
   background: var(--btn-primary-bg);
   border-color: var(--btn-primary-border);
   color: var(--btn-primary-text);
@@ -2467,6 +2464,33 @@ tbody tr:last-child td {
 
 .glass-metric-pill.pill-primary {
   border-left: 3px solid var(--primary);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HARD-LOCK SEARCH ICON (NO GIANT MAGNIFYING GLASS)
+   ══════════════════════════════════════════════════════════════ */
+.filter-search-wrap svg,
+.filter-search-icon,
+.filter-search-icon svg,
+#inv-search-input ~ svg,
+#inv-search ~ svg,
+.search-box svg {
+    width: 16px !important;
+    height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    position: absolute !important;
+    left: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    pointer-events: none !important;
+}
+
+.filter-search-wrap input,
+#inv-search-input,
+#inv-search,
+.search-box input {
+    padding-left: 38px !important;
 }
 
 
