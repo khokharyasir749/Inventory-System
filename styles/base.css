@@ -165,34 +165,34 @@
 
 /* ── Dark Mode Token Overrides ───────────────────────────────── */
 [data-theme="dark"] {
-  /* Rich Midnight Graphite & Obsidian Slate Canvas - #0E1117 */
-  --canvas:             #0E1117;
-  --surface:            #161922;
-  --surface-raised:     #1E222D;
-  --surface-hover:      #262B38;
-  --surface-glass:      #161922;
-  --sidebar-bg:         #111318;
-  --header-bg:          #111318;
-  --border:             rgba(255, 255, 255, 0.08);
+  /* Rich Dark Charcoal Base - #090B0E (Tailwind bg-zinc-950 / bg-slate-950 equivalent) */
+  --canvas:             #090B0E;
+  --surface:            rgba(255, 255, 255, 0.035);
+  --surface-raised:     rgba(255, 255, 255, 0.05);
+  --surface-hover:      rgba(255, 255, 255, 0.07);
+  --surface-glass:      rgba(255, 255, 255, 0.035);
+  --sidebar-bg:         #0E1117;
+  --header-bg:          #0E1117;
+  --border:             rgba(255, 255, 255, 0.07);
   --border-soft:        rgba(255, 255, 255, 0.04);
-  --border-strong:      rgba(255, 255, 255, 0.14);
+  --border-strong:      rgba(255, 255, 255, 0.12);
   --specular-highlight: none;
   --shadow-glass:       none;
 
-  /* Buttons - High-contrast monochrome pure white with #0E1117 pitch text */
-  --btn-primary-bg:     #FFFFFF;
-  --btn-primary-text:   #0E1117;
-  --btn-primary-hover:  #F1F5F9;
-  --btn-primary-border: #FFFFFF;
+  /* Buttons - High-contrast monochrome pure white with #090B0E pitch text */
+  --btn-primary-bg:     #F1F5F9;
+  --btn-primary-text:   #090B0E;
+  --btn-primary-hover:  #FFFFFF;
+  --btn-primary-border: #F1F5F9;
 
-  --btn-secondary-bg:     #161922;
-  --btn-secondary-text:   #F8FAFC;
-  --btn-secondary-hover:  #1E222D;
+  --btn-secondary-bg:     rgba(255, 255, 255, 0.04);
+  --btn-secondary-text:   #F1F5F9;
+  --btn-secondary-hover:  rgba(255, 255, 255, 0.07);
   --btn-secondary-border: rgba(255, 255, 255, 0.08);
 
-  /* Navigation Active Pill - solid monochrome white with #0E1117 pitch text */
-  --active-nav-bg:   #FFFFFF;
-  --active-nav-text: #0E1117;
+  /* Navigation Active Pill - solid monochrome white with #090B0E pitch text */
+  --active-nav-bg:   #F1F5F9;
+  --active-nav-text: #090B0E;
 
   /* Input Focus Border */
   --input-focus-border: #94A3B8;
@@ -206,37 +206,37 @@
   --primary-glow:   transparent;
   --accent-neutral: #94A3B8;
 
-  --zeploy-midnight: #0E1117;
-  --zeploy-surface:  #161922;
-  --zeploy-header:   #111318;
+  --zeploy-midnight: #090B0E;
+  --zeploy-surface:  #0E1117;
+  --zeploy-header:   #0E1117;
   --zeploy-accent:   #D97706;
 
-  /* Text - Pure crisp white & readable warm slate */
-  --text-primary:   #F8FAFC;
+  /* Typography & Muted Text Hierarchy: slate-100, slate-400, slate-500 */
+  --text-primary:   #F1F5F9;
   --text-secondary: #94A3B8;
   --text-muted:     #64748B;
-  --text-inverse:   #0E1117;
+  --text-inverse:   #090B0E;
 
-  /* Status Colors - Muted Sage Green, Warm Amber, Muted Brick Red (0% neon) */
-  --stock-in:       #10B981;
+  /* Refined Subtle Indicators (Red / Green / Amber) */
+  --stock-in:       #34D399;
   --stock-in-bg:    rgba(16, 185, 129, 0.12);
-  --sale:           #F59E0B;
+  --sale:           #FBBF24;
   --sale-bg:        rgba(245, 158, 11, 0.12);
-  --alert:          #F59E0B;
+  --alert:          #FBBF24;
   --alert-bg:       rgba(245, 158, 11, 0.12);
-  --danger:         #EF4444;
+  --danger:         #F87171;
   --danger-bg:      rgba(239, 68, 68, 0.12);
-  --spoilage:       #D97706;
-  --spoilage-bg:    rgba(217, 119, 6, 0.12);
-  --success:        #10B981;
+  --spoilage:       #FBBF24;
+  --spoilage-bg:    rgba(245, 158, 11, 0.12);
+  --success:        #34D399;
   --success-bg:     rgba(16, 185, 129, 0.12);
-  --warning:        #F59E0B;
+  --warning:        #FBBF24;
   --warning-bg:     rgba(245, 158, 11, 0.12);
   --info:           #94A3B8;
-  --info-bg:        rgba(255, 255, 255, 0.06);
-  --teal:           #10B981;
+  --info-bg:        rgba(255, 255, 255, 0.05);
+  --teal:           #34D399;
   --teal-bg:        rgba(16, 185, 129, 0.12);
-  --emerald:        #10B981;
+  --emerald:        #34D399;
 
   --shadow-xs:  0 1px 2px rgba(0, 0, 0, 0.40);
   --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.45);

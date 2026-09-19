@@ -26,6 +26,11 @@
   overflow: hidden;
 }
 
+[data-theme="dark"] #sidebar {
+  background: #0E1117;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -34,6 +39,11 @@
   border-bottom: 1px solid var(--border);
   min-height: var(--topbar-height);
   background: var(--sidebar-bg);
+}
+
+[data-theme="dark"] .sidebar-logo {
+  background: #0E1117;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .sidebar-logo-mark {
@@ -135,8 +145,8 @@
 }
 
 [data-theme="dark"] .nav-item.active {
-  background: #FFFFFF;
-  color: #0E1117;
+  background: #F1F5F9;
+  color: #090B0E;
 }
 
 [data-theme="light"] .nav-item.active,
@@ -183,6 +193,11 @@
   background: var(--sidebar-bg);
 }
 
+[data-theme="dark"] .sidebar-footer {
+  background: #0E1117;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
 .sidebar-footer .nav-item {
   margin: 0;
 }
@@ -210,6 +225,11 @@
   position: relative;
   z-index: 50;
   transition: background-color var(--transition-normal), border-color var(--transition-normal);
+}
+
+[data-theme="dark"] #topbar {
+  background: #0E1117;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .topbar-search-wrap {
@@ -424,6 +444,29 @@
 
 .section-card:hover {
   border-color: var(--border-strong);
+}
+
+[data-theme="dark"] .section-card {
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.02);
+  transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+[data-theme="dark"] .section-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Soft ambient accent lighting behind charts & visualizations */
+[data-theme="dark"] .section-card:has(#trendline-chart-container),
+[data-theme="dark"] .section-card:has(.hourly-heatmap-grid),
+[data-theme="dark"] .section-card:has(svg),
+[data-theme="dark"] .section-card:has(canvas),
+[data-theme="dark"] .section-card.chart-card {
+  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(217, 119, 6, 0.08);
 }
 
 .section-card-header {

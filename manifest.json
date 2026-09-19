@@ -10,8 +10,8 @@
     }
   ],
   "start_url": "index.html",
-  "background_color": "#F1F5F9",
-  "theme_color": "#0F766E",
+  "background_color": "#090B0E",
+  "theme_color": "#090B0E",
   "display": "standalone",
   "orientation": "any"
 }

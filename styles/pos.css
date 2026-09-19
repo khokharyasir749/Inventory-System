@@ -99,9 +99,19 @@
   transform: translateY(-2px);
 }
 
+[data-theme="dark"] .pos-product-card {
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
 [data-theme="dark"] .pos-product-card:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 255, 255, 0.03);
+  transform: translateY(-2px);
 }
 
 .pos-product-card:active {
@@ -207,6 +217,13 @@
   overflow: hidden;
 }
 
+[data-theme="dark"] .pos-cart-panel {
+  background: #0E1117;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+
 [data-theme="light"] .pos-cart-panel {
   background: var(--surface);
   border-left: 1px solid var(--border);
@@ -221,6 +238,11 @@
   border-bottom: 1px solid var(--border-soft);
   flex-shrink: 0;
   background: var(--canvas);
+}
+
+[data-theme="dark"] .cart-header {
+  background: #0E1117;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .cart-title {
@@ -308,6 +330,19 @@
   border-color: var(--border-strong);
   background: var(--surface-hover);
   box-shadow: none;
+}
+
+[data-theme="dark"] .cart-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+[data-theme="dark"] .cart-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="light"] .cart-item {
@@ -435,6 +470,11 @@
   gap: var(--space-3);
   flex-shrink: 0;
   background: var(--surface);
+}
+
+[data-theme="dark"] .cart-summary {
+  background: #0E1117;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 [data-theme="light"] .cart-summary {
@@ -864,24 +904,27 @@
 
 /* In Stock */
 .pos-card-stock-badge.in-stock {
-  background: var(--stock-in);
-  color: #FFFFFF;
+  background: rgba(16, 185, 129, 0.12);
+  color: #34D399;
+  border: 1px solid rgba(16, 185, 129, 0.2);
   box-shadow: none;
   text-shadow: none;
 }
 
 /* Low Stock */
 .pos-card-stock-badge.low-stock {
-  background: var(--alert);
-  color: #FFFFFF;
+  background: rgba(245, 158, 11, 0.12);
+  color: #FBBF24;
+  border: 1px solid rgba(245, 158, 11, 0.2);
   box-shadow: none;
   text-shadow: none;
 }
 
 /* Out of Stock */
 .pos-card-stock-badge.out-of-stock {
-  background: var(--danger);
-  color: #FFFFFF;
+  background: rgba(239, 68, 68, 0.12);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   box-shadow: none;
   text-shadow: none;
 }
